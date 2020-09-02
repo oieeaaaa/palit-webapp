@@ -1,0 +1,89 @@
+/* stylelint-disable */
+
+// GUIDES
+$grid-guides: (
+	mobile: (
+		size: 375px,
+		cols: 10,
+		gutter: 0,
+	),
+	tablet-p: (
+		size: 768px,
+		cols: 12,
+		gutter: 0,
+	),
+	tablet-l: (
+		size: 1024px,
+		cols: 12,
+		gutter: 0,
+	),
+	desktop: (
+		size: 1280px,
+		cols: 20,
+		gutter: 0,
+	),
+);
+
+// mobile first
+$default-guide: map-get($grid-guides, "mobile");
+
+// get the specified guide.
+@function get-guide($guide-name) {
+	@return map-get($grid-guides, $guide-name);
+}
+
+// setup the grid 'at the specified screen'.
+@mixin at-screen($screen) {
+	@media screen and (min-width: map-get(get-guide($screen), "size")) {
+		@content;
+	}
+}
+
+// on tablet portrait screens
+@mixin tablet-p {
+	@include at-screen("tablet-p") {
+		@content;
+	}
+}
+
+// on tablet landscape screens
+@mixin tablet-l {
+	@include at-screen("tablet-l") {
+		@content;
+	}
+}
+
+// on desktop screens
+@mixin desktop {
+	@include at-screen("desktop") {
+		@content;
+	}
+}
+
+@mixin gen-cols($screen) {
+	grid-template-columns: repeat(map-get(get-guide($screen), "cols"), 1fr);
+
+	@if (map-get(get-guide($screen), "gutter") > 0px) {
+		padding: 0 map-get(get-guide($screen), "gutter");
+	}
+}
+
+.grid {
+	display: grid;
+	grid-template-columns: repeat(map-get($default-guide, "cols"), 1fr);
+	max-width: map-get(get-guide("desktop"), "size");
+	margin: 0 auto;
+
+	@include tablet-p {
+		@include gen-cols("tablet-p");
+	}
+
+	@include tablet-l {
+		@include gen-cols("tablet-l");
+	}
+
+	@include desktop {
+		@include gen-cols("desktop");
+		padding: 0;
+	}
+}

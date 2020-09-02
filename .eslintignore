@@ -1,0 +1,6 @@
+# Configs
+.next.config.js
+.babelrc
+.editorconfig
+.stylelintrc
+.eslintrc

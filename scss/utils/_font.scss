@@ -1,0 +1,7 @@
+@mixin font($weight) {
+  @if ($weight != '') {
+    font-family: #{$font $weight}, sans-serif;
+  } @else {
+    font-family: $font, sans-serif;
+  }
+}

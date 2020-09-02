@@ -1,0 +1,29 @@
+.styleguide-nav {
+  display: flex;
+  flex-wrap: nowrap;
+  padding: rem(10);
+  background-color: $dark-2;
+  overflow-x: scroll;
+
+  & > &__item:not(:last-child) {
+    margin-right: rem(10);
+  }
+
+  &__button {
+    border: rem(1) solid $light-2;
+    border-radius: rem(3);
+    font-size: rem(16);
+    padding: rem(10) rem(20);
+    cursor: pointer;
+
+    @include font('Bold');
+  }
+
+  &__button.active {
+    background-color: $dark-2;
+    color: $light-2;
+    transition-property: background-color, color;
+    transition-timing-function: ease;
+    transition-duration: .15s;
+  }
+}
