@@ -1,5 +1,4 @@
 import Head from 'next/head';
-import StyleGuide from 'styleguide/styleguide';
 
 const Home = () => (
   <div className="container">
@@ -7,7 +6,7 @@ const Home = () => (
       <title>Boilerplate</title>
       <link rel="icon" href="/favicon.ico" />
     </Head>
-    <StyleGuide />
+    <h1>When I&#39;m home</h1>
   </div>
 );
 

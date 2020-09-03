@@ -18,9 +18,8 @@ export default () => {
     return () => window.removeEventListener('keypress', toggleGrid);
   });
 
-
   const renderComponents = (list) => {
-    if (!activeComponent) return () => {};
+    if (!activeComponent) return null;
 
     const Component = list.reduce((comp, curComp) => {
       if (activeComponent === curComp.name) {
