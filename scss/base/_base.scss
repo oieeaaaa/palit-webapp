@@ -1,8 +1,9 @@
 $base-font-size: 10;
 
 html {
+  @include Montserrat;
+
   font-size: $base-font-size + px;
-  font-family: 'Modern Era', sans-serif;
 }
 
 body {
