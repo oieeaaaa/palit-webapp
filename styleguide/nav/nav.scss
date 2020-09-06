@@ -2,7 +2,7 @@
   display: flex;
   flex-wrap: nowrap;
   padding: rem(10);
-  background-color: $dark-2;
+  background-color: var(--dark);
   overflow-x: scroll;
 
   & > &__item:not(:last-child) {
@@ -10,18 +10,18 @@
   }
 
   &__button {
-    border: rem(1) solid $light-2;
+    border: rem(1) solid var(--light);
     border-radius: rem(3);
     font-size: rem(16);
     padding: rem(10) rem(20);
     cursor: pointer;
 
-    @include font('Bold');
+    @include Montserrat(700);
   }
 
   &__button.active {
-    background-color: $dark-2;
-    color: $light-2;
+    background-color: var(--dark);
+    color: var(--light);
     transition-property: background-color, color;
     transition-timing-function: ease;
     transition-duration: .15s;
