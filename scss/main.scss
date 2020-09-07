@@ -6,15 +6,18 @@
 
 // utils
 @import './utils/aspect-ratio';
-@import './utils/center';
+@import './utils/layout';
 @import './utils/rem';
 @import './utils/grid';
 
 // styleguide
 @import 'styleguide/styleguide';
+@import 'styleguide/grid-guide';
 @import 'styleguide/nav/nav';
 
 // components
+@import 'components/header/header';
+
 @import 'components/card/card';
 
 @import 'components/button/button';
