@@ -1,4 +1,19 @@
+// montserrat import
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap');
+
+// avenir local import
+@font-face {
+  font-family: 'Avenir', sans-serif;
+  src: url("/scss/Avenir-Black.woff") format("woff"), url("/scss/Avenir-Black.woff2") format("woff2");
+  font-weight: 900;
+}
+
+@font-face {
+  font-family: 'Avenir', sans-serif;
+  src: url("/scss/Avenir-BlackOblique.woff") format("woff"), url("/scss/Avenir-BlackOblique.woff2") format("woff2");
+  font-weight: 900;
+  font-style: oblique;
+}
 
 /*
 Montserrat
@@ -8,5 +23,15 @@ Bold: 700
 */
 @mixin Montserrat($weight: 400) {
   font-family: 'Montserrat', sans-serif;
+  font-weight: $weight;
+}
+
+/*
+Avenir
+==============
+Black: 900
+*/
+@mixin Avenir($weight: 900) {
+  font-family: 'Avenir', sans-serif;
   font-weight: $weight;
 }
