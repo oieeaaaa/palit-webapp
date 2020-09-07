@@ -1,0 +1,21 @@
+.grid-guide {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: grid;
+  pointer-events: none;
+  user-select: none;
+  z-index: 9999;
+
+  @include desktop {
+    max-width: rem(1280);
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  & > span {
+    background-color: rgba(red, .1);
+  }
+}
