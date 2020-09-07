@@ -4,22 +4,26 @@
 $grid-guides: (
 	mobile: (
 		size: 375px,
-		cols: 10,
-		gutter: 0,
+		cols: 8,
+		margin: 20px,
+		gutter: 10px,
 	),
 	tablet-p: (
 		size: 768px,
 		cols: 12,
+		margin: 0,
 		gutter: 0,
 	),
 	tablet-l: (
 		size: 1024px,
 		cols: 12,
+		margin: 0,
 		gutter: 0,
 	),
 	desktop: (
 		size: 1280px,
 		cols: 20,
+		margin: 0,
 		gutter: 0,
 	),
 );
@@ -62,17 +66,24 @@ $default-guide: map-get($grid-guides, "mobile");
 
 @mixin gen-cols($screen) {
 	grid-template-columns: repeat(map-get(get-guide($screen), "cols"), 1fr);
+  grid-column-gap: map-get(get-guide($screen), "gutter");
 
-	@if (map-get(get-guide($screen), "gutter") > 0px) {
-		padding: 0 map-get(get-guide($screen), "gutter");
+	@if (map-get(get-guide($screen), "margin") > 0px) {
+		padding: 0 map-get(get-guide($screen), "margin");
 	}
 }
 
 .grid {
 	display: grid;
 	grid-template-columns: repeat(map-get($default-guide, "cols"), 1fr);
+	grid-column-gap: map-get($default-guide, "gutter");
+  width: 100%;
 	max-width: map-get(get-guide("desktop"), "size");
 	margin: 0 auto;
+
+	@if (map-get($default-guide, "margin") > 0px) {
+		padding: 0 map-get($default-guide, "margin");
+	}
 
 	@include tablet-p {
 		@include gen-cols("tablet-p");
