@@ -1,0 +1,62 @@
+/*
+***************************************
+Component: Item Card
+Author: Joimee
+Description:
+***************************************
+*/
+
+.itemCard {
+  &__title {
+    @include Montserrat(700);
+
+    margin-bottom: rem(10);
+
+    font-size: rem(18);
+    line-height: rem(22);
+    color: var(--mine-shaft);
+  }
+
+  &__body {
+    padding-bottom: rem(20);
+    border: rem(1) solid var(--gray);
+    border-radius: rem(5);
+    background-color: var(--light);
+    overflow: hidden;
+  }
+
+  &__image {
+    @include aspect-ratio(1, 1);
+
+    border-bottom: rem(1) solid var(--gray);
+  }
+
+  &__meta {
+    padding: rem(15) rem(10) 0;
+  }
+
+  &__meta-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  &__meta-text {
+    font-size: rem(14);
+    line-height: rem(17);
+    color: var(--mine-shaft);
+  }
+
+  &__button {
+    border: none;
+    background: none;
+  }
+
+  //&__meta-icon {}
+
+  &__meta-subtext {
+    @include Montserrat(700);
+
+    margin-top: rem(5);
+  }
+}
