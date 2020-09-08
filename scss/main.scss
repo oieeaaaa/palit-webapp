@@ -10,12 +10,19 @@
 @import './utils/rem';
 @import './utils/grid';
 
+// pages
+@import './pages/home';
+
 // styleguide
 @import 'styleguide/styleguide';
 @import 'styleguide/grid-guide';
 @import 'styleguide/nav/nav';
 
 // components
+@import 'components/footer/footer';
+
+@import 'components/itemCard/itemCard';
+
 @import 'components/header/header';
 
 @import 'components/card/card';
