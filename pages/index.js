@@ -4,7 +4,6 @@ import Header from 'components/header/header';
 import ItemCard from 'components/itemCard/itemCard';
 import { data as cardsData } from 'components/itemCard/itemCard.styleguide';
 import Footer from 'components/footer/footer';
-import GridGuides from 'styleguide/grid-guide';
 
 const Home = () => {
   const [data, setData] = useState(cardsData);
@@ -50,7 +49,6 @@ const Home = () => {
         ))}
       </div>
       <Footer />
-      <GridGuides />
     </div>
   );
 };
