@@ -1,4 +1,6 @@
 // list of components
+import Layout from 'components/layout/layout.styleguide';
+
 import Footer from 'components/footer/footer.styleguide';
 
 import ItemCard from 'components/itemCard/itemCard.styleguide';
@@ -10,6 +12,11 @@ import Card from 'components/card/card.styleguide';
 import Button from 'components/button/button.styleguide';
 
 export default [
+  {
+    name: 'Layout',
+    component: Layout,
+  },
+
   {
     name: 'Footer',
     component: Footer,
