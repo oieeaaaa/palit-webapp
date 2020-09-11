@@ -12,6 +12,7 @@
 
 // pages
 @import './pages/home';
+@import './pages/item';
 
 // styleguide
 @import 'styleguide/styleguide';
@@ -19,6 +20,8 @@
 @import 'styleguide/nav/nav';
 
 // components
+@import 'components/layout/layout';
+
 @import 'components/footer/footer';
 
 @import 'components/itemCard/itemCard';
