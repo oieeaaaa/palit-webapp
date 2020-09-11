@@ -7,6 +7,9 @@ Description:
 */
 
 .itemCard {
+  text-decoration: none;
+  color: var(--merlin);
+
   &__title {
     @include Montserrat(700);
 
