@@ -1,0 +1,97 @@
+.item {
+  padding-top: rem(30);
+
+  &__image {
+    @include aspect-ratio(248, 248);
+
+    grid-column: 2 / -2;
+
+    border-radius: rem(10);
+    border: rem(1) solid var(--gray);
+    background-color: var(--light);
+  }
+
+  &__title {
+    @include Montserrat(700);
+
+    grid-column: 1 / -1;
+    margin-top: rem(20);
+
+    text-align: center;
+    font-size: rem(24);
+    line-height: rem(29);
+  }
+
+  &-card {
+    grid-column: 1 / -1;
+    margin-top: rem(30);
+
+    &:last-of-type {
+      margin-bottom: rem(60);
+    }
+
+    &__title {
+      margin-bottom: rem(10);
+
+      @include Montserrat(700);
+
+      font-size: rem(18);
+      line-height: rem(22);
+    }
+
+    &__details {
+      padding: rem(10);
+      border-radius: rem(10);
+      border: rem(1) solid var(--gray);
+      background-color: var(--light);
+    }
+
+    &__item {
+      font-size: rem(16);
+      line-height: rem(30);
+    }
+
+    &__item strong {
+      @include Montserrat(700);
+    }
+
+    &__item a {
+      color: var(--merlin);
+    }
+  }
+
+  &__button {
+    @include Montserrat(700);
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: rem(40);
+    border-radius: rem(5);
+    font-size: rem(16);
+    line-height: rem(20);
+    border: none;
+
+    &.--default {
+      grid-column: 1 / 4;
+      border: rem(1) solid var(--dusty-gray);
+      background-color: var(--light);
+    }
+
+    &.--primary-dark {
+      grid-column: 4 / -1;
+
+      border: rem(1) solid var(--tree-poppy);
+      color: var(--tree-poppy);
+      background-color: var(--mine-shaft);
+    }
+
+    &-icon {
+      margin-right: rem(15);
+
+      div {
+        display: flex;
+      }
+    }
+  }
+}
