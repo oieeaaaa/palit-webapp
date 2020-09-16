@@ -1,4 +1,6 @@
 // list of components
+import ItemForm from 'components/itemForm/itemForm.styleguide';
+
 import Layout from 'components/layout/layout.styleguide';
 
 import Footer from 'components/footer/footer.styleguide';
@@ -12,6 +14,11 @@ import Card from 'components/card/card.styleguide';
 import Button from 'components/button/button.styleguide';
 
 export default [
+  {
+    name: 'ItemForm',
+    component: ItemForm,
+  },
+
   {
     name: 'Layout',
     component: Layout,
