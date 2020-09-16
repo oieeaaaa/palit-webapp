@@ -1,0 +1,96 @@
+/*
+***************************************
+Component: ItemForm
+Author: Joimee
+Description:
+***************************************
+*/
+
+.itemForm {
+  padding-top: rem(30);
+
+  &__image {
+    @include aspect-ratio(1, 1);
+
+    border: rem(1) solid var(--gray);
+    border-radius: rem(10);
+  }
+
+  &__icon {
+    width: rem(50);
+    height: rem(50);
+  }
+
+  .input-group {
+    @include Montserrat(700);
+
+    grid-column: 2 / -2;
+
+    input {
+      position: absolute;
+      top: rem(-1000);
+      left: rem(-1000);
+      height: rem(1);
+      width: rem(1);
+      opacity: 0;
+    }
+
+    span {
+      margin: rem(20) 0;
+
+      display: block;
+      text-align: center;
+      text-decoration: underline;
+      font-size: rem(16);
+      line-height: rem(20);
+    }
+  }
+
+  .input {
+    @include Montserrat(700);
+
+    grid-column: 1 / -1;
+    margin-bottom: rem(30);
+
+    height: rem(50);
+    padding: 0 rem(10);
+    font-size: rem(24);
+    line-height: rem(29);
+    background-color: var(--mine-shaft);
+    border-radius: rem(10);
+    border: rem(1) solid var(--gray);
+    color: var(--light);
+  }
+
+  .textarea {
+    @include Montserrat;
+
+    grid-column: 1 / -1;
+
+    font-size: rem(16);
+    line-height: rem(20);
+    color: var(--light);
+    padding: rem(10);
+    border-radius: rem(10);
+    background-color: var(--mine-shaft);
+    border: rem(1) solid var(--gray);
+    height: rem(101);
+  }
+
+  .button {
+    @include Montserrat(600);
+    @include flex-center;
+
+    grid-column: -4 / -1;
+    justify-self: end;
+    margin-top: rem(140);
+
+    height: rem(40);
+    font-size: rem(16);
+    line-height: rem(20);
+    background-color: var(--tree-poppy);
+    border: 1px solid var(--paarl);
+    border-radius: rem(5);
+    padding: rem(10) rem(15);
+  }
+}
