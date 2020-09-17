@@ -1,16 +1,33 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { ReactSVG } from 'react-svg';
+import firebase from 'palit-firebase';
+
 import Layout from 'components/layout/layout';
-import { data } from 'components/itemCard/itemCard.styleguide';
 
 export default () => {
   const router = useRouter();
   const [item, setItem] = useState({});
 
+  const [error, setError] = useState(null);
+
+  const getItem = async (key) => {
+    const itemRef = firebase.database().ref(`/items/${key}`);
+
+    try {
+      const data = await itemRef.once('value');
+
+      setItem(data.val());
+    } catch (err) {
+      console.log(err);
+      setError(err);
+    }
+  };
+
   useEffect(() => {
-    // TODO: fetch item here
-    setItem(data[router.query.itemID]);
+    if (!router) return;
+
+    getItem(router.query.itemID);
   }, [router]);
 
   // TODO: display basic loading skeleton
@@ -84,8 +101,7 @@ export default () => {
             </h2>
             <div className="item-card__details">
               <p className="item-card__text">
-                Lorem ipsum dolor sit amet consectetur adipisicing elit. Unde
-                accusantium deserunt asperiores eius, ad debitis
+                {item.remarks}
               </p>
             </div>
           </div>
