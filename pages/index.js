@@ -1,19 +1,38 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Head from 'next/head';
+import firebase from 'palit-firebase';
+
 import Header from 'components/header/header';
 import ItemCard from 'components/itemCard/itemCard';
-import { data as cardsData } from 'components/itemCard/itemCard.styleguide';
 import Footer from 'components/footer/footer';
 
+import { objectToArray } from 'js/utils';
+
 const Home = () => {
-  const [data, setData] = useState(cardsData);
+  const [items, setItems] = useState([]);
+  const [error, setError] = useState(null);
+
+  const getItems = async () => {
+    const itemsRef = firebase.database().ref('items');
+
+    try {
+      const data = await itemsRef.once('value');
+
+      // 🎉
+      setItems(objectToArray(data.val()));
+    } catch (err) {
+      // 🚨
+      console.error(err);
+      setError(err);
+    }
+  };
 
   /**
    * It toggles ❤️
    * @param {number} id
    */
   const onLike = (id) => {
-    setData((prevData) => prevData.map((item) => {
+    setItems((prevData) => prevData.map((item) => {
       if (item.id === id) {
         item.is_liked = !item.is_liked;
       }
@@ -31,6 +50,10 @@ const Home = () => {
     console.log('%c Wanna trade?', 'font-size: 24px; font-family: "Avenir"'); // eslint-disable-line
   };
 
+  useEffect(() => {
+    getItems();
+  }, []);
+
   return (
     <div className="home">
       <Head>
@@ -39,9 +62,9 @@ const Home = () => {
       </Head>
       <Header />
       <div className="grid home__list">
-        {data.map((item) => (
+        {items.map((item) => (
           <ItemCard
-            key={item.id}
+            key={item.key}
             item={item}
             onLike={onLike}
             onTrade={onTrade}

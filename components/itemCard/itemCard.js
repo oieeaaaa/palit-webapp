@@ -9,11 +9,11 @@ import Link from 'next/link';
 import { ReactSVG } from 'react-svg';
 
 export default ({ item, onLike, onTrade }) => (
-  <Link href="/items/[itemID]" as={`/items/${item.id}`}>
+  <Link href="/items/[itemID]" as={`/items/${item.key}`}>
     <a className="itemCard">
 
       {/* TITLE */}
-      <h2 className="itemCard__title">{item.title}</h2>
+      <h2 className="itemCard__title" title={item.name}>{item.name}</h2>
 
       {/* BODY */}
       <div className="itemCard__body">
@@ -38,7 +38,7 @@ export default ({ item, onLike, onTrade }) => (
             <button
               className="itemCard__button"
               type="button"
-              onClick={() => onLike(item.id)}
+              onClick={() => onLike(item.key)}
             >
               <ReactSVG
                 className="itemCard__meta-icon"
@@ -68,7 +68,7 @@ export default ({ item, onLike, onTrade }) => (
             <button
               className="itemCard__button"
               type="button"
-              onClick={() => onTrade(item.id)}
+              onClick={() => onTrade(item.key)}
             >
               <ReactSVG
                 className="itemCard__meta-icon"
