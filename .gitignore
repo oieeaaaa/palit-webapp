@@ -17,6 +17,7 @@
 
 # misc
 .DS_Store
+todo.md
 
 # debug
 npm-debug.log*
