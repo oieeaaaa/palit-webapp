@@ -10,6 +10,7 @@ import { ReactSVG } from 'react-svg';
 import { extractFileURL } from 'js/utils';
 import firebase from 'palit-firebase';
 import UserContext from 'js/contexts/user';
+import LayoutContext from 'js/contexts/layout';
 import item from 'js/models/item';
 
 const initialFormValues = {
@@ -19,11 +20,9 @@ const initialFormValues = {
 
 export default () => {
   const user = useContext(UserContext);
+  const { handlers } = useContext(LayoutContext);
   const [form, setForm] = useState(initialFormValues);
-
-  // Problem: User need to know if something went wrong.
-  // TODO: Make a state banner component then display the error on that banner
-  const [error, setError] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   /**
    * handleChange.
@@ -70,6 +69,9 @@ export default () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // Disable button while waiting for the requests below
+    setIsLoading(true);
+
     const storageRef = firebase.storage().ref();
 
     // Problem: Firebase overrides the previous image if the filename already exists
@@ -88,14 +90,21 @@ export default () => {
         cover,
       });
 
-      alert(`Successfully added ${form.name} item. Yey! 🎉`);
-
       // reset form
       setForm(initialFormValues);
+
+      handlers.showBanner({
+        variant: 'success',
+        text: `Added ${form.name} 🎉`,
+      });
     } catch (err) {
-      alert('Something failed, Blame 👉 Joimee 😅');
-      console.error(err);
-      setError(err);
+      handlers.showBanner({
+        variant: 'error',
+        text: err.message,
+      });
+    } finally {
+      // Enable submit button
+      setIsLoading(false);
     }
   };
 
@@ -134,7 +143,11 @@ export default () => {
           onChange={handleChange}
           value={form.remarks}
         />
-        <button className="button" type="submit">
+        <button
+          className={`button ${isLoading ? ' --disabled' : ''}`}
+          type="submit"
+          disabled={isLoading}
+        >
           Add
         </button>
       </form>

@@ -92,5 +92,10 @@ Description:
     border: 1px solid var(--paarl);
     border-radius: rem(5);
     padding: rem(10) rem(15);
+
+    &.--disabled {
+      background-color: var(--silver);
+      color: var(--mine-shaft);
+    }
   }
 }
