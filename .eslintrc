@@ -26,6 +26,7 @@
   ],
   "rules": {
     "no-console": "off",
+    "no-alert": "off",
     "import/no-unresolved": "off",
     "react/react-in-jsx-scope": "off",
     "react/jsx-filename-extension": "off",
