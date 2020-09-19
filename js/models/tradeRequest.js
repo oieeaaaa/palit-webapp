@@ -15,7 +15,7 @@ const add = (userID, itemID, data) => (
     .push({
       [data.key]: {
         cover: data.cover,
-        title: data.title,
+        name: data.name,
         likes: data.likes,
         tradeRequests: data.tradeRequests,
       },
