@@ -5,17 +5,21 @@ Author: Joimee
 Description:
 ***************************************
 */
-import { useState } from 'react';
+import { useState, useContext } from 'react';
 import { ReactSVG } from 'react-svg';
 import { extractFileURL } from 'js/utils';
 import firebase from 'palit-firebase';
+import UserContext from 'js/contexts/user';
+import item from 'js/models/item';
+
+const initialFormValues = {
+  name: '',
+  remarks: '',
+};
 
 export default () => {
-  const [form, setForm] = useState({
-    name: '',
-    image: '',
-    remarks: '',
-  });
+  const user = useContext(UserContext);
+  const [form, setForm] = useState(initialFormValues);
 
   // Problem: User need to know if something went wrong.
   // TODO: Make a state banner component then display the error on that banner
@@ -66,8 +70,6 @@ export default () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const itemsRef = firebase.database().ref('items');
-
     const storageRef = firebase.storage().ref();
 
     // Problem: Firebase overrides the previous image if the filename already exists
@@ -75,18 +77,23 @@ export default () => {
     const imageRef = storageRef.child(`images/${form.image.name}`);
 
     try {
-      const snapshot = await imageRef.put(form.image);
+      const imageSnapshot = await imageRef.put(form.image);
 
       // fetch the public file URL then store it in the database
-      const cover = await snapshot.ref.getDownloadURL();
+      const cover = await imageSnapshot.ref.getDownloadURL();
 
       // add new data in the database
-      itemsRef.push({
+      await item.add(user.id, {
+        ...form,
         cover,
-        name: form.name,
-        remarks: form.remarks,
       });
+
+      alert(`Successfully added ${form.name} item. Yey! 🎉`);
+
+      // reset form
+      setForm(initialFormValues);
     } catch (err) {
+      alert('Something failed, Blame 👉 Joimee 😅');
       console.error(err);
       setError(err);
     }
