@@ -11,7 +11,7 @@ const itemsRef = firebase.database().ref('items');
 const add = (userID, data) => (
   itemsRef.push({
     owner: userID,
-    title: data.title,
+    name: data.name,
     cover: data.cover,
     remarks: data.remarks,
     likes: data.likes || 0,
