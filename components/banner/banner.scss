@@ -1,0 +1,52 @@
+/*
+***************************************
+Component: Banner
+Author: Joimee
+Description: For notifications, alerts, tips, and information of the user
+***************************************
+*/
+
+.banner {
+  $height: rem(50);
+
+  @include flex-center;
+  @include Montserrat(700);
+
+  padding: 0 rem(20);
+  height: $height;
+  background-color: var(--silver);
+  max-height: 0;
+  transition: max-height 0.25s ease;
+  overflow: hidden;
+
+  // IF IS OPEN IS TRUE
+  &.--open {
+    max-height: $height;
+  }
+
+  // VARIANTS
+  &.--default {
+    background-color: var(--silver);
+    color: var(--mine-shaft);
+  }
+
+  &.--warning {
+    background-color: var(--tree-poppy);
+    color: var(--light);
+  }
+
+  &.--error {
+    background-color: var(--persimmon);
+    color: var(--light);
+  }
+
+  &.--info {
+    background-color: var(--dodger-blue);
+    color: var(--light);
+  }
+
+  &.--success {
+    background-color: var(--apple);
+    color: var(--light);
+  }
+}
