@@ -1,25 +1,46 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import Head from 'next/head';
 import firebase from 'palit-firebase';
+import UserContext from 'js/contexts/user';
+import ITEM from 'js/models/item';
+import LIKES from 'js/models/likes';
+import { normalizeData } from 'js/utils';
 
 import Header from 'components/header/header';
 import ItemCard from 'components/itemCard/itemCard';
 import Footer from 'components/footer/footer';
 
-import { objectToArray } from 'js/utils';
-
 const Home = () => {
+  const user = useContext(UserContext);
   const [items, setItems] = useState([]);
   const [error, setError] = useState(null);
 
-  const getItems = async () => {
-    const itemsRef = firebase.database().ref('items');
+  const getLikesAtItems = async () => {
+    const db = firebase.database();
+    const likesRef = db.ref('likes');
 
     try {
-      const data = await itemsRef.once('value');
+      likesRef.on('child_added', (snap) => {
+        const itemRef = db.ref(`items/${snap.key}`);
 
-      // 🎉
-      setItems(objectToArray(data.val()));
+        itemRef.once('value', (item) => {
+          console.log({
+            item: item.val(),
+            likes: snap.val(),
+          });
+        });
+      });
+    } catch (err) {
+      console.error(err);
+      setError(err);
+    }
+  };
+
+  const getItems = async () => {
+    try {
+      const rawData = await ITEM.get(user.id);
+
+      setItems(normalizeData(rawData));
     } catch (err) {
       // 🚨
       console.error(err);
@@ -30,15 +51,16 @@ const Home = () => {
   /**
    * It toggles ❤️
    * @param {number} id
+   * @param {number} likes
    */
-  const onLike = (id) => {
-    setItems((prevData) => prevData.map((item) => {
-      if (item.id === id) {
-        item.is_liked = !item.is_liked;
-      }
+  const onLike = async (id, likes) => {
+    try {
+      const res = await LIKES.add(user.id, { id, likes });
 
-      return item;
-    }));
+      console.log(res);
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   /**
@@ -52,6 +74,7 @@ const Home = () => {
 
   useEffect(() => {
     getItems();
+    getLikesAtItems();
   }, []);
 
   return (

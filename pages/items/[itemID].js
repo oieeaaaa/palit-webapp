@@ -1,31 +1,37 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { useRouter } from 'next/router';
 import { ReactSVG } from 'react-svg';
-import firebase from 'palit-firebase';
+import ITEM from 'js/models/item';
+import { normalizeData } from 'js/utils';
+import LayoutContext from 'js/contexts/layout';
 
 import Layout from 'components/layout/layout';
 
-export default () => {
+const Item = () => {
+  const { handlers } = useContext(LayoutContext);
   const router = useRouter();
   const [item, setItem] = useState({});
 
-  const [error, setError] = useState(null);
-
   const getItem = async (key) => {
-    const itemRef = firebase.database().ref(`/items/${key}`);
-
     try {
-      const data = await itemRef.once('value');
+      const res = await ITEM.getOne(key);
+      const data = normalizeData(res);
 
-      setItem(data.val());
+      setItem(data);
+      handlers.showBanner({
+        variant: 'success',
+        text: `Successfully retrieved ${data.name} 🎉`,
+      });
     } catch (err) {
-      console.log(err);
-      setError(err);
+      handlers.showBanner({
+        variant: 'error',
+        text: err.message,
+      });
     }
   };
 
   useEffect(() => {
-    if (!router) return;
+    if (!router.query.itemID) return;
 
     getItem(router.query.itemID);
   }, [router]);
@@ -51,7 +57,7 @@ export default () => {
               <li className="item-card__item">
                 Trade Requests:
                 {' '}
-                <strong>{item.trade_requests}</strong>
+                <strong>{item.tradeRequests}</strong>
               </li>
               <li className="item-card__item">
                 Likes:
@@ -118,3 +124,5 @@ export default () => {
     </Layout>
   );
 };
+
+export default Item;
