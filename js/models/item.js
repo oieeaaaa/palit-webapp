@@ -24,13 +24,13 @@ const add = (userID, data) => (
 /**
  * get.
  *
- * TODO: It should retrieve items from other users
+ * It should retrieve items from other users
  * It should have a limit
  * @param {string} userID
  * @param {number} limit
  */
 const get = async (userID, limit = 10) => itemsRef
-  .where('owner', '==', userID)
+  .where('owner', '!=', userID)
   .limit(limit)
   .get();
 
