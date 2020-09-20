@@ -1,74 +1,83 @@
 import { useState, useEffect, useContext } from 'react';
-import Head from 'next/head';
-import firebase from 'palit-firebase';
 import UserContext from 'js/contexts/user';
 import ITEM from 'js/models/item';
+import LIKES from 'js/models/likes';
 import { normalizeData } from 'js/utils';
 
-import Header from 'components/header/header';
+import Layout from 'components/layout/layout';
 import ItemCard from 'components/itemCard/itemCard';
-import Footer from 'components/footer/footer';
 
 const Home = () => {
   const user = useContext(UserContext);
   const [items, setItems] = useState([]);
-  const [error, setError] = useState(null);
 
-  const getLikesAtItems = async () => {
-    const db = firebase.database();
-    const likesRef = db.ref('likes');
-
-    try {
-      likesRef.on('child_added', (snap) => {
-        const itemRef = db.ref(`items/${snap.key}`);
-
-        itemRef.once('value', (item) => {
-          console.log({
-            item: item.val(),
-            likes: snap.val(),
-          });
-        });
-      });
-    } catch (err) {
-      console.error(err);
-      setError(err);
-    }
-  };
-
+  /**
+   * getItems.
+   *
+   */
   const getItems = async () => {
     try {
       const rawData = await ITEM.get(user.id);
+      const data = normalizeData(rawData);
 
-      setItems(normalizeData(rawData));
+      setItems(data);
     } catch (err) {
       // 🚨
       console.error(err);
-      setError(err);
+    }
+  };
+
+  /**
+   * onLike.
+   *
+   * @param {object} payload
+   */
+  const onLike = async (payload) => {
+    try {
+      let isLiked = false;
+
+      if (payload.isLiked) {
+        await LIKES.remove(user.id, payload.key);
+        isLiked = false;
+      } else {
+        await LIKES.add(user.id, payload.key);
+        isLiked = true;
+      }
+
+      setItems((prevItems) => prevItems.map((item) => {
+        if (item.key === payload.key) {
+          item = {
+            ...item,
+            likes: isLiked ? (item.likes + 1) : (item.likes - 1),
+            isLiked,
+          };
+        }
+
+        return item;
+      }));
+    } catch (err) {
+      console.log(err);
     }
   };
 
   useEffect(() => {
     getItems();
-    getLikesAtItems();
   }, []);
 
   return (
-    <div className="home">
-      <Head>
-        <title>Palit</title>
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
-      <Header />
-      <div className="grid home__list">
-        {items.map((item) => (
-          <ItemCard
-            key={item.key}
-            item={item}
-          />
-        ))}
+    <Layout title="Palit">
+      <div className="home">
+        <div className="grid home__list">
+          {items.map((item) => (
+            <ItemCard
+              key={item.key}
+              item={item}
+              onLike={onLike}
+            />
+          ))}
+        </div>
       </div>
-      <Footer />
-    </div>
+    </Layout>
   );
 };
 
