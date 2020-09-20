@@ -38,7 +38,7 @@ export default ({ item, onLike, onTrade }) => (
             <button
               className="itemCard__button"
               type="button"
-              onClick={() => onLike(item.key)}
+              onClick={() => onLike(item.key, item.likes)}
             >
               <ReactSVG
                 className="itemCard__meta-icon"
@@ -72,14 +72,14 @@ export default ({ item, onLike, onTrade }) => (
             >
               <ReactSVG
                 className="itemCard__meta-icon"
-                src={`/icons/cart-${item.is_traded ? 'filled' : 'outline'}.svg`}
+                src={`/icons/cart-${item.isTraded ? 'filled' : 'outline'}.svg`}
               />
             </button>
           </div>
 
           {/* TRADE REQUESTS */}
           <p className="itemCard__meta-subtext">
-            {item.trade_requests}
+            {item.tradeRequests}
           </p>
         </div>
       </div>

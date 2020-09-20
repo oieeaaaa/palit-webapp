@@ -11,7 +11,7 @@ import { extractFileURL } from 'js/utils';
 import firebase from 'palit-firebase';
 import UserContext from 'js/contexts/user';
 import LayoutContext from 'js/contexts/layout';
-import item from 'js/models/item';
+import ITEM from 'js/models/item';
 
 const initialFormValues = {
   name: '',
@@ -85,7 +85,7 @@ export default () => {
       const cover = await imageSnapshot.ref.getDownloadURL();
 
       // add new data in the database
-      await item.add(user.id, {
+      await ITEM.add(user.id, {
         ...form,
         cover,
       });
