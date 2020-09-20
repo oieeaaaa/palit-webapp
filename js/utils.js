@@ -21,8 +21,40 @@ export const objectToArray = (data) => Object.keys(data).map((key) => ({
   key,
 }));
 
+/**
+ * normalizeData.
+ *
+ * NOTE: rawData is a firestore query result
+ * @param {object} rawData
+ */
+export const normalizeData = (rawData) => {
+  if (rawData.size >= 2) {
+    const data = [];
+
+    rawData.forEach((item) => {
+      data.push({
+        ...item.data(),
+        key: item.id,
+      });
+    });
+
+    return data;
+  }
+
+  // for single data
+  if (rawData.exists) {
+    return {
+      ...rawData.data(),
+      key: rawData.id,
+    };
+  }
+
+  return null;
+};
+
 // export as collection of utils
 export default {
   extractFileURL,
   objectToArray,
+  normalizeData,
 };
