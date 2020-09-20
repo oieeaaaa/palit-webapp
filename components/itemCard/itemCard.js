@@ -42,7 +42,7 @@ export default ({ item, onLike, onTrade }) => (
             >
               <ReactSVG
                 className="itemCard__meta-icon"
-                src={`/icons/heart-${item.is_liked ? 'filled' : 'outline'}.svg`}
+                src={`/icons/heart-${item.likes >= 1 ? 'filled' : 'outline'}.svg`}
               />
             </button>
           </div>
@@ -72,7 +72,7 @@ export default ({ item, onLike, onTrade }) => (
             >
               <ReactSVG
                 className="itemCard__meta-icon"
-                src={`/icons/cart-${item.isTraded ? 'filled' : 'outline'}.svg`}
+                src={`/icons/cart-${item.trades >= 1 ? 'filled' : 'outline'}.svg`}
               />
             </button>
           </div>

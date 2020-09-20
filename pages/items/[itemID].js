@@ -2,22 +2,64 @@ import { useState, useEffect, useContext } from 'react';
 import { useRouter } from 'next/router';
 import { ReactSVG } from 'react-svg';
 import ITEM from 'js/models/item';
+import LIKES from 'js/models/likes';
 import { normalizeData } from 'js/utils';
 import LayoutContext from 'js/contexts/layout';
+import UserContext from 'js/contexts/user';
 
 import Layout from 'components/layout/layout';
 
-const Item = () => {
+export default () => {
   const { handlers } = useContext(LayoutContext);
+  const user = useContext(UserContext);
   const router = useRouter();
   const [item, setItem] = useState({});
 
+  /**
+   * checkIfLiked.
+   *
+   * @type {string} itemID
+   * @type {string} userID
+   */
+  const checkIfLiked = async (itemID, userID) => {
+    let isLiked = false;
+
+    try {
+      const res = await LIKES.getOne(itemID);
+      const data = normalizeData(res);
+
+      if (data[userID]) {
+        isLiked = true;
+      }
+    } catch (err) {
+      handlers.showBanner({
+        variant: 'error',
+        text: err.message,
+      });
+    }
+
+    return isLiked;
+  };
+
+  /**
+   * getItem
+   *
+   * It should fetch the item
+   * It should display an error or success message
+   *
+   * @type {string} key
+   */
   const getItem = async (key) => {
     try {
       const res = await ITEM.getOne(key);
+      const isLiked = await checkIfLiked(key, user.id);
       const data = normalizeData(res);
 
-      setItem(data);
+      setItem({
+        ...data,
+        isLiked,
+      });
+
       handlers.showBanner({
         variant: 'success',
         text: `Successfully retrieved ${data.name} 🎉`,
@@ -30,10 +72,41 @@ const Item = () => {
     }
   };
 
-  useEffect(() => {
-    if (!router.query.itemID) return;
+  /**
+   * It toggles ❤️
+   */
+  const onLike = async () => {
+    try {
+      let isLiked = false;
 
-    getItem(router.query.itemID);
+      if (item.isLiked) {
+        await LIKES.remove(user.id, item.key);
+
+        isLiked = false;
+      } else {
+        await LIKES.add(user.id, item.key);
+
+        isLiked = true;
+      }
+
+      setItem((prevItem) => ({
+        ...prevItem,
+        isLiked,
+      }));
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  /**
+   * useEffect.
+   */
+  useEffect(() => {
+    const { itemID } = router.query;
+
+    if (!itemID) return;
+
+    getItem(itemID);
   }, [router]);
 
   // TODO: display basic loading skeleton
@@ -111,8 +184,15 @@ const Item = () => {
               </p>
             </div>
           </div>
-          <button className="item__button --default" type="button">
-            <ReactSVG className="item__button-icon" src="/icons/heart-outline.svg" />
+          <button
+            className="item__button --default"
+            type="button"
+            onClick={onLike}
+          >
+            <ReactSVG
+              className="item__button-icon"
+              src={`/icons/heart-${item.isLiked ? 'filled' : 'outline'}.svg`}
+            />
             <span>Like</span>
           </button>
           <button className="item__button --primary-dark" type="button">
@@ -124,5 +204,3 @@ const Item = () => {
     </Layout>
   );
 };
-
-export default Item;
