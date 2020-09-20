@@ -7,7 +7,7 @@ Description:
 */
 import Head from 'next/head';
 import Header from '../header/header';
-import Footer from '../footer/footer';
+import Footer, { FooterDock } from '../footer/footer';
 import Banner from '../banner/banner';
 
 const Layout = ({ title, description, children }) => (
@@ -20,6 +20,7 @@ const Layout = ({ title, description, children }) => (
     <Banner />
     {children}
     <Footer />
+    <FooterDock />
   </>
 );
 

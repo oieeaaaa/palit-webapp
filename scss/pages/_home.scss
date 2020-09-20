@@ -1,8 +1,4 @@
 .home {
-  .header {
-    margin-bottom: rem(30);
-  }
-
   &__list {
     grid-template-columns: repeat(2, 1fr);
     grid-column-gap: rem(9);

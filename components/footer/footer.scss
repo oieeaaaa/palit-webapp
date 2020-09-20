@@ -7,13 +7,26 @@ Description:
 */
 
 .footer {
+  $height: rem(85);
+
   margin-top: rem(50);
 
+  position: fixed;
+  display: flex;
+  align-items: center;
+  bottom: 0;
+  left: 0;
+  width: 100%;
   border-top: rem(1) solid var(--gray);
-  padding-top: rem(28);
-  padding-bottom: rem(28);
+  height: $height;
   background-color: var(--light);
   z-index: var(--z-footer);
+
+  &-dock {
+    margin-top: rem(30);
+
+    height: $height;
+  }
 
   &__link {
     &.--home {

@@ -7,6 +7,8 @@ Description:
 */
 import { ReactSVG } from 'react-svg';
 
+export const FooterDock = () => <div className="footer-dock" />;
+
 export default () => (
   <div className="footer">
     <div className="grid">
