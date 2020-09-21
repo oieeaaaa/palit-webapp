@@ -185,18 +185,18 @@ export default () => {
             </div>
           </div>
           <button
-            className="item__button --default"
+            className="button --default item__like"
             type="button"
             onClick={onLike}
           >
             <ReactSVG
-              className="item__button-icon"
+              className="button-icon"
               src={`/icons/heart-${item.isLiked ? 'filled' : 'outline'}.svg`}
             />
             <span>Like</span>
           </button>
-          <button className="item__button --primary-dark" type="button">
-            <ReactSVG className="item__button-icon" src="/icons/cart-filled.svg" />
+          <button className="button --primary-dark item__trade" type="button">
+            <ReactSVG className="button-icon" src="/icons/cart-filled.svg" />
             <span>Trade Requests</span>
           </button>
         </div>

@@ -1,0 +1,27 @@
+.inventory {
+  &__title {
+    @include Montserrat(700);
+
+    grid-column: 1 / -1;
+    margin-bottom: rem(20);
+
+    font-size: rem(16);
+    line-height: rem(20);
+    color: var(--gray);
+  }
+
+  &__list {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-column-gap: (9 / 375) * 100%;
+    grid-row-gap: rem(30);
+  }
+
+  &__add {
+    @include Montserrat(600);
+
+    grid-column: 3 / -3;
+    margin-top: rem(30);
+  }
+}

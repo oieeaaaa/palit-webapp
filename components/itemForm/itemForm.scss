@@ -7,8 +7,6 @@ Description:
 */
 
 .itemForm {
-  padding-top: rem(30);
-
   &__image {
     @include aspect-ratio(1, 1);
 

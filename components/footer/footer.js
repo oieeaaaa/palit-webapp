@@ -15,7 +15,7 @@ export default () => (
       <a className="footer__link --home" href="/">
         <ReactSVG className="footer__link-icon" src="/icons/home-outline.svg" />
       </a>
-      <a className="footer__link --trades" href="/">
+      <a className="footer__link --trades" href="/inventory">
         <ReactSVG className="footer__link-icon" src="/icons/clipboard-outline.svg" />
       </a>
       <a className="footer__link --search" href="/">

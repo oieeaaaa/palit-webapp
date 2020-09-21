@@ -29,8 +29,19 @@ const add = (userID, data) => (
  * @param {string} userID
  * @param {number} limit
  */
-const get = async (userID, limit = 10) => itemsRef
+const get = (userID, limit = 10) => itemsRef
   .where('owner', '!=', userID)
+  .limit(limit)
+  .get();
+
+/**
+ * getItemsAtUser.
+ *
+ * @param {string} userID
+ * @param {number} limit
+ */
+const getItemsAtUser = (userID, limit = 10) => itemsRef
+  .where('owner', '==', userID)
   .limit(limit)
   .get();
 
@@ -45,4 +56,5 @@ export default {
   add,
   get,
   getOne,
+  getItemsAtUser,
 };
