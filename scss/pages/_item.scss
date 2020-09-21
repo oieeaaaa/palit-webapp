@@ -60,38 +60,11 @@
     }
   }
 
-  &__button {
-    @include Montserrat(700);
+  &__like {
+    grid-column: 1 / 4;
+  }
 
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: rem(40);
-    border-radius: rem(5);
-    font-size: rem(16);
-    line-height: rem(20);
-    border: none;
-
-    &.--default {
-      grid-column: 1 / 4;
-      border: rem(1) solid var(--dusty-gray);
-      background-color: var(--light);
-    }
-
-    &.--primary-dark {
-      grid-column: 4 / -1;
-
-      border: rem(1) solid var(--tree-poppy);
-      color: var(--tree-poppy);
-      background-color: var(--mine-shaft);
-    }
-
-    &-icon {
-      margin-right: rem(15);
-
-      div {
-        display: flex;
-      }
-    }
+  &__trade {
+    grid-column: 4 / -1;
   }
 }

@@ -10,9 +10,13 @@
 @import './utils/rem';
 @import './utils/grid';
 
+// commons
+@import './commons/button';
+
 // pages
 @import './pages/home';
 @import './pages/item';
+@import './pages/inventory';
 
 // styleguide
 @import 'styleguide/styleguide';
