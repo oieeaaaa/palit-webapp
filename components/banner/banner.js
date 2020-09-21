@@ -26,9 +26,15 @@ export default () => {
   useEffect(() => {
     if (!banner.isOpen) return;
 
+    const header = document.querySelector('.header');
+    if (!header) return;
+
+    header.classList.add('--no-space');
+
     // close banner after 3 seconds
     setTimeout(() => {
       handlers.closeBanner();
+      header.classList.remove('--no-space');
     }, 3000);
   }, [banner.isOpen]);
 

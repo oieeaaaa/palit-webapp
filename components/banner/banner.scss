@@ -22,6 +22,7 @@ Description: For notifications, alerts, tips, and information of the user
   // IF IS OPEN IS TRUE
   &.--open {
     max-height: $height;
+    margin-bottom: rem(30);
   }
 
   // VARIANTS
