@@ -76,24 +76,10 @@ Description:
   }
 
   .button {
-    @include Montserrat(600);
-    @include flex-center;
-
     grid-column: -4 / -1;
     justify-self: end;
     margin-top: rem(140);
 
-    height: rem(40);
-    font-size: rem(16);
-    line-height: rem(20);
-    background-color: var(--tree-poppy);
-    border: 1px solid var(--paarl);
-    border-radius: rem(5);
-    padding: rem(10) rem(15);
-
-    &.--disabled {
-      background-color: var(--silver);
-      color: var(--mine-shaft);
-    }
+    min-width: rem(65);
   }
 }
