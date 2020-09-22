@@ -144,7 +144,7 @@ export default () => {
           value={form.remarks}
         />
         <button
-          className={`button ${isLoading ? ' --disabled' : ''}`}
+          className={`button --primary ${isLoading ? ' --disabled' : ''}`}
           type="submit"
           disabled={isLoading}
         >
