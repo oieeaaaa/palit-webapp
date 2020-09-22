@@ -1,31 +1,57 @@
 import firebase from 'palit-firebase';
-import { normalizeData } from 'js/utils';
+import firebaseApp from 'firebase/app';
 
 const db = firebase.firestore();
 const tradeRequestsRef = db.collection('tradeRequests');
+const itemRef = db.collection('items');
 
-/**
- * tradeRequests.
- *
- * @param {string} userID
- * @param {string} itemID
- * @param {object} data
- */
-const add = (userID, itemID, data) => (
-  // e.g., /john/cup
-  tradeRequestsRef.child(userID).child(itemID)
-    .push({
-      [data.key]: {
-        cover: data.cover,
-        name: data.name,
-        likes: data.likes,
-        tradeRequests: data.tradeRequests,
-      },
-    })
-);
+const add = (myItem, itemToTrade) => {
+  const batch = db.batch();
+
+  // My Item
+  const myItemRef = tradeRequestsRef.doc(myItem.key);
+  const myItemRequestsItemRef = myItemRef.collection('requests').doc(itemToTrade.key);
+
+  // Item to trade
+  const itemToTradeRef = tradeRequestsRef.doc(itemToTrade.key);
+  const itemToTradeRequestsItemRef = itemToTradeRef.collection('requests').doc(myItem.key);
+
+  // misc
+  batch.update(itemRef.doc(myItem.key), {
+    tradeRequests: firebaseApp.firestore.FieldValue.increment(1),
+  });
+
+  batch.update(itemRef.doc(itemToTrade.key), {
+    tradeRequests: firebaseApp.firestore.FieldValue.increment(1),
+  });
+
+  batch.set(myItemRef, { isAccepted: false });
+  batch.set(myItemRequestsItemRef, {
+    cover: itemToTrade.cover,
+    name: itemToTrade.name,
+    isTraded: itemToTrade.isTraded,
+    likes: itemToTrade.likes,
+    tradeRequests: firebaseApp.firestore.FieldValue.increment(1),
+    owner: itemToTrade.owner,
+  });
+
+  batch.set(itemToTradeRef, { isAccepted: false });
+  batch.set(itemToTradeRequestsItemRef, {
+    cover: myItem.cover,
+    name: myItem.name,
+    isTraded: myItem.isTraded,
+    likes: myItem.likes,
+    tradeRequests: firebaseApp.firestore.FieldValue.increment(1),
+    owner: myItem.owner,
+  });
+
+  batch.commit();
+};
 
 /**
  * getOne
+ *
+ * Woah.
  *
  * @type {string} itemID
  */
