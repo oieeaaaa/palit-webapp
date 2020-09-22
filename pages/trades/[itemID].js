@@ -1,10 +1,12 @@
 import { useState, useEffect, useContext } from 'react';
 import { useRouter } from 'next/router';
+import Link from 'next/link';
 import LayoutContext from 'js/contexts/layout';
 import ITEM from 'js/models/item';
 import TRADE_REQUESTS from 'js/models/tradeRequest';
 import Layout from 'components/layout/layout';
 import ItemCard from 'components/itemCard/itemCard';
+import MiniCard from 'components/miniCard/miniCard';
 
 export default () => {
   const [item, setItem] = useState({});
@@ -27,7 +29,10 @@ export default () => {
       const rawData = await ITEM.getOne(key);
       const data = rawData.data();
 
-      setItem(data);
+      setItem({
+        ...data,
+        key: rawData.id,
+      });
     } catch (err) {
       console.error(err);
     }
@@ -64,8 +69,6 @@ export default () => {
     getItemTradeRequests(itemID);
   }, [router]);
 
-  console.log(tradeRequests);
-
   return (
     <Layout title={item.name}>
       <div className="trade-request">
@@ -73,19 +76,11 @@ export default () => {
           <h2 className="trade-request__heading">
             My Item
           </h2>
-          <div className="trade-request__item">
-            <figure className="trade-request__item-image">
-              <img src={item.cover} alt={item.name} />
-            </figure>
-            <div className="trade-request__item-info">
-              <h3 className="trade-request__item-name">{item.name}</h3>
-              <p className="trade-request__item-likes">
-                Likes:
-                {' '}
-                <b>{item.likes}</b>
-              </p>
-            </div>
-          </div>
+          <Link href="/items/[itemID]" as={`/items/${item.key}`}>
+            <a className="trade-request__item">
+              <MiniCard data={item} />
+            </a>
+          </Link>
           <h2 className="trade-request__heading">
             Trade Requests
           </h2>

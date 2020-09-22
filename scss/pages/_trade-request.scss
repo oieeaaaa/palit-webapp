@@ -14,41 +14,9 @@
     grid-column: 1 / -1;
     margin-bottom: rem(40);
 
-    display: grid;
-    grid-template-columns: (76 / 335 * 100%) 1fr;
-    grid-column-gap: rem(10);
-
-    &-image {
-      @include aspect-ratio(1, 1);
-
-      border: rem(1) solid var(--gray);
-      border-radius: rem(3);
-    }
-
-    &-info {
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      padding: rem(10);
-      border: rem(1) solid var(--gray);
-      border-radius: rem(3);
-      background-color: var(--light);
-    }
-
-    &-name {
-      @include Montserrat(700);
-
-      font-size: rem(16);
-      line-height: rem(20);
-    }
-
-    &-likes {
-      font-size: rem(16);
-
-      b {
-        @include Montserrat(700);
-      }
-    }
+    display: block;
+    text-decoration: none;
+    color: var(--mines-shaft);
   }
 
   &__list {
@@ -57,6 +25,7 @@
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     grid-column-gap: rem(10);
+    grid-row-gap: rem(20);
 
     &-item {
       .button {

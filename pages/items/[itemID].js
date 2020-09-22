@@ -1,9 +1,9 @@
 import { useState, useEffect, useContext } from 'react';
 import { useRouter } from 'next/router';
+import Link from 'next/link';
 import { ReactSVG } from 'react-svg';
 import ITEM from 'js/models/item';
 import LIKES from 'js/models/likes';
-import { normalizeData } from 'js/utils';
 import LayoutContext from 'js/contexts/layout';
 import UserContext from 'js/contexts/user';
 
@@ -57,6 +57,7 @@ export default () => {
 
       setItem({
         ...data,
+        key: res.id,
         isLiked,
       });
 
@@ -195,10 +196,12 @@ export default () => {
             />
             <span>Like</span>
           </button>
-          <button className="button --primary-dark item__trade" type="button">
-            <ReactSVG className="button-icon" src="/icons/cart-filled.svg" />
-            <span>Trade Requests</span>
-          </button>
+          <Link href="/trades/request/[itemID]" as={`/trades/request/${item.key}`}>
+            <a className="button --primary-dark item__trade">
+              <ReactSVG className="button-icon" src="/icons/cart-filled.svg" />
+              <span>Trade Requests</span>
+            </a>
+          </Link>
         </div>
       </div>
     </Layout>
