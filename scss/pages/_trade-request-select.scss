@@ -1,0 +1,59 @@
+.trade-request-select {
+  height: (582 / 812) * 100vh;
+
+  .grid {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+
+  &__heading {
+    @include Montserrat(700);
+
+    margin-bottom: rem(20);
+
+    font-size: rem(16);
+    line-height: rem(20);
+    color: var(--gray);
+  }
+
+  &__list {
+    margin-bottom: rem(40);
+
+    & > *:not(:last-child) {
+      margin-bottom: rem(10);
+    }
+  }
+
+  &__option {
+    width: 100%;
+    display: block;
+
+    &.--selected {
+      .miniCard-image {
+        border-color: var(--paarl);
+      }
+
+      .miniCard-info {
+        background-color: var(--tree-poppy);
+        border-color: var(--paarl);
+        color: var(--light);
+      }
+    }
+  }
+
+  &__footer {
+    margin-top: auto;
+
+    display: flex;
+    justify-content: space-between;
+  }
+
+  &__cancel {
+    min-width: rem(87);
+  }
+
+  &__submit {
+    min-width: rem(164);
+  }
+}
