@@ -1,6 +1,8 @@
 import firebase from 'palit-firebase';
+import { normalizeData } from 'js/utils';
 
-const tradeRequestsRef = firebase.database().ref('tradeRequests');
+const db = firebase.firestore();
+const tradeRequestsRef = db.collection('tradeRequests');
 
 /**
  * tradeRequests.
@@ -22,6 +24,40 @@ const add = (userID, itemID, data) => (
     })
 );
 
+/**
+ * getOne
+ *
+ * @type {string} itemID
+ */
+const getOne = async (itemID) => {
+  const tradeRequestItemRef = tradeRequestsRef.doc(itemID);
+  const requests = await tradeRequestItemRef.collection('requests').get();
+
+  return db.runTransaction(async (transaction) => {
+    const rawTradeRequestItem = await transaction.get(tradeRequestItemRef);
+
+    if (!rawTradeRequestItem) return null;
+
+    // kudos to doug for providing this snippet below 🎉
+    const requestsInTransaction = [];
+
+    for (const doc of requests.docs) { // eslint-disable-line
+      const requestInTransaction = await transaction.get(doc.ref); // eslint-disable-line
+      requestsInTransaction.push({
+        ...requestInTransaction.data(),
+        key: requestInTransaction.id,
+      });
+    }
+    // https://stackoverflow.com/questions/63995150/how-to-query-subcollection-inside-transaction-in-firebase/63995746#63995746
+
+    return {
+      ...rawTradeRequestItem.data(),
+      requests: requestsInTransaction,
+    };
+  });
+};
+
 export default {
   add,
+  getOne,
 };

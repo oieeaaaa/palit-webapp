@@ -1,0 +1,84 @@
+.trade-request {
+  &__heading {
+    @include Montserrat(700);
+
+    grid-column: 1 / -1;
+    margin-bottom: rem(20);
+
+    font-size: rem(16);
+    line-height: rem(20);
+    color: var(--gray);
+  }
+
+  &__item {
+    grid-column: 1 / -1;
+    margin-bottom: rem(40);
+
+    display: grid;
+    grid-template-columns: (76 / 335 * 100%) 1fr;
+    grid-column-gap: rem(10);
+
+    &-image {
+      @include aspect-ratio(1, 1);
+
+      border: rem(1) solid var(--gray);
+      border-radius: rem(3);
+    }
+
+    &-info {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: rem(10);
+      border: rem(1) solid var(--gray);
+      border-radius: rem(3);
+      background-color: var(--light);
+    }
+
+    &-name {
+      @include Montserrat(700);
+
+      font-size: rem(16);
+      line-height: rem(20);
+    }
+
+    &-likes {
+      font-size: rem(16);
+
+      b {
+        @include Montserrat(700);
+      }
+    }
+  }
+
+  &__list {
+    grid-column: 1 / -1;
+
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-column-gap: rem(10);
+
+    &-item {
+      .button {
+        margin-top: rem(10);
+        width: 100%;
+      }
+    }
+  }
+
+  &__footer {
+    grid-column: 1 / -1;
+    margin-top: rem(50);
+
+    display: flex;
+    justify-content: space-between;
+
+    & > .button:first-child {
+      min-width: rem(86);
+    }
+
+    & > .button:last-child {
+      min-width: rem(64);
+    }
+  }
+}
