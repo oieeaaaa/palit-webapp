@@ -8,7 +8,9 @@ Description:
 import Link from 'next/link';
 import { ReactSVG } from 'react-svg';
 
-export default ({ item, onLike, onTrade }) => (
+export default ({
+  item, onLike, onTrade, linkOptions = { href: '', as: '' },
+}) => (
   <div className="itemCard">
     {/* TITLE */}
     <h2 className="itemCard__title" title={item.name}>{item.name}</h2>
@@ -16,7 +18,7 @@ export default ({ item, onLike, onTrade }) => (
     {/* BODY */}
     <div className="itemCard__body">
 
-      <Link href="/items/[itemID]" as={`/items/${item.key}`}>
+      <Link {...linkOptions}>
         <a>
 
           {/* IMAGE */}
@@ -38,6 +40,7 @@ export default ({ item, onLike, onTrade }) => (
           </p>
 
           {/* LIKE BUTTON */}
+          {onLike && (
           <button
             className="itemCard__button"
             type="button"
@@ -48,8 +51,9 @@ export default ({ item, onLike, onTrade }) => (
               src={`/icons/heart-${item.isLiked ? 'filled' : 'outline'}.svg`}
             />
           </button>
-        </div>
+          )}
 
+        </div>
         {/* LIKES */}
         <p className="itemCard__meta-subtext">
           {item.likes}
@@ -68,6 +72,7 @@ export default ({ item, onLike, onTrade }) => (
           </p>
 
           {/* TRADE BUTTOn */}
+          {onTrade && (
           <button
             className="itemCard__button"
             type="button"
@@ -78,6 +83,8 @@ export default ({ item, onLike, onTrade }) => (
               src={`/icons/cart-${item.isTraded ? 'filled' : 'outline'}.svg`}
             />
           </button>
+          )}
+
         </div>
 
         {/* TRADE REQUESTS */}
