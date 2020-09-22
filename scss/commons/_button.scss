@@ -8,19 +8,36 @@
   border-radius: rem(5);
   font-size: rem(16);
   line-height: rem(20);
-  border: none;
+  border: rem(1) solid;
   text-decoration: none;
 
   &.--default {
-    border: rem(1) solid var(--dusty-gray);
+    border-color: var(--dusty-gray);
     background-color: var(--light);
     color: var(--mine-shaft);
   }
 
-  &.--primary-dark {
-    border: rem(1) solid var(--tree-poppy);
-    color: var(--tree-poppy);
+  &.--dark {
+    border-color: var(--mine-shaft);
     background-color: var(--mine-shaft);
+    color: var(--light);
+  }
+
+  &.--primary {
+    border-color: var(--paarl);
+    background-color: var(--tree-poppy);
+    color: var(--mine-shaft);
+  }
+
+  &.--primary-dark {
+    border-color: var(--tree-poppy);
+    background-color: var(--mine-shaft);
+    color: var(--tree-poppy);
+  }
+
+  &.--red-outline {
+    border-color: var(--persimmon);
+    color: var(--persimmon);
   }
 
   &-icon {
