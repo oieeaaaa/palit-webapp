@@ -73,6 +73,10 @@ const Home = () => {
               key={item.key}
               item={item}
               onLike={onLike}
+              linkOptions={{
+                href: '/items/[itemID]',
+                as: `/items/${item.key}`,
+              }}
             />
           ))}
         </div>

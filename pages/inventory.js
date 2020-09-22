@@ -52,7 +52,14 @@ export default () => {
           <h1 className="inventory__title">Inventory</h1>
           <div className="inventory__list">
             {items.map((item) => (
-              <ItemCard key={item.key} item={item} />
+              <ItemCard
+                key={item.key}
+                item={item}
+                linkOptions={{
+                  href: '/trades/[itemID]',
+                  as: `/trades/${item.key}`,
+                }}
+              />
             ))}
           </div>
           <Link href="/items/add">
