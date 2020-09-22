@@ -18,6 +18,7 @@
 @import './pages/item';
 @import './pages/inventory';
 @import './pages/trade-request';
+@import './pages/trade-request-select';
 
 // styleguide
 @import 'styleguide/styleguide';
@@ -25,6 +26,8 @@
 @import 'styleguide/nav/nav';
 
 // components
+@import 'components/miniCard/miniCard';
+
 @import 'components/banner/banner';
 
 @import 'components/itemForm/itemForm';

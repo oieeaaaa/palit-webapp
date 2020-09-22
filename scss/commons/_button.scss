@@ -40,6 +40,11 @@
     color: var(--persimmon);
   }
 
+  &.--disabled {
+    background-color: var(--silver);
+    color: var(--mine-shaft);
+  }
+
   &-icon {
     margin-right: rem(15);
 
