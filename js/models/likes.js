@@ -22,7 +22,7 @@ const add = (userID, itemID) => {
   batch.set(likeRef, { [userID]: true });
   batch.update(itemRef, { likes: firebaseApp.firestore.FieldValue.increment(1) });
 
-  return batch.commit();
+  batch.commit();
 };
 
 /**
