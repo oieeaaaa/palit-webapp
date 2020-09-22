@@ -26,7 +26,7 @@ export default () => {
 
     try {
       const res = await LIKES.getOne(itemID);
-      const data = normalizeData(res);
+      const data = res.data();
 
       if (data[userID]) {
         isLiked = true;
@@ -53,7 +53,7 @@ export default () => {
     try {
       const res = await ITEM.getOne(key);
       const isLiked = await checkIfLiked(key, user.id);
-      const data = normalizeData(res);
+      const data = res.data();
 
       setItem({
         ...data,
