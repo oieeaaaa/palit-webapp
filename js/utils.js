@@ -28,28 +28,18 @@ export const objectToArray = (data) => Object.keys(data).map((key) => ({
  * @param {object} rawData
  */
 export const normalizeData = (rawData) => {
-  if (rawData.size >= 2) {
-    const data = [];
+  const data = [];
 
-    rawData.forEach((item) => {
-      data.push({
-        ...item.data(),
-        key: item.id,
-      });
+  if (!rawData) return data;
+
+  rawData.forEach((item) => {
+    data.push({
+      ...item.data(),
+      key: item.id,
     });
+  });
 
-    return data;
-  }
-
-  // for single data
-  if (rawData.exists) {
-    return {
-      ...rawData.data(),
-      key: rawData.id,
-    };
-  }
-
-  return null;
+  return data;
 };
 
 // export as collection of utils
