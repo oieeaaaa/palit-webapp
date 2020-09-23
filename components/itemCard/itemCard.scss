@@ -22,7 +22,7 @@ Description:
 
   &__body {
     padding-bottom: rem(20);
-    border: rem(1) solid var(--gray);
+    border: $thin-gray-border;
     border-radius: rem(5);
     background-color: var(--light);
     overflow: hidden;
@@ -61,5 +61,77 @@ Description:
     @include Montserrat(700);
 
     margin-top: rem(5);
+  }
+
+  // SKELETON
+  &-skeleton {
+    &__title {
+      margin-bottom: rem(10);
+
+      display: block;
+      width: rem(121);
+      height: rem(23);
+      background-image: var(--loading-gradient);
+      border-radius: rem(3);
+      animation: loadingSkeletonFadeInOut 1s linear infinite alternate;
+    }
+
+    &__body {
+      height: rem(299);
+      width: 100%;
+      border-radius: rem(5);
+      border: $thin-gray-border;
+      background-color: var(--light);
+      overflow: hidden;
+    }
+
+    &__image {
+      @include aspect-ratio(1, 1);
+
+      min-width: rem(163);
+      min-height: rem(163);
+      background-image: var(--loading-gradient);
+      border-bottom: $thin-gray-border;
+      animation: loadingSkeletonFadeInOut 2s linear infinite alternate;
+    }
+
+    &__meta {
+      padding-left: rem(10);
+      padding-right: rem(10);
+    }
+
+    &__text {
+      margin-top: rem(14);
+
+      display: block;
+      height: rem(17);
+      width: rem(40);
+      background-image: var(--loading-gradient);
+      animation: loadingSkeletonFadeInOut 0.75s linear infinite alternate;
+
+      &.--long {
+        width: rem(96);
+      }
+    }
+
+    &__subtext {
+      margin-top: rem(5);
+
+      display: block;
+      height: rem(20);
+      width: rem(29);
+      background-image: var(--loading-gradient);
+      animation: loadingSkeletonFadeInOut 2s linear infinite alternate;
+    }
+  }
+}
+
+@keyframes loadingSkeletonFadeInOut {
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: .5;
   }
 }

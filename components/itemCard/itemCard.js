@@ -8,6 +8,22 @@ Description:
 import Link from 'next/link';
 import { ReactSVG } from 'react-svg';
 
+export const ItemCardSkeleton = () => (
+  <div className="itemCard-skeleton">
+    <span className="itemCard-skeleton__title" />
+    <div className="itemCard-skeleton__body">
+      <div className="itemCard-skeleton__image" />
+      <div className="itemCard-skeleton__meta">
+        <span className="itemCard-skeleton__text" />
+        <span className="itemCard-skeleton__subtext" />
+
+        <span className="itemCard-skeleton__text --long" />
+        <span className="itemCard-skeleton__subtext" />
+      </div>
+    </div>
+  </div>
+);
+
 export default ({
   item, onLike, onTrade, linkOptions = { href: '', as: '' },
 }) => (
@@ -76,7 +92,7 @@ export default ({
           <button
             className="itemCard__button"
             type="button"
-            onClick={() => onTrade(item.key)}
+            onClick={() => onTrade(item)}
           >
             <ReactSVG
               className="itemCard__meta-icon"
