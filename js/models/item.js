@@ -2,6 +2,7 @@ import firebase from 'palit-firebase';
 
 const db = firebase.firestore();
 const itemsRef = db.collection('items');
+const likesRef = db.collection('likes');
 
 /**
  * add.
@@ -35,6 +36,35 @@ const get = (userID, limit = 10) => itemsRef
   .get();
 
 /**
+ * getWithLikes.
+ *
+ * It should retrieve items from other users
+ * It should have an association with likesRef
+ *
+ * @param {string} userID
+ * @param {number} limit
+ */
+const getWithLikes = async (userID, limit = 10) => {
+  const rawItems = await get(userID, limit);
+
+  return db.runTransaction(async (transaction) => {
+    const itemsWithIsLiked = [];
+
+    for (const rawItem of rawItems.docs) { // eslint-disable-line
+      const rawLikes = await transaction.get(likesRef.doc(rawItem.id)); // eslint-disable-line
+
+      itemsWithIsLiked.push({
+        ...rawItem.data(),
+        key: rawItem.id,
+        isLiked: Object.keys(rawLikes.data()).includes(userID),
+      });
+    }
+
+    return itemsWithIsLiked;
+  });
+};
+
+/**
  * getItemsAtUser.
  *
  * @param {string} userID
@@ -57,4 +87,5 @@ export default {
   get,
   getOne,
   getItemsAtUser,
+  getWithLikes,
 };
