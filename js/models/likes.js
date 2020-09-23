@@ -20,6 +20,8 @@ const add = (userID, itemID) => {
   const itemRef = itemsRef.doc(itemID);
 
   batch.set(likeRef, { [userID]: true });
+
+  // TODO: One like per user
   batch.update(itemRef, { likes: firebaseApp.firestore.FieldValue.increment(1) });
 
   batch.commit();
@@ -40,7 +42,7 @@ const remove = (userID, itemID) => {
   batch.update(likeRef, { [userID]: firebaseApp.firestore.FieldValue.delete() });
   batch.update(itemRef, { likes: firebaseApp.firestore.FieldValue.increment(-1) });
 
-  return batch.commit();
+  batch.commit();
 };
 
 /**
