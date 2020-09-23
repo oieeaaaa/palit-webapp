@@ -21,6 +21,8 @@ Description: For notifications, alerts, tips, and information of the user
 
   // IF IS OPEN IS TRUE
   &.--open {
+    // TODO: Find a way to animate height without using max-height
+    // My guess is to use requestAnimation but that might be overkill
     max-height: $height;
     margin-bottom: rem(30);
   }
