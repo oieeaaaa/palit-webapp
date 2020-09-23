@@ -1,15 +1,17 @@
 import { useState, useEffect, useContext } from 'react';
 import UserContext from 'js/contexts/user';
 import ITEM from 'js/models/item';
-import LIKES from 'js/models/likes';
-import { normalizeData } from 'js/utils';
+import useError from 'js/hooks/useError';
+import useLikes from 'js/hooks/useLikes';
 
 import Layout from 'components/layout/layout';
-import ItemCard from 'components/itemCard/itemCard';
+import ItemCard, { ItemCardSkeleton } from 'components/itemCard/itemCard';
 
 const Home = () => {
   const user = useContext(UserContext);
-  const [items, setItems] = useState([]);
+  const [items, setItems] = useState(null);
+  const [displayError] = useError();
+  const { setLike, setUnlike } = useLikes();
 
   /**
    * getItems.
@@ -17,13 +19,11 @@ const Home = () => {
    */
   const getItems = async () => {
     try {
-      const rawData = await ITEM.get(user.id);
-      const data = normalizeData(rawData);
+      const data = await ITEM.getWithLikes(user.id);
 
       setItems(data);
     } catch (err) {
-      // 🚨
-      console.error(err);
+      displayError(err);
     }
   };
 
@@ -33,33 +33,35 @@ const Home = () => {
    * @param {object} payload
    */
   const onLike = async (payload) => {
-    try {
-      let isLiked = false;
+    // TODO: This doesn't look right 👀
+    if (!payload.isLiked) {
+      setLike(payload, (data) => {
+        setItems((prevItems) => prevItems.map((prevItem) => {
+          if (prevItem.key === data.key) {
+            prevItem.likes += 1;
+            prevItem.isLiked = true;
+          }
 
-      if (payload.isLiked) {
-        await LIKES.remove(user.id, payload.key);
-        isLiked = false;
-      } else {
-        await LIKES.add(user.id, payload.key);
-        isLiked = true;
-      }
+          return prevItem;
+        }));
+      });
+    } else {
+      setUnlike(payload.key, (removedItemID) => {
+        setItems((prevItems) => prevItems.map((prevItem) => {
+          if (prevItem.key === removedItemID) {
+            prevItem.likes -= 1;
+            prevItem.isLiked = false;
+          }
 
-      setItems((prevItems) => prevItems.map((item) => {
-        if (item.key === payload.key) {
-          item = {
-            ...item,
-            likes: isLiked ? (item.likes + 1) : (item.likes - 1),
-            isLiked,
-          };
-        }
-
-        return item;
-      }));
-    } catch (err) {
-      console.log(err);
+          return prevItem;
+        }));
+      });
     }
   };
 
+  /**
+   * useEffect.
+   */
   useEffect(() => {
     getItems();
   }, []);
@@ -68,7 +70,7 @@ const Home = () => {
     <Layout title="Palit">
       <div className="home">
         <div className="grid home__list">
-          {items.map((item) => (
+          {items ? items.map((item) => (
             <ItemCard
               key={item.key}
               item={item}
@@ -78,7 +80,9 @@ const Home = () => {
                 as: `/items/${item.key}`,
               }}
             />
-          ))}
+          )) : (
+            Array.from({ length: 10 }).map((_, index) => <ItemCardSkeleton key={index} />)
+          )}
         </div>
       </div>
     </Layout>
