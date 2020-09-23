@@ -14,6 +14,18 @@
   --dodger-blue: #3399ff;
   --apple: #2ac940;
 
+  // Gradients
+  --loading-gradient: linear-gradient(135.3deg, #acacac 0%, #bdbdbd 100%);
+
   // z-indexes
   --z-footer: 3;
 }
+
+// SCSS Variables
+
+// BORDERS
+$thin-gray-border: 1px solid var(--gray);
+
+// BOX SHADOWS
+
+// ETC...
