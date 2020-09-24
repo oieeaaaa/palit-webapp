@@ -1,0 +1,21 @@
+.tip {
+  &-heading {
+    @include Montserrat(700);
+
+    margin-bottom: rem(10);
+
+    display: block;
+    font-size: rem(16);
+  }
+
+  &-text {
+    @include Montserrat(700);
+
+    font-size: rem(24);
+  }
+
+  &-link {
+    color: var(--dodger-blue);
+    text-decoration: none;
+  }
+}
