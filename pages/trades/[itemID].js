@@ -157,7 +157,7 @@ export default () => {
                       type="button"
                       className={getButtonVariant(tradeRequest)}
                       onClick={() => onAcceptRequest(tradeRequest)}
-                      disabled={tradeRequestItem.isAccepted}
+                      disabled={tradeRequestItem.isAccepted || tradeRequest.isTraded}
                     >
                       {checkIfCurrentItemIsAccepted(tradeRequest) ? 'Accepted' : tradeRequest.isTraded ? 'Traded' : 'Accept Request'}
                     </button>
@@ -166,7 +166,7 @@ export default () => {
                       type="button"
                       className={getButtonVariant(tradeRequest, '--default --red-outline')}
                       onClick={() => onCancelRequest(tradeRequest.key)}
-                      disabled={tradeRequestItem.isAccepted || tradeRequestItem.isTraded}
+                      disabled={tradeRequestItem.isAccepted || tradeRequest.isTraded}
                     >
                       {checkIfCurrentItemIsAccepted(tradeRequest) ? 'Accepted' : tradeRequest.isTraded ? 'Traded' : 'Cancel Request'}
                     </button>
