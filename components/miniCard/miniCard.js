@@ -6,6 +6,22 @@ Description:
 ***************************************
 */
 
+export const MiniCardSkeleton = ({ className = '' }) => (
+  <div className={`miniCard-skeleton ${className}`}>
+    <div className="miniCard-skeleton-image" />
+    <div className="miniCard-skeleton-info">
+      <span className="miniCard-skeleton-name" />
+      <span className="miniCard-skeleton-likes" />
+    </div>
+  </div>
+);
+
+/**
+ * @param {object} data:
+   *  @param {string} name
+   *  @param {number} likes
+   *  @param {string} cover
+ */
 export default ({ data }) => (
   <div className="miniCard">
     <figure className="miniCard-image">
