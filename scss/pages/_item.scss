@@ -7,7 +7,7 @@
     grid-column: 2 / -2;
 
     border-radius: rem(10);
-    border: rem(1) solid var(--gray);
+    border: $thin-gray-border;
     background-color: var(--light);
   }
 
@@ -41,8 +41,9 @@
 
     &__details {
       padding: rem(10);
+      min-height: rem(46);
       border-radius: rem(10);
-      border: rem(1) solid var(--gray);
+      border: $thin-gray-border;
       background-color: var(--light);
     }
 

@@ -1,10 +1,8 @@
 .trade-request-select {
-  height: (582 / 812) * 100vh;
-
   .grid {
     display: flex;
     flex-direction: column;
-    height: 100%;
+    min-height: (582 / 812) * 100vh;
   }
 
   &__heading {
