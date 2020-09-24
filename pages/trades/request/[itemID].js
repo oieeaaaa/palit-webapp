@@ -1,59 +1,66 @@
-import { useContext, useState, useEffect } from 'react';
+import {
+  useContext, useState, useEffect, useCallback,
+} from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
+import useError from 'js/hooks/useError';
 import UserContext from 'js/contexts/user';
 import LayoutContext from 'js/contexts/layout';
 import ITEM from 'js/models/item';
 import TRADE_REQUEST from 'js/models/tradeRequest';
-import { normalizeData } from 'js/utils';
 
 import Layout from 'components/layout/layout';
-import MiniCard from 'components/miniCard/miniCard';
+import MiniCard, { MiniCardSkeleton } from 'components/miniCard/miniCard';
 
 export default () => {
+  // customHooks
   const router = useRouter();
+  const [displayError] = useError();
+
+  // contexts
   const user = useContext(UserContext);
   const { handlers } = useContext(LayoutContext);
+
+  // states
   const [itemToTrade, setItemToTrade] = useState({});
-  const [items, setItems] = useState([]);
-  const [selected, setSelected] = useState(null);
+  const [items, setItems] = useState(null);
+  const [selectedItemID, setSelectedItemID] = useState(null);
+
+  // callbacks
+  const checkItemsEmpty = useCallback(() => !!(items && !items.length), [items]);
 
   /**
-   * getUserItems.
+   * getItemsToTrade.
    *
    * It should fetch user items
-   * TODO: Items should have a value of isTraded set to false
    *
    * @type {string} itemID
    */
-  const getUserItems = async () => {
+  const getItemsToTrade = async (itemID) => {
     try {
-      const rawData = await ITEM.getItemsAtUser(user.id);
+      const data = await ITEM.getItemsToTrade(user.id, itemID);
 
-      setItems(normalizeData(rawData));
+      setItems(data);
     } catch (err) {
-      console.error(err.message);
+      displayError(err);
     }
   };
 
   /**
-   * getItemToTrade.
+   * getSelectedItem.
    *
    * @param {string} itemID
    */
-  const getItemToTrade = async (itemID) => {
+  const getSelectedItem = async (itemID) => {
     try {
-      const rawData = await ITEM.getOne(itemID);
+      const rawItem = await ITEM.getOne(itemID);
 
       setItemToTrade({
-        ...rawData.data(),
-        key: rawData.id,
+        ...rawItem.data(),
+        key: rawItem.id,
       });
     } catch (err) {
-      handlers.showBanner({
-        error: err.message,
-        variant: 'error',
-      });
+      displayError(err);
     }
   };
 
@@ -64,14 +71,14 @@ export default () => {
     try {
       // get the whole data of the selected item
       // using the selected state
-      const myItem = items.find((item) => item.key === selected);
+      const myItem = items.find((item) => item.key === selectedItemID);
 
       // Send the request to firestore
       await TRADE_REQUEST.add(myItem, itemToTrade);
 
       // display some nice success message
       handlers.showBanner({
-        text: 'Good choice! 🎉',
+        text: `Traded ${myItem.name} 🎉`,
         variant: 'success',
       });
 
@@ -84,10 +91,7 @@ export default () => {
         );
       }, 300);
     } catch (err) {
-      handlers.showBanner({
-        error: err.message,
-        variant: 'error',
-      });
+      displayError(err);
     }
   };
 
@@ -96,8 +100,14 @@ export default () => {
    *
    * @param {string} key
    */
-  const onSelect = (key) => {
-    setSelected(key);
+  const onSelect = (itemID) => {
+    let selectedKey = itemID;
+
+    if (itemID === selectedItemID) {
+      selectedKey = null;
+    }
+
+    setSelectedItemID(selectedKey);
   };
 
   useEffect(() => {
@@ -105,8 +115,8 @@ export default () => {
 
     if (!itemID) return;
 
-    getUserItems();
-    getItemToTrade(itemID);
+    getItemsToTrade(itemID);
+    getSelectedItem(itemID);
   }, [router]);
 
   return (
@@ -114,13 +124,13 @@ export default () => {
       <div className="trade-request-select">
         <div className="grid">
           <h2 className="trade-request-select__heading">
-            Select an item to trade
+            {checkItemsEmpty() ? 'No available items to trade' : 'Select an item to trade'}
           </h2>
           <div className="trade-request-select__list">
-            {items.map((item) => (
+            {items ? items.map((item) => (
               <button
                 key={item.key}
-                className={`trade-request-select__option ${item.key === selected ? ' --selected' : ''}`}
+                className={`trade-request-select__option ${item.key === selectedItemID ? ' --selected' : ''}`}
                 type="button"
                 onClick={() => onSelect(item.key)}
               >
@@ -128,7 +138,26 @@ export default () => {
                   data={item}
                 />
               </button>
-            ))}
+            )) : (
+              Array.from({ length: 5 }).map((_, index) => <MiniCardSkeleton key={index} />)
+            )}
+
+            {checkItemsEmpty() && (
+              <div className="tip">
+                <strong className="tip-heading">Tip:</strong>
+                <p className="tip-text">
+                  Add more items in your
+                  {' '}
+                  <Link href="/inventory">
+                    <a className="tip-link">
+                      inventory
+                    </a>
+                  </Link>
+                  {' '}
+                  to keep trading
+                </p>
+              </div>
+            )}
           </div>
           <div className="trade-request-select__footer">
             <Link href="/items/[itemID]" as={`/items/${router.query.itemID}`}>
@@ -137,10 +166,10 @@ export default () => {
               </a>
             </Link>
             <button
-              className={`button --primary trade-request-select__submit ${!selected ? '--disabled' : ''}`}
+              className={`button --primary trade-request-select__submit ${!selectedItemID ? '--disabled' : ''}`}
               type="button"
               onClick={submitRequest}
-              disabled={!selected}
+              disabled={!selectedItemID}
             >
               Submit Request
             </button>
