@@ -2,11 +2,10 @@ import { useState, useEffect, useContext } from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
 import { ReactSVG } from 'react-svg';
+import useLikes from 'js/hooks/useLikes';
 import ITEM from 'js/models/item';
-import LIKES from 'js/models/likes';
 import LayoutContext from 'js/contexts/layout';
 import UserContext from 'js/contexts/user';
-
 import Layout from 'components/layout/layout';
 
 export default () => {
@@ -14,32 +13,7 @@ export default () => {
   const user = useContext(UserContext);
   const router = useRouter();
   const [item, setItem] = useState({});
-
-  /**
-   * checkIfLiked.
-   *
-   * @type {string} itemID
-   * @type {string} userID
-   */
-  const checkIfLiked = async (itemID, userID) => {
-    let isLiked = false;
-
-    try {
-      const res = await LIKES.getOne(itemID);
-      const data = res.data();
-
-      if (data[userID]) {
-        isLiked = true;
-      }
-    } catch (err) {
-      handlers.showBanner({
-        variant: 'error',
-        text: err.message,
-      });
-    }
-
-    return isLiked;
-  };
+  const { setLike, setUnlike } = useLikes();
 
   /**
    * getItem
@@ -51,20 +25,9 @@ export default () => {
    */
   const getItem = async (key) => {
     try {
-      const res = await ITEM.getOne(key);
-      const isLiked = await checkIfLiked(key, user.id);
-      const data = res.data();
+      const data = await ITEM.getOneWithLikes(key);
 
-      setItem({
-        ...data,
-        key: res.id,
-        isLiked,
-      });
-
-      handlers.showBanner({
-        variant: 'success',
-        text: `Successfully retrieved ${data.name} 🎉`,
-      });
+      setItem(data);
     } catch (err) {
       handlers.showBanner({
         variant: 'error',
@@ -74,28 +37,25 @@ export default () => {
   };
 
   /**
-   * It toggles ❤️
+   * onLike.
    */
-  const onLike = async () => {
-    try {
-      let isLiked = false;
-
-      if (item.isLiked) {
-        await LIKES.remove(user.id, item.key);
-
-        isLiked = false;
-      } else {
-        await LIKES.add(user.id, item.key);
-
-        isLiked = true;
-      }
-
-      setItem((prevItem) => ({
-        ...prevItem,
-        isLiked,
-      }));
-    } catch (err) {
-      console.log(err);
+  const onLike = () => {
+    if (item.isLiked) {
+      setLike(item, () => {
+        setItem((prevItem) => ({
+          ...prevItem,
+          likes: prevItem.likes - 1,
+          isLiked: false,
+        }));
+      });
+    } else {
+      setUnlike(item.key, () => {
+        setItem((prevItem) => ({
+          ...prevItem,
+          likes: prevItem.likes + 1,
+          isLiked: true,
+        }));
+      });
     }
   };
 
@@ -110,15 +70,12 @@ export default () => {
     getItem(itemID);
   }, [router]);
 
-  // TODO: display basic loading skeleton
-  if (!item) return null;
-
   return (
-    <Layout title={item.title}>
+    <Layout title={item.name}>
       <div className="item">
         <div className="grid">
           <figure className="item__image">
-            <img src={item.cover} alt={item.title} />
+            <img src={item.cover} alt={item.name} />
           </figure>
           <h1 className="item__title">
             {item.title}
@@ -146,30 +103,27 @@ export default () => {
             </h2>
             <ul className="item-card__details">
               <li className="item-card__item">
-                First Name:
+                Name:
                 {' '}
-                <strong>John</strong>
-              </li>
-              <li className="item-card__item">
-                Last Name:
+                <strong>{user.firstName}</strong>
                 {' '}
-                <strong>Doe</strong>
+                <strong>{user.lastName}</strong>
               </li>
               <li className="item-card__item">
                 Address:
                 {' '}
-                <strong>Cauayan City, Isabela</strong>
+                <strong>{user.address}</strong>
               </li>
               <li className="item-card__item">
                 Email:
                 {' '}
                 <strong>
                   <a
-                    href="mailto:john.doe@gmail.com"
+                    href={`mailto:${user.email}`}
                     target="_blank"
                     rel="noreferrer"
                   >
-                    john.doe@gmail.com
+                    {user.email}
                   </a>
                 </strong>
               </li>
