@@ -54,6 +54,7 @@ const add = (userID, data) => (
  */
 const get = (userID, limit = 10) => itemsRef
   .where('owner', '!=', userID)
+  .where('isTraded', '==', false)
   .limit(limit)
   .get();
 
