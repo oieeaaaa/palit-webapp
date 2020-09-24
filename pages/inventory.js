@@ -1,16 +1,19 @@
-import { useState, useEffect, useContext } from 'react';
+import {
+  useState, useEffect, useContext, useCallback,
+} from 'react';
 import Link from 'next/link';
+import useError from 'js/hooks/useError';
 import UserContext from 'js/contexts/user';
-import LayoutContext from 'js/contexts/layout';
 import ITEM from 'js/models/item';
 import { normalizeData } from 'js/utils';
 import Layout from 'components/layout/layout';
-import ItemCard from 'components/itemCard/itemCard';
+import ItemCard, { ItemCardSkeleton } from 'components/itemCard/itemCard';
 
 export default () => {
   const user = useContext(UserContext);
-  const { handlers } = useContext(LayoutContext);
-  const [items, setItems] = useState([]);
+  const [items, setItems] = useState(null);
+  const [displayError] = useError();
+  const checkItemsEmpty = useCallback(() => !!(items && !items.length), [items]);
 
   /**
    * getItems.
@@ -29,10 +32,7 @@ export default () => {
       // else
       setItems(data);
     } catch (err) {
-      handlers.showBanner({
-        text: err.message,
-        variant: 'error',
-      });
+      displayError(err);
     }
   };
 
@@ -51,7 +51,7 @@ export default () => {
         <div className="grid">
           <h1 className="inventory__title">Inventory</h1>
           <div className="inventory__list">
-            {items.map((item) => (
+            {items ? items.map((item) => (
               <ItemCard
                 key={item.key}
                 item={item}
@@ -60,7 +60,9 @@ export default () => {
                   as: `/trades/${item.key}`,
                 }}
               />
-            ))}
+            )) : (
+              Array.from({ length: 6 }).map((_, index) => <ItemCardSkeleton key={index} />)
+            )}
           </div>
           <Link href="/items/add">
             <a className="button --default inventory__add">
