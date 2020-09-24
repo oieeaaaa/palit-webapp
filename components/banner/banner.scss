@@ -19,7 +19,7 @@ Description: For notifications, alerts, tips, and information of the user
   transition: max-height 0.25s ease;
   overflow: hidden;
 
-  // IF IS OPEN IS TRUE
+  // IF isOpen IS TRUE
   &.--open {
     // TODO: Find a way to animate height without using max-height
     // My guess is to use requestAnimation but that might be overkill
