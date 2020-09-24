@@ -11,6 +11,7 @@
   border: rem(1) solid;
   text-decoration: none;
 
+  // variants
   &.--default {
     border-color: var(--dusty-gray);
     background-color: var(--light);
@@ -45,6 +46,7 @@
     color: var(--mine-shaft);
   }
 
+  // with icon
   &-icon {
     margin-right: rem(15);
 
