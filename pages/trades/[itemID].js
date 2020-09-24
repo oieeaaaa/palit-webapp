@@ -1,60 +1,54 @@
-import { useState, useEffect, useContext } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
-import LayoutContext from 'js/contexts/layout';
-import ITEM from 'js/models/item';
+import useError from 'js/hooks/useError';
 import TRADE_REQUESTS from 'js/models/tradeRequest';
 import Layout from 'components/layout/layout';
-import ItemCard from 'components/itemCard/itemCard';
-import MiniCard from 'components/miniCard/miniCard';
+import ItemCard, { ItemCardSkeleton } from 'components/itemCard/itemCard';
+import MiniCard, { MiniCardSkeleton } from 'components/miniCard/miniCard';
 
 export default () => {
-  const [item, setItem] = useState({});
-  const { handlers } = useContext(LayoutContext);
-  const [tradeRequests, setTradeRequests] = useState({
-    isAccepted: false,
-    requests: [],
-  });
+  // custom hooks
   const router = useRouter();
+  const [displayError] = useError();
 
-  /**
-   * getItem.
-   *
-   * It should fetch the item
-   *
-   * @param {string} key
-   */
-  const getItem = async (key) => {
-    try {
-      const rawData = await ITEM.getOne(key);
-      const data = rawData.data();
-
-      setItem({
-        ...data,
-        key: rawData.id,
-      });
-    } catch (err) {
-      console.error(err);
-    }
-  };
+  // states
+  const [tradeRequestItem, setTradeRequestItem] = useState(null);
 
   /**
    * getItemTradeRequests
    *
    * It should fetch the item's trade requests
    *
-   * @type {string} string
+   * @param {string} itemID
    */
   const getItemTradeRequests = async (itemID) => {
     try {
       const data = await TRADE_REQUESTS.getOne(itemID);
 
-      setTradeRequests(data);
+      setTradeRequestItem(data);
     } catch (err) {
-      handlers.showBanner({
-        variant: 'variant',
-        text: err.message,
-      });
+      displayError(err);
+    }
+  };
+
+  /**
+   * onCancelRequest
+   *
+   * @param {itemToTradeID}
+   */
+  const onCancelRequest = async (itemToTradeID) => {
+    try {
+      await TRADE_REQUESTS.remove(tradeRequestItem.key, itemToTradeID);
+
+      setTradeRequestItem((prevTradeRequests) => ({
+        ...prevTradeRequests,
+        requests: prevTradeRequests.requests.filter(
+          (prevTradeRequest) => (prevTradeRequest.key !== itemToTradeID),
+        ),
+      }));
+    } catch (err) {
+      displayError(err);
     }
   };
 
@@ -65,42 +59,62 @@ export default () => {
     const { itemID } = router.query;
     if (!itemID) return;
 
-    getItem(itemID);
     getItemTradeRequests(itemID);
   }, [router]);
 
   return (
-    <Layout title={item.name}>
+    <Layout title="Trades List">
       <div className="trade-request">
         <div className="grid">
           <h2 className="trade-request__heading">
             My Item
           </h2>
-          <Link href="/items/[itemID]" as={`/items/${item.key}`}>
-            <a className="trade-request__item">
-              <MiniCard data={item} />
-            </a>
-          </Link>
+          {tradeRequestItem ? (
+            <Link href="/items/[itemID]" as={`/items/${tradeRequestItem.key}`}>
+              <a className="trade-request__item">
+                <MiniCard data={{
+                  name: tradeRequestItem.name,
+                  likes: tradeRequestItem.likes,
+                  cover: tradeRequestItem.cover,
+                }}
+                />
+              </a>
+            </Link>
+          ) : <MiniCardSkeleton className="trade-request__item" />}
           <h2 className="trade-request__heading">
             Trade Requests
           </h2>
           <div className="trade-request__list">
-            {tradeRequests.requests.length && (
-              tradeRequests.requests.map((tradeRequest) => (
+            {(tradeRequestItem && tradeRequestItem.requests) ? (
+              tradeRequestItem.requests.map((tradeRequest) => (
                 <div key={tradeRequest.key} className="trade-request__list-item">
                   <ItemCard
                     item={tradeRequest}
-                    onLike={() => {}}
                     linkOptions={{
                       href: '/items/[itemID]',
                       as: `/items/${tradeRequest.key}`,
                     }}
                   />
-                  <button type="button" className="button --default">
-                    Accept Request
-                  </button>
+                  {tradeRequest.isRequestor ? (
+                    <button
+                      type="button"
+                      className="button --default"
+                    >
+                      Accept Request
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      className="button --default --red-outline"
+                      onClick={() => onCancelRequest(tradeRequest.key)}
+                    >
+                      Cancel Request
+                    </button>
+                  )}
                 </div>
               ))
+            ) : (
+              Array.from({ length: 6 }).map((_, index) => <ItemCardSkeleton key={index} />)
             )}
           </div>
           <div className="trade-request__footer">
