@@ -16,6 +16,8 @@ const useError = () => {
    * @param {object} error
    */
   const displayError = (error) => {
+    console.error(error.message);
+
     handlers.showBanner({
       text: error.message,
       variant: 'error',
