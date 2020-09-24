@@ -19,6 +19,8 @@ const add = (userID, itemID) => {
   const likeRef = likesRef.doc(itemID);
   const itemRef = itemsRef.doc(itemID);
 
+  // TODO: Update all 'requests' subcollection documents
+
   batch.set(likeRef, { [userID]: true });
 
   // TODO: One like per user
