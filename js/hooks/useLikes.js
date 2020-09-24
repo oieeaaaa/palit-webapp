@@ -15,7 +15,7 @@ const useLikes = () => {
    *
    * It should add user's like from the selected item|payload
    *
-   * @type {string} itemID
+   * @type {object} payload
    * @type {function} onSuccess (callback function)
    */
   const setLike = async (payload, onSuccess) => {
