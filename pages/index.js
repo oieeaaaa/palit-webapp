@@ -1,4 +1,6 @@
-import { useState, useEffect, useContext } from 'react';
+import {
+  useState, useEffect, useContext, useCallback,
+} from 'react';
 import UserContext from 'js/contexts/user';
 import ITEM from 'js/models/item';
 import useError from 'js/hooks/useError';
@@ -12,6 +14,7 @@ const Home = () => {
   const [items, setItems] = useState(null);
   const [displayError] = useError();
   const { setLike, setUnlike } = useLikes();
+  const checkItemsEmpty = useCallback(() => !!(items && !items.length), [items]);
 
   /**
    * getItems.
@@ -19,7 +22,7 @@ const Home = () => {
    */
   const getItems = async () => {
     try {
-      const data = await ITEM.getWithLikes(user.id);
+      const data = await ITEM.getWithIsLiked(user.id);
 
       setItems(data);
     } catch (err) {
@@ -82,6 +85,17 @@ const Home = () => {
             />
           )) : (
             Array.from({ length: 10 }).map((_, index) => <ItemCardSkeleton key={index} />)
+          )}
+
+          {checkItemsEmpty() && (
+            <div className="tip">
+              <h1 className="tip-heading">
+                Wow!
+              </h1>
+              <p className="tip-text">
+                It&apos;s empty.
+              </p>
+            </div>
           )}
         </div>
       </div>
