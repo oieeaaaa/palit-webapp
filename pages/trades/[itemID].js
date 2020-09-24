@@ -1,3 +1,4 @@
+/* eslint no-nested-ternary: 0 */
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
@@ -53,6 +54,60 @@ export default () => {
   };
 
   /**
+   * onAcceptRequest.
+   *
+   * @param {object} itemToAccept
+   */
+  const onAcceptRequest = async (itemToAccept) => {
+    const { requests, ...myItem } = tradeRequestItem;
+
+    try {
+      await TRADE_REQUESTS.acceptRequest(myItem, itemToAccept);
+
+      setTradeRequestItem((prevTradeRequests) => ({
+        ...prevTradeRequests,
+        isAccepted: true,
+        isTraded: true,
+        acceptedItem: itemToAccept,
+      }));
+    } catch (err) {
+      displayError(err);
+    }
+  };
+
+  const checkIfCurrentItemIsAccepted = (currentItem) => (
+    tradeRequestItem.isAccepted
+    && tradeRequestItem.acceptedItem.key === currentItem.key
+  );
+
+  /**
+   * getButtonVariant.
+   *
+   * @param {object} currentItem
+   * @param {string} defaultVariant
+   */
+  const getButtonVariant = (currentItem, defaultVariant = '--default') => {
+    let variant = '';
+
+    // TODO: Make this easy to read
+    if (checkIfCurrentItemIsAccepted(currentItem)) {
+      variant = '--success';
+    } else if (
+      (
+        !checkIfCurrentItemIsAccepted(currentItem)
+        && tradeRequestItem.isAccepted
+      )
+      || currentItem.isTraded
+    ) {
+      variant = '--disabled';
+    } else {
+      variant = defaultVariant;
+    }
+
+    return `button ${variant}`;
+  };
+
+  /**
    * useEffect.
    */
   useEffect(() => {
@@ -62,6 +117,8 @@ export default () => {
     getItemTradeRequests(itemID);
   }, [router]);
 
+  // Warning: The jsx below is a little messy right now, Blame Joimee 👈
+  // TODO: Make this easy to read
   return (
     <Layout title="Trades List">
       <div className="trade-request">
@@ -98,17 +155,20 @@ export default () => {
                   {tradeRequest.isRequestor ? (
                     <button
                       type="button"
-                      className="button --default"
+                      className={getButtonVariant(tradeRequest)}
+                      onClick={() => onAcceptRequest(tradeRequest)}
+                      disabled={tradeRequestItem.isAccepted}
                     >
-                      Accept Request
+                      {checkIfCurrentItemIsAccepted(tradeRequest) ? 'Accepted' : tradeRequest.isTraded ? 'Traded' : 'Accept Request'}
                     </button>
                   ) : (
                     <button
                       type="button"
-                      className="button --default --red-outline"
+                      className={getButtonVariant(tradeRequest, '--default --red-outline')}
                       onClick={() => onCancelRequest(tradeRequest.key)}
+                      disabled={tradeRequestItem.isAccepted || tradeRequestItem.isTraded}
                     >
-                      Cancel Request
+                      {checkIfCurrentItemIsAccepted(tradeRequest) ? 'Accepted' : tradeRequest.isTraded ? 'Traded' : 'Cancel Request'}
                     </button>
                   )}
                 </div>

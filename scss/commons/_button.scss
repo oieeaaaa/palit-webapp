@@ -36,6 +36,12 @@
     color: var(--tree-poppy);
   }
 
+  &.--success {
+    border-color: var(--mine-shaft);
+    background-color: var(--apple);
+    color: var(--light);
+  }
+
   &.--red-outline {
     border-color: var(--persimmon);
     color: var(--persimmon);
@@ -43,7 +49,7 @@
 
   &.--disabled {
     background-color: var(--silver);
-    color: var(--mine-shaft);
+    color: var(--gray);
   }
 
   // with icon

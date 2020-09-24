@@ -7,6 +7,26 @@ const likesRef = db.collection('likes');
 const tradeRequestsRef = db.collection('tradeRequests');
 
 /**
+ • 🚨🚨🚨🚨🚨🚨
+   DANGER
+ • 🚨🚨🚨🚨🚨🚨
+ */
+const reset = async () => {
+  const batch = db.batch();
+  const allItems = await itemsRef.get();
+
+  allItems.forEach((itemRef) => {
+    batch.update(itemsRef.doc(itemRef.id), {
+      likes: 0,
+      tradeRequests: 0,
+      isTraded: false,
+    });
+  });
+
+  batch.commit();
+};
+
+/**
  * add.
  *
  * @param {string} userID
@@ -149,9 +169,10 @@ export default {
   get,
   getOne,
   getOneWithLikes,
-  getOne,
-  getOneWithLikes,
   getItemsAtUser,
   getWithIsLiked,
   getItemsToTrade,
+
+  // WARNING DON'T USE THIS FUNCTION
+  reset,
 };
