@@ -19,8 +19,7 @@ import LayoutContext from 'js/contexts/layout';
      info
      success
 */
-
-export default () => {
+const Banner = () => {
   const { banner, handlers } = useContext(LayoutContext);
 
   useEffect(() => {
@@ -44,3 +43,5 @@ export default () => {
     </div>
   );
 };
+
+export default Banner;

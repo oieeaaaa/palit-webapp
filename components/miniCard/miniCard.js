@@ -22,7 +22,7 @@ export const MiniCardSkeleton = ({ className = '' }) => (
    *  @param {number} likes
    *  @param {string} cover
  */
-export default ({ data }) => (
+const MiniCard = ({ data }) => (
   <div className="miniCard">
     <figure className="miniCard-image">
       <img src={data.cover} alt={data.name} />
@@ -37,3 +37,5 @@ export default ({ data }) => (
     </div>
   </div>
 );
+
+export default MiniCard;

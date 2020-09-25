@@ -6,8 +6,8 @@ NOTE: Not for production use
 *******************************
 */
 
-import Header from './header'
+import Header from './header';
 
-export default () => (
-  <Header />
-)
+const HeaderStyleguide = () => <Header />;
+
+export default HeaderStyleguide;

@@ -47,6 +47,6 @@ export const data = [
   },
 ];
 
-export default () => (
-  <ItemCard />
-);
+const ItemCardStyleguide = () => <ItemCard />;
+
+export default ItemCardStyleguide;

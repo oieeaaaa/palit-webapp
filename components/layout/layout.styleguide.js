@@ -6,8 +6,8 @@ NOTE: Not for production use
 *******************************
 */
 
-import Layout from './layout'
+import Layout from './layout';
 
-export default () => (
-  <Layout />
-)
+const LayoutStyleguide = () => <Layout />;
+
+export default LayoutStyleguide;

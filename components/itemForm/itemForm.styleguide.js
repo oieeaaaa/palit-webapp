@@ -6,8 +6,8 @@ NOTE: Not for production use
 *******************************
 */
 
-import ItemForm from './itemForm'
+import ItemForm from './itemForm';
 
-export default () => (
-  <ItemForm />
-)
+const ItemFormStyleguide = () => <ItemForm />;
+
+export default ItemFormStyleguide;

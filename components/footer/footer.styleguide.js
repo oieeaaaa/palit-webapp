@@ -6,8 +6,8 @@ NOTE: Not for production use
 *******************************
 */
 
-import Footer from './footer'
+import Footer from './footer';
 
-export default () => (
-  <Footer />
-)
+const FooterStyleguide = () => <Footer />;
+
+export default FooterStyleguide;

@@ -5,7 +5,7 @@ Author: Joimee
 Description:
 ***************************************
 */
-export default () => (
+const Header = () => (
   <div className="header">
     <div className="grid">
       <a className="header__brand" href="/">
@@ -17,3 +17,5 @@ export default () => (
     </div>
   </div>
 );
+
+export default Header;

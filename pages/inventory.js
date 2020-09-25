@@ -9,7 +9,7 @@ import { normalizeData } from 'js/utils';
 import Layout from 'components/layout/layout';
 import ItemCard, { ItemCardSkeleton } from 'components/itemCard/itemCard';
 
-export default () => {
+const Inventory = () => {
   const user = useContext(UserContext);
   const [items, setItems] = useState(null);
   const [displayError] = useError();
@@ -80,3 +80,5 @@ export default () => {
     </Layout>
   );
 };
+
+export default Inventory;

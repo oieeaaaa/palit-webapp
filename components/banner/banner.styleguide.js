@@ -6,8 +6,8 @@ NOTE: Not for production use
 *******************************
 */
 
-import Banner from './banner'
+import Banner from './banner';
 
-export default () => (
-  <Banner />
-)
+const BannerStyleguide = () => <Banner />;
+
+export default BannerStyleguide;

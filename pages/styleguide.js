@@ -1,3 +1,5 @@
 import StyleGuide from 'styleguide/styleguide';
 
-export default () => <StyleGuide />;
+const Styleguide = () => <StyleGuide />;
+
+export default Styleguide;

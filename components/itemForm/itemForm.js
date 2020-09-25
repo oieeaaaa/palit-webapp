@@ -18,7 +18,7 @@ const initialFormValues = {
   remarks: '',
 };
 
-export default () => {
+const ItemForm = () => {
   const user = useContext(UserContext);
   const { handlers } = useContext(LayoutContext);
   const [form, setForm] = useState(initialFormValues);
@@ -154,3 +154,5 @@ export default () => {
     </div>
   );
 };
+
+export default ItemForm;

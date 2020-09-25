@@ -24,9 +24,11 @@ export const ItemCardSkeleton = () => (
   </div>
 );
 
-export default ({
-  item, onLike, onTrade, linkOptions = { href: '', as: '' },
-}) => (
+const ItemCard = (
+  {
+    item, onLike, onTrade, linkOptions = { href: '', as: '' },
+  },
+) => (
   <div className="itemCard">
     {/* TITLE */}
     <h2 className="itemCard__title" title={item.name}>{item.name}</h2>
@@ -111,3 +113,5 @@ export default ({
     </div>
   </div>
 );
+
+export default ItemCard;

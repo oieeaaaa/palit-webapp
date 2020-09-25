@@ -9,7 +9,7 @@ import { ReactSVG } from 'react-svg';
 
 export const FooterDock = () => <div className="footer-dock" />;
 
-export default () => (
+const Footer = () => (
   <div className="footer">
     <div className="grid">
       <a className="footer__link --home" href="/">
@@ -24,3 +24,5 @@ export default () => (
     </div>
   </div>
 );
+
+export default Footer;

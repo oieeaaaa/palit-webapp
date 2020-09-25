@@ -6,8 +6,8 @@ NOTE: Not for production use
 *******************************
 */
 
-import MiniCard from './miniCard'
+import MiniCard from './miniCard';
 
-export default () => (
-  <MiniCard />
-)
+const MiniCardStyleguide = () => <MiniCard />;
+
+export default MiniCardStyleguide;

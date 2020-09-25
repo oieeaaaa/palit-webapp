@@ -1,8 +1,10 @@
 import ItemForm from 'components/itemForm/itemForm';
 import Layout from 'components/layout/layout';
 
-export default () => (
+const Add = () => (
   <Layout title="Add new item">
     <ItemForm />
   </Layout>
 );
+
+export default Add;

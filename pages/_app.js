@@ -4,7 +4,7 @@ import GridGuides from 'styleguide/grid-guide';
 import UserContext, { defaultValue as userDefaultValue } from 'js/contexts/user';
 import LayoutContext, { defaultValue as layoutDefaultValue } from 'js/contexts/layout';
 
-export default ({ Component, pageProps }) => {
+const App = ({ Component, pageProps }) => {
   const [banner, setBanner] = useState(layoutDefaultValue.banner);
 
   const layoutContextValue = {
@@ -30,3 +30,5 @@ export default ({ Component, pageProps }) => {
     </UserContext.Provider>
   );
 };
+
+export default App;
