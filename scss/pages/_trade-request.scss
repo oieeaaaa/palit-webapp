@@ -1,4 +1,9 @@
 .trade-request {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 69.82758620689656vh;
+
   &__heading {
     @include Montserrat(700);
 
@@ -49,5 +54,9 @@
     & > .button:last-child {
       min-width: rem(64);
     }
+  }
+
+  .tip {
+    grid-column: 1 / -1;
   }
 }

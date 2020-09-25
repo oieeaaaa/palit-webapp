@@ -1,9 +1,11 @@
 /* eslint no-nested-ternary: 0 */
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
 import useError from 'js/hooks/useError';
 import TRADE_REQUESTS from 'js/models/tradeRequest';
+import ITEM from 'js/models/item';
+import { normalizeData } from 'js/utils';
 import Layout from 'components/layout/layout';
 import ItemCard, { ItemCardSkeleton } from 'components/itemCard/itemCard';
 import MiniCard, { MiniCardSkeleton } from 'components/miniCard/miniCard';
@@ -15,6 +17,27 @@ export default () => {
 
   // states
   const [tradeRequestItem, setTradeRequestItem] = useState(null);
+  const [myItem, setMyItem] = useState();
+
+  // callbacks
+  const checkIfRequestsIsEmpty = useCallback(() => (
+    tradeRequestItem && !tradeRequestItem.requests.length
+  ), [tradeRequestItem]);
+
+  /**
+   * getMyItem
+   *
+   * @param {string} itemID
+   */
+  const getMyItem = async (itemID) => {
+    try {
+      const rawMyItem = await ITEM.getOne(itemID);
+
+      setMyItem(normalizeData(rawMyItem));
+    } catch (err) {
+      displayError(err);
+    }
+  };
 
   /**
    * getItemTradeRequests
@@ -40,7 +63,7 @@ export default () => {
    */
   const onCancelRequest = async (itemToTradeID) => {
     try {
-      await TRADE_REQUESTS.remove(tradeRequestItem.key, itemToTradeID);
+      await TRADE_REQUESTS.remove(myItem.key, itemToTradeID);
 
       setTradeRequestItem((prevTradeRequests) => ({
         ...prevTradeRequests,
@@ -59,8 +82,6 @@ export default () => {
    * @param {object} itemToAccept
    */
   const onAcceptRequest = async (itemToAccept) => {
-    const { requests, ...myItem } = tradeRequestItem;
-
     try {
       await TRADE_REQUESTS.acceptRequest(myItem, itemToAccept);
 
@@ -115,6 +136,7 @@ export default () => {
     if (!itemID) return;
 
     getItemTradeRequests(itemID);
+    getMyItem(itemID);
   }, [router]);
 
   // Warning: The jsx below is a little messy right now, Blame Joimee 👈
@@ -126,13 +148,13 @@ export default () => {
           <h2 className="trade-request__heading">
             My Item
           </h2>
-          {tradeRequestItem ? (
-            <Link href="/items/[itemID]" as={`/items/${tradeRequestItem.key}`}>
+          {myItem ? (
+            <Link href="/items/[itemID]" as={`/items/${myItem.key}`}>
               <a className="trade-request__item">
                 <MiniCard data={{
-                  name: tradeRequestItem.name,
-                  likes: tradeRequestItem.likes,
-                  cover: tradeRequestItem.cover,
+                  name: myItem.name,
+                  likes: myItem.likes,
+                  cover: myItem.cover,
                 }}
                 />
               </a>
@@ -176,7 +198,26 @@ export default () => {
             ) : (
               Array.from({ length: 6 }).map((_, index) => <ItemCardSkeleton key={index} />)
             )}
+
+            {checkIfRequestsIsEmpty() && (
+              <div className="tip">
+                <h2 className="tip-heading">
+                  No traded items yet:
+                </h2>
+                <p className="tip-text">
+                  Try to make a
+                  {' '}
+                  <Link href="/">
+                    <a className="tip-link">
+                      trade
+                    </a>
+                  </Link>
+                </p>
+              </div>
+            )}
           </div>
+        </div>
+        <div className="grid">
           <div className="trade-request__footer">
             <button type="button" className="button --dark --red-outline">
               Delete
