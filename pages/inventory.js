@@ -63,6 +63,12 @@ export default () => {
             )) : (
               Array.from({ length: 6 }).map((_, index) => <ItemCardSkeleton key={index} />)
             )}
+            {checkItemsEmpty() && (
+              <div className="tip">
+                <h2 className="tip-heading">Tip:</h2>
+                <p className="tip-text">Add more item</p>
+              </div>
+            )}
           </div>
           <Link href="/items/add">
             <a className="button --default inventory__add">

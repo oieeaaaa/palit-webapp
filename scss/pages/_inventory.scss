@@ -17,6 +17,10 @@
     grid-template-columns: repeat(2, 1fr);
     grid-column-gap: (9 / 375) * 100%;
     grid-row-gap: rem(30);
+
+    .tip {
+      grid-column: 1 / -1;
+    }
   }
 
   &__add {
