@@ -95,6 +95,7 @@ Description:
 
   &__profile {
     @include flex-center;
+    @include aspect-ratio(1, 1);
 
     width: rem(30);
     height: rem($profile-height);

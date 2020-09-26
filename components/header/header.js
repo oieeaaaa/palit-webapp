@@ -91,7 +91,7 @@ const Header = ({ user }) => {
         {user.avatar && (
           <div className="header-nav">
             <button className="header__profile" type="button" onClick={openDropdown}>
-              <img src="/temp/profile.png" alt="Joimee Tan Cajandab" />
+              <img src={user.avatar} alt="Joimee Tan Cajandab" />
             </button>
             <HeaderDropdown isOpen={isDropdownOpen} onLogout={auth.signout} />
           </div>
