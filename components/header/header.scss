@@ -42,5 +42,19 @@ Description:
     height: rem(30);
     border-radius: 50%;
     overflow: hidden;
+    text-decoration: none;
+  }
+
+  &__placeholder {
+    @include Montserrat(700);
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    background-color: var(--tree-poppy);
+    text-transform: uppercase;
+    color: var(--mine-shaft);
   }
 }
