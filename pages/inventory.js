@@ -23,7 +23,7 @@ const Inventory = () => {
    */
   const getItems = async () => {
     try {
-      const rawData = await ITEM.getItemsAtUser(user.id);
+      const rawData = await ITEM.getItemsAtUser(user.key);
       const data = normalizeData(rawData);
 
       // if data is empty

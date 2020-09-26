@@ -85,7 +85,7 @@ const ItemForm = () => {
       const cover = await imageSnapshot.ref.getDownloadURL();
 
       // add new data in the database
-      await ITEM.add(user.id, {
+      await ITEM.add(user.key, {
         ...form,
         cover,
       });

@@ -38,7 +38,7 @@ export default () => {
    */
   const getItemsToTrade = async (itemID) => {
     try {
-      const data = await ITEM.getItemsToTrade(user.id, itemID);
+      const data = await ITEM.getItemsToTrade(user.key, itemID);
 
       setItems(data);
     } catch (err) {
