@@ -11,7 +11,7 @@ const useAuth = () => {
     const { pathname } = router;
 
     const unsubscribe = firebaseApp.auth().onAuthStateChanged((snapshot) => {
-      if (!snapshot) {
+      if (!snapshot && !pathname.includes('auth')) {
         router.push('/auth', '/auth');
       }
 
