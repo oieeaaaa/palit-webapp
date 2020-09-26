@@ -10,6 +10,8 @@
   line-height: rem(20);
   border: rem(1) solid;
   text-decoration: none;
+  padding-left: rem(10);
+  padding-right: rem(10);
 
   // variants
   &.--default {
@@ -28,12 +30,19 @@
     border-color: var(--paarl);
     background-color: var(--tree-poppy);
     color: var(--mine-shaft);
-  }
 
-  &.--primary-dark {
-    border-color: var(--tree-poppy);
-    background-color: var(--mine-shaft);
-    color: var(--tree-poppy);
+    &-dark {
+      border-color: var(--tree-poppy);
+      background-color: var(--mine-shaft);
+      color: var(--tree-poppy);
+    }
+
+    &-link {
+      background-color: transparent;
+      border-color: transparent;
+      color: var(--tree-poppy);
+      text-decoration: underline;
+    }
   }
 
   &.--success {
