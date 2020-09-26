@@ -7,12 +7,18 @@ Description:
 */
 
 .header {
+  $profile-height: 30;
+  $bottom-padding: 10;
+
   margin-bottom: rem(30);
 
   display: flex;
   height: rem(80);
-  padding-bottom: rem(10);
   background-color: var(--dark);
+
+  .grid {
+    padding-bottom: rem($bottom-padding);
+  }
 
   &.--no-space {
     margin-bottom: 0;
@@ -32,14 +38,66 @@ Description:
     color: var(--light);
   }
 
-  &__profile {
-    @include flex-center;
-
+  &-nav {
     grid-column: 8 / 9;
     align-self: end;
 
+    position: relative;
+  }
+
+  &-dropdown {
+    display: none;
+    position: absolute;
+    top: rem($profile-height + $bottom-padding);
+    right: 0;
+    min-width: rem(172);
+    padding-bottom: rem(20);
+    background-color: var(--mine-shaft);
+    border-bottom-left-radius: rem(5);
+    border-bottom-right-radius: rem(5);
+    z-index: var(--z-header-dropdown);
+    box-shadow: $header-dropdown-box-shadow;
+
+    &.--open {
+      display: block;
+    }
+
+    &__item {
+      padding-top: rem(20);
+      padding-left: rem(20);
+      padding-right: rem(20);
+      color: var(--light);
+    }
+
+    &__link {
+      @include Montserrat(700);
+
+      font-size: rem(16);
+      line-height: rem(20);
+      color: var(--light);
+      text-decoration: none;
+    }
+
+    &__button {
+      @include Montserrat(700);
+
+      font-size: rem(16);
+      line-height: rem(20);
+      color: var(--light);
+      border: none;
+      background: none;
+    }
+
+    &__button.--logout {
+      color: var(--persimmon);
+    }
+  }
+
+  &__profile {
+    @include flex-center;
+
     width: rem(30);
-    height: rem(30);
+    height: rem($profile-height);
     border-radius: 50%;
     overflow: hidden;
     text-decoration: none;
