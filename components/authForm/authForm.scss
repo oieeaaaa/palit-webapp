@@ -1,0 +1,34 @@
+/*
+***************************************
+Component: AuthForm
+Author: Joimee
+Description:
+***************************************
+*/
+
+.authForm {
+  &-form {
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    height: 86vh; // formula: 732 (target) / 812 (base) * 100vh
+  }
+
+  // Buttons
+  &-buttons {
+    margin-top: auto;
+    margin-bottom: rem(40);
+
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  &__cancel {
+    min-width: rem(87);
+  }
+
+  &__submit {
+    min-width: rem(164);
+  }
+}
