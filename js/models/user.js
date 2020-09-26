@@ -1,6 +1,7 @@
 import firebase from 'palit-firebase';
 
-const usersRef = firebase.database().ref('users');
+const db = firebase.firestore();
+const usersCollection = db.collection('users');
 
 /**
  * add.
@@ -8,18 +9,23 @@ const usersRef = firebase.database().ref('users');
  * @param {string} userID
  * @param {object} data
  */
-const add = (userID, data) => (
-  // e.g., /users/john
-  usersRef.push({
-    [userID]: {
-      address: data.address,
-      email: data.email,
-      firstName: data.firstName,
-      lastName: data.lastName,
-    },
-  })
-);
+const add = (userID, email) => usersCollection.doc(userID).set({
+  email,
+  firstName: '',
+  lastName: '',
+  avatar: '',
+  address: '',
+  messagerLink: '',
+});
+
+/**
+ * getOne.
+ *
+ * @param {string} userID
+ */
+const getOne = (userID) => usersCollection.doc(userID).get();
 
 export default {
   add,
+  getOne,
 };
