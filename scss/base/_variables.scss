@@ -19,6 +19,7 @@
 
   // z-indexes
   --z-footer: 3;
+  --z-header-dropdown: 4;
 }
 
 // SCSS Variables
@@ -27,5 +28,6 @@
 $thin-gray-border: 1px solid var(--gray);
 
 // BOX SHADOWS
+$header-dropdown-box-shadow: 0 5px 10px 0 rgba(0,0,0,0.3);
 
 // ETC...
