@@ -2,6 +2,7 @@
   &-group {
     margin-bottom: rem(20);
 
+    display: block;
     width: 100%;
 
     &__label {
@@ -38,6 +39,25 @@
       background-color: var(--mine-shaft);
       border-color: var(--dark);
       color: var(--light);
+    }
+
+    &.--disabled {
+      background: none;
+      border: none;
+      color: var(--gray);
+    }
+
+    &.--disabled:focus,
+    &.--disabled:hover {
+      background: none;
+      border: none;
+      color: var(--gray);
+    }
+
+    &.--textarea {
+      min-height: rem(130);
+      padding-top: rem(10);
+      padding-bottom: rem(10);
     }
   }
 }

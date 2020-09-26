@@ -9,3 +9,12 @@
   justify-content: center;
   align-items: center;
 }
+
+@mixin hide-appearance {
+  position: absolute;
+  top: rem(-1000);
+  left: rem(-1000);
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+}

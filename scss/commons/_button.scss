@@ -57,6 +57,7 @@
   }
 
   &.--disabled {
+    border-color: var(--gray);
     background-color: var(--silver);
     color: var(--gray);
   }
