@@ -1,4 +1,6 @@
 // list of components
+import AuthForm from 'components/authForm/authForm.styleguide';
+
 import MiniCard from 'components/miniCard/miniCard.styleguide';
 
 import Banner from 'components/banner/banner.styleguide';
@@ -14,6 +16,11 @@ import ItemCard from 'components/itemCard/itemCard.styleguide';
 import Header from 'components/header/header.styleguide';
 
 export default [
+  {
+    name: 'AuthForm',
+    component: AuthForm,
+  },
+
   {
     name: 'MiniCard',
     component: MiniCard,

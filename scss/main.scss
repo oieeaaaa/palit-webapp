@@ -13,6 +13,7 @@
 // commons
 @import './commons/button';
 @import './commons/tip';
+@import './commons/form';
 
 // pages
 @import './pages/home';
@@ -20,6 +21,8 @@
 @import './pages/inventory';
 @import './pages/trade-request';
 @import './pages/trade-request-select';
+@import './pages/auth';
+@import './pages/signup';
 
 // styleguide
 @import 'styleguide/styleguide';
@@ -27,6 +30,8 @@
 @import 'styleguide/nav/nav';
 
 // components
+@import 'components/authForm/authForm';
+
 @import 'components/miniCard/miniCard';
 
 @import 'components/banner/banner';
