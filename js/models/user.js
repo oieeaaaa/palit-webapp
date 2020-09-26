@@ -19,6 +19,13 @@ const add = (userID, email) => usersCollection.doc(userID).set({
 });
 
 /**
+ * update
+ *
+ * @param {object} user
+ */
+const update = (userID, user) => usersCollection.doc(userID).update(user);
+
+/**
  * getOne.
  *
  * @param {string} userID
@@ -27,5 +34,6 @@ const getOne = (userID) => usersCollection.doc(userID).get();
 
 export default {
   add,
+  update,
   getOne,
 };
