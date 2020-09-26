@@ -20,10 +20,12 @@ const Inventory = () => {
    *
    * It should retrieve items of the user
    * It should display an error message when network request failed
+   *
+   * @param {string} userID
    */
-  const getItems = async () => {
+  const getItems = async (userID) => {
     try {
-      const rawData = await ITEM.getItemsAtUser(user.key);
+      const rawData = await ITEM.getItemsAtUser(userID);
       const data = normalizeData(rawData);
 
       // if data is empty
@@ -42,8 +44,10 @@ const Inventory = () => {
    * It should only trigger on initial render
    */
   useEffect(() => {
-    getItems();
-  }, []);
+    if (!user.key) return;
+
+    getItems(user.key);
+  }, [user]); // TODO: Find a way to getItems without depending on the user every time
 
   return (
     <Layout title="Inventory">

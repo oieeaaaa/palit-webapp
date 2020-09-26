@@ -20,11 +20,12 @@ const Home = () => {
    * getItems.
    *
    */
-  const getItems = async () => {
+  const getItems = async (userID) => {
     try {
-      const data = await ITEM.getWithIsLiked(user.key);
+      const data = await ITEM.getWithIsLiked(userID);
+      const onlyItemsFromOtherUsers = data.filter((item) => item.owner !== userID);
 
-      setItems(data);
+      setItems(onlyItemsFromOtherUsers);
     } catch (err) {
       displayError(err);
     }
@@ -66,8 +67,10 @@ const Home = () => {
    * useEffect.
    */
   useEffect(() => {
-    getItems();
-  }, []);
+    if (!user.key) return;
+
+    getItems(user.key);
+  }, [user]);
 
   return (
     <Layout title="Palit">

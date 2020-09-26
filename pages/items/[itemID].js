@@ -8,7 +8,7 @@ import LayoutContext from 'js/contexts/layout';
 import UserContext from 'js/contexts/user';
 import Layout from 'components/layout/layout';
 
-export default () => {
+const ItemDetails = () => {
   const { handlers } = useContext(LayoutContext);
   const user = useContext(UserContext);
   const router = useRouter();
@@ -161,3 +161,5 @@ export default () => {
     </Layout>
   );
 };
+
+export default ItemDetails;
