@@ -20,7 +20,7 @@ const defaultUser = {
 };
 
 // context
-const UserContext = createContext(null);
+const UserContext = createContext(defaultUser);
 
 /**
  * UserProvider.
@@ -33,11 +33,11 @@ export const UserProvider = ({ children }) => {
   const [user, setUser] = useState(defaultUser);
 
   /**
-   * onAuthChanges.
+   * getUser.
    *
    * @param {object} value
    */
-  const onAuthChanges = async (value) => {
+  const getUser = async (value) => {
     if (!value || user.key) return;
 
     try {
@@ -53,7 +53,7 @@ export const UserProvider = ({ children }) => {
    * useEffect.
    */
   useEffect(() => {
-    const unsubscribe = firebaseApp.auth().onAuthStateChanged(onAuthChanges);
+    const unsubscribe = firebaseApp.auth().onAuthStateChanged(getUser);
 
     return () => unsubscribe();
   }, []);
