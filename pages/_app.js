@@ -1,33 +1,30 @@
-import { useState } from 'react';
 import 'scss/main.scss';
+import 'palit-firebase';
+
+import { useEffect } from 'react';
+import { UserProvider } from 'js/contexts/user';
+import { LayoutProvider } from 'js/contexts/layout';
+import useAuth from 'js/hooks/useAuth';
 import GridGuides from 'styleguide/grid-guide';
-import UserContext, { defaultValue as userDefaultValue } from 'js/contexts/user';
-import LayoutContext, { defaultValue as layoutDefaultValue } from 'js/contexts/layout';
 
 const App = ({ Component, pageProps }) => {
-  const [banner, setBanner] = useState(layoutDefaultValue.banner);
+  const auth = useAuth();
 
-  const layoutContextValue = {
-    banner,
-    handlers: {
-      showBanner: (data) => setBanner((prevState) => ({
-        ...prevState,
-        ...data,
-        isOpen: true,
-      })),
-      closeBanner: () => setBanner({ isOpen: false }),
-    },
-  };
+  useEffect(() => {
+    const unsubscribe = auth.verifyUser();
+
+    return () => unsubscribe();
+  }, []);
 
   return (
-    <UserContext.Provider value={userDefaultValue}>
-      <LayoutContext.Provider value={layoutContextValue}>
+    <UserProvider>
+      <LayoutProvider>
         <div>
           <Component {...pageProps} />
           <GridGuides />
         </div>
-      </LayoutContext.Provider>
-    </UserContext.Provider>
+      </LayoutProvider>
+    </UserProvider>
   );
 };
 
