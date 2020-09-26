@@ -1,4 +1,6 @@
+import { useContext } from 'react';
 import Router from 'next/router';
+import UserContext from 'js/contexts/user';
 import useError from 'js/hooks/useError';
 import useAuth from 'js/hooks/useAuth';
 import USER from 'js/models/user';
@@ -12,6 +14,7 @@ import AuthForm from 'components/authForm/authForm';
  * Signup.
  */
 const Signup = () => {
+  const user = useContext(UserContext);
   const auth = useAuth();
   const [displayError] = useError();
 
@@ -47,7 +50,7 @@ const Signup = () => {
 
   return (
     <div className="signup">
-      <Header />
+      <Header user={user} />
       <Banner />
       <AuthForm
         fieldKeys={fieldKeys}

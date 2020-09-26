@@ -1,4 +1,6 @@
+import { useContext } from 'react';
 import Router from 'next/router';
+import UserContext from 'js/contexts/user';
 import useAuth from 'js/hooks/useAuth';
 import useError from 'js/hooks/useError';
 import Header from 'components/header/header';
@@ -11,6 +13,7 @@ import AuthForm from 'components/authForm/authForm';
  * Login.
  */
 const Login = () => {
+  const user = useContext(UserContext);
   const auth = useAuth();
   const [displayError] = useError();
 
@@ -43,7 +46,7 @@ const Login = () => {
 
   return (
     <div className="login">
-      <Header />
+      <Header user={user} />
       <Banner />
       <AuthForm
         fieldKeys={fieldKeys}
