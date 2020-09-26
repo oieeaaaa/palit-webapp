@@ -20,7 +20,7 @@ const useLikes = () => {
    */
   const setLike = async (payload, onSuccess) => {
     try {
-      await LIKES.add(user.id, payload.key);
+      await LIKES.add(user.key, payload.key);
 
       onSuccess(payload);
     } catch (err) {
@@ -38,7 +38,7 @@ const useLikes = () => {
    */
   const setUnlike = async (itemID, onSuccess) => {
     try {
-      await LIKES.remove(user.id, itemID);
+      await LIKES.remove(user.key, itemID);
 
       onSuccess(itemID);
     } catch (err) {
