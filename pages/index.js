@@ -22,7 +22,7 @@ const Home = () => {
    */
   const getItems = async () => {
     try {
-      const data = await ITEM.getWithIsLiked(user.id);
+      const data = await ITEM.getWithIsLiked(user.key);
 
       setItems(data);
     } catch (err) {
