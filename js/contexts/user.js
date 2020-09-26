@@ -14,7 +14,7 @@ const defaultUser = {
   firstName: '',
   lastName: '',
   email: '',
-  messagerLink: '',
+  messengerLink: '',
   phoneNumber: '',
   address: '',
 };
@@ -38,7 +38,12 @@ export const UserProvider = ({ children }) => {
    * @param {object} value
    */
   const getUser = async (value) => {
-    if (!value || user.key) return;
+    if (user.key) return;
+
+    if (!value) {
+      setUser(defaultUser);
+      return;
+    }
 
     try {
       const rawData = await USER.getOne(value.uid);
