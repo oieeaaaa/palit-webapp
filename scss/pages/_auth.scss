@@ -1,0 +1,71 @@
+.auth {
+  background-image: url('/images/auth-image.jpg');
+  background-repeat: no-repeat;
+  background-size: cover;
+  height: 100vh;
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(black, 0.8);
+    z-index: 0;
+  }
+
+  .grid {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 2;
+  }
+
+  &__title {
+    @include Avenir;
+
+    margin-top: (265 / 812) * 100vh;
+
+    font-size: rem(34);
+    line-height: rem(46);
+    font-style: oblique;
+    color: var(--light);
+    text-transform: uppercase;
+    z-index: 2;
+  }
+
+  &__text {
+    margin: rem(20) 0;
+
+    font-size: rem(16);
+    line-height: rem(20);
+    color: var(--light);
+  }
+
+  &-buttons {
+    margin-bottom: (100 / 812) * 100vh;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  &__signup {
+    min-width: rem(227);
+  }
+
+  &__login {
+    min-width: rem(215);
+
+    &-with-google {
+      margin-bottom: rem(20);
+    }
+  }
+}
