@@ -1,0 +1,75 @@
+/*
+***************************************
+Component: ProfileForm
+Author: Joimee
+Description:
+***************************************
+*/
+
+.profileForm {
+  &-top {
+    grid-column: 1 / -1;
+    margin-bottom: rem(50);
+
+    display: grid;
+    grid-template-columns: ((118 / 335) * 100%) ((206 / 335) * 100%);
+    grid-column-gap: rem(10);
+    align-items: start;
+  }
+
+  &__upload {
+    &-button {
+      @include Montserrat(600);
+
+      display: block;
+      width: 100%;
+      background: none;
+      border: none;
+      color: var(--gray);
+      font-size: rem(14);
+      line-height: rem(17);
+      text-decoration: underline;
+      text-align: center;
+    }
+
+    input {
+      @include hide-appearance;
+    }
+  }
+
+  &__avatar {
+    @include aspect-ratio(1, 1);
+
+    margin-bottom: rem(10);
+
+    border: $thin-gray-border;
+    border-radius: rem(10);
+
+    &-icon {
+      width: rem(20);
+      height: rem(20);
+    }
+  }
+
+  &__name {
+    label[for="lastName"] {
+      margin-bottom: 0;
+    }
+  }
+
+  .form-group {
+    grid-column: 1 / -1;
+
+    &[for="address"] {
+      margin-bottom: 0;
+    }
+  }
+
+  &-bottom {
+    grid-column: 1 / -1;
+    margin-top: rem(60);
+
+    display: flex;
+    justify-content: space-between;
+  }
+}

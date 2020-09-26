@@ -1,4 +1,6 @@
 // list of components
+import ProfileForm from 'components/profileForm/profileForm.styleguide';
+
 import AuthForm from 'components/authForm/authForm.styleguide';
 
 import MiniCard from 'components/miniCard/miniCard.styleguide';
@@ -16,6 +18,11 @@ import ItemCard from 'components/itemCard/itemCard.styleguide';
 import Header from 'components/header/header.styleguide';
 
 export default [
+  {
+    name: 'ProfileForm',
+    component: ProfileForm,
+  },
+
   {
     name: 'AuthForm',
     component: AuthForm,
