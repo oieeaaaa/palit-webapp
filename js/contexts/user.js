@@ -1,24 +1,68 @@
-import { createContext } from 'react';
+import {
+  useEffect,
+  useState,
+  createContext,
+} from 'react';
+import firebaseApp from 'firebase/app';
+import USER from 'js/models/user';
+import useError from 'js/hooks/useError';
+import { normalizeData } from 'js/utils';
 
-const users = {
-  joimee: {
-    id: 'iBffuKGQ1ZUlcMrz3Orls0mH91W2',
-    address: 'Mississippi, United States',
-    email: 'joimee.cajandab@gmail.com',
-    firstName: 'Joimee',
-    lastName: 'Cajandab',
-  },
-  jm: {
-    id: 'v8WgF6h9IOhUHtxgrOL7mqNk8Dk1',
-    address: 'California, United States',
-    email: 'jm.smith@gmail.com',
-    firstName: 'JM',
-    lastName: 'Smith',
-  },
+const defaultUser = {
+  key: '',
+  avatar: '',
+  firstName: '',
+  lastName: '',
+  email: '',
+  messagerLink: '',
+  phoneNumber: '',
+  address: '',
 };
 
-export const defaultValue = users.jm;
+// context
+const UserContext = createContext(null);
 
-const UserContext = createContext(defaultValue);
+/**
+ * UserProvider.
+ *
+ * @param {object} props
+   * @param {object} children
+ */
+export const UserProvider = ({ children }) => {
+  const [displayError] = useError();
+  const [user, setUser] = useState(defaultUser);
+
+  /**
+   * onAuthChanges.
+   *
+   * @param {object} value
+   */
+  const onAuthChanges = async (value) => {
+    if (!value || user.key) return;
+
+    try {
+      const rawData = await USER.getOne(value.uid);
+
+      setUser(normalizeData(rawData));
+    } catch (err) {
+      displayError(err);
+    }
+  };
+
+  /**
+   * useEffect.
+   */
+  useEffect(() => {
+    const unsubscribe = firebaseApp.auth().onAuthStateChanged(onAuthChanges);
+
+    return () => unsubscribe();
+  }, []);
+
+  return (
+    <UserContext.Provider value={user}>
+      {children}
+    </UserContext.Provider>
+  );
+};
 
 export default UserContext;
