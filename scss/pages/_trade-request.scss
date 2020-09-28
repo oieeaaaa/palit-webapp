@@ -24,6 +24,11 @@
     color: var(--mines-shaft);
   }
 
+  .goodLuckCard {
+    grid-column: 1 / -1;
+    margin-bottom: rem(40);
+  }
+
   &__list {
     grid-column: 1 / -1;
 

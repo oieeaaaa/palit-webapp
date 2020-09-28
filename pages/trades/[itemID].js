@@ -15,6 +15,7 @@ import { normalizeData } from 'js/utils';
 import Layout from 'components/layout/layout';
 import ItemCard, { ItemCardSkeleton } from 'components/itemCard/itemCard';
 import MiniCard, { MiniCardSkeleton } from 'components/miniCard/miniCard';
+import GoodLuckCard from 'components/goodLuckCard/goodLuckCard';
 
 const TradeItem = () => {
   const { handlers } = useContext(LayoutContext);
@@ -187,6 +188,14 @@ const TradeItem = () => {
               </a>
             </Link>
           ) : <MiniCardSkeleton className="trade-request__item" />}
+          {(tradeRequestItem && tradeRequestItem.isAccepted) && (
+            <>
+              <h2 className="trade-request__heading">
+                Traded Item
+              </h2>
+              <GoodLuckCard ownerID={tradeRequestItem.acceptedItem.owner} />
+            </>
+          )}
           <h2 className="trade-request__heading">
             Trade Requests
           </h2>
