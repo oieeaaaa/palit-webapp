@@ -1,0 +1,80 @@
+.owner {
+  &-top {
+    grid-column: 1 / -1;
+    margin-bottom: rem(50);
+
+    display: grid;
+    grid-template-columns: ((118 / 335) * 100%) ((206 / 335) * 100%);
+    grid-column-gap: rem(10);
+    align-items: start;
+  }
+
+  &__avatar {
+    @include aspect-ratio(1, 1);
+
+    margin-bottom: rem(10);
+
+    border: $thin-gray-border;
+    border-radius: rem(10);
+
+    &-icon {
+      width: rem(20);
+      height: rem(20);
+    }
+  }
+
+  &-group {
+    grid-column: 1 / -1;
+    margin-bottom: rem(20);
+
+    &__label {
+      @include Montserrat(600);
+
+      margin-bottom: rem(10);
+
+      display: block;
+      font-size: rem(14);
+      line-height: rem(17);
+      color: var(--gray);
+    }
+
+    &__text {
+      @include Montserrat(700);
+
+      display: block;
+      font-size: rem(16);
+      line-height: rem(20);
+      color: var(--mine-shaft);
+    }
+
+    &__link {
+      @include Montserrat(700);
+
+      display: block;
+      font-size: rem(16);
+      line-height: rem(20);
+      color: var(--mine-shaft);
+    }
+
+    &__longtext {
+      @include Montserrat(700);
+
+      display: block;
+      font-size: rem(16);
+      white-space: pre;
+      line-height: 1.5em;
+      color: var(--mine-shaft);
+    }
+  }
+
+  & > &-group:last-of-type {
+    margin-bottom: 0;
+  }
+
+  .button {
+    grid-column: 1 / -1;
+    margin-top: rem(80);
+
+    justify-self: end;
+  }
+}
