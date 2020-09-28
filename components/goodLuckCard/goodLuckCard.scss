@@ -1,0 +1,43 @@
+/*
+***************************************
+Component: GoodLuckCard
+Author: Joimee
+Description:
+***************************************
+*/
+
+.goodLuckCard {
+  width: 100%;
+  padding: rem(20) rem(15);
+  border: $thin-gray-border;
+  border-radius: rem(10);
+  background-color: var(--light);
+
+  &__title {
+    @include Montserrat(700);
+
+    margin-bottom: rem(10);
+
+    font-size: rem(16);
+    line-height: rem(20);
+    color: var(--gray);
+  }
+
+  &__text {
+    @include Montserrat(600);
+
+    font-size: rem(16);
+    line-height: rem(20);
+    color: var(--gray);
+  }
+
+  & > &__text:not(:last-of-type) {
+    margin-bottom: 1em;
+  }
+
+  .button {
+    margin-top: rem(25);
+
+    display: inline-flex;
+  }
+}

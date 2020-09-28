@@ -23,6 +23,7 @@
 @import './pages/trade-request-select';
 @import './pages/auth';
 @import './pages/signup';
+@import './pages/owner';
 
 // styleguide
 @import 'styleguide/styleguide';
@@ -30,6 +31,8 @@
 @import 'styleguide/nav/nav';
 
 // components
+@import 'components/goodLuckCard/goodLuckCard';
+
 @import 'components/profileForm/profileForm';
 
 @import 'components/authForm/authForm';

@@ -1,4 +1,6 @@
 // list of components
+import GoodLuckCard from 'components/goodLuckCard/goodLuckCard.styleguide';
+
 import ProfileForm from 'components/profileForm/profileForm.styleguide';
 
 import AuthForm from 'components/authForm/authForm.styleguide';
@@ -18,6 +20,11 @@ import ItemCard from 'components/itemCard/itemCard.styleguide';
 import Header from 'components/header/header.styleguide';
 
 export default [
+  {
+    name: 'GoodLuckCard',
+    component: GoodLuckCard,
+  },
+
   {
     name: 'ProfileForm',
     component: ProfileForm,
