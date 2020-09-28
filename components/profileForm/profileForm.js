@@ -10,7 +10,10 @@ import { ReactSVG } from 'react-svg';
 import UserContext from 'js/contexts/user';
 import { extractFileURL } from 'js/utils';
 
-const ProfileForm = ({ onSubmit, isLoading }) => {
+const ProfileForm = ({
+  onSubmit,
+  isLoading,
+}) => {
   const user = useContext(UserContext);
   const [form, setForm] = useState(user);
   const fieldKeys = {
@@ -92,9 +95,9 @@ const ProfileForm = ({ onSubmit, isLoading }) => {
               />
             )}
           </figure>
-          <button className="profileForm__upload-button" type="button">
+          <p className="profileForm__upload-button" type="button">
             Upload Image
-          </button>
+          </p>
           <input
             id={fieldKeys.avatar}
             name={fieldKeys.avatar}
@@ -163,7 +166,6 @@ const ProfileForm = ({ onSubmit, isLoading }) => {
           value={form[fieldKeys.messengerLink]}
           onChange={handleFormChange}
           type="text"
-          required
         />
       </label>
       <label className="form-group" htmlFor={fieldKeys.address}>
@@ -174,7 +176,6 @@ const ProfileForm = ({ onSubmit, isLoading }) => {
           name={fieldKeys.address}
           value={form[fieldKeys.address]}
           onChange={handleFormChange}
-          required
         />
       </label>
       <div className="profileForm-bottom">
