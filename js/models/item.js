@@ -2,9 +2,10 @@ import firebase from 'palit-firebase';
 import { normalizeData } from 'js/utils';
 
 const db = firebase.firestore();
-const itemsRef = db.collection('items');
-const likesRef = db.collection('likes');
-const tradeRequestsRef = db.collection('tradeRequests');
+const itemsCollection = db.collection('items');
+const likesCollection = db.collection('likes');
+const tradeRequestsCollection = db.collection('tradeRequests');
+const requestsCollection = db.collectionGroup('requests');
 
 /**
  • 🚨🚨🚨🚨🚨🚨
@@ -13,10 +14,10 @@ const tradeRequestsRef = db.collection('tradeRequests');
  */
 const reset = async () => {
   const batch = db.batch();
-  const allItems = await itemsRef.get();
+  const allItems = await itemsCollection.get();
 
   allItems.forEach((itemRef) => {
-    batch.update(itemsRef.doc(itemRef.id), {
+    batch.update(itemsCollection.doc(itemRef.id), {
       likes: 0,
       tradeRequests: 0,
       isTraded: false,
@@ -33,7 +34,7 @@ const reset = async () => {
  * @param {object} data
  */
 const add = (userID, data) => (
-  itemsRef.add({
+  itemsCollection.add({
     owner: userID,
     name: data.name,
     cover: data.cover,
@@ -45,6 +46,20 @@ const add = (userID, data) => (
 );
 
 /**
+ * update.
+ *
+ * @param {string} itemID
+ * @param {object} data
+ */
+const update = (itemID, data) => (
+  itemsCollection.doc(itemID).update({
+    name: data.name,
+    cover: data.cover,
+    remarks: data.remarks,
+  })
+);
+
+/**
  * get.
  *
  * It should retrieve items from other users
@@ -52,7 +67,7 @@ const add = (userID, data) => (
  * @param {string} userID
  * @param {number} limit
  */
-const get = (userID, limit = 10) => itemsRef
+const get = (userID, limit = 10) => itemsCollection
   .where('owner', '!=', userID)
   .where('isTraded', '==', false)
   .limit(limit)
@@ -74,7 +89,7 @@ const getWithIsLiked = async (userID, limit = 10) => {
     const itemsWithIsLiked = [];
 
     for (const rawItem of rawItems.docs) { // eslint-disable-line
-      const rawLikes = await transaction.get(likesRef.doc(rawItem.id)); // eslint-disable-line
+      const rawLikes = await transaction.get(likesCollection.doc(rawItem.id)); // eslint-disable-line
 
       itemsWithIsLiked.push({
         ...rawItem.data(),
@@ -94,7 +109,7 @@ const getWithIsLiked = async (userID, limit = 10) => {
  *
  * @param {string} itemID
  */
-const getOne = (itemID) => itemsRef.doc(itemID).get();
+const getOne = (itemID) => itemsCollection.doc(itemID).get();
 
 /**
  * getOneWithLikes.
@@ -102,8 +117,8 @@ const getOne = (itemID) => itemsRef.doc(itemID).get();
  * @param {string} itemID
  */
 const getOneWithLikes = (itemID) => db.runTransaction(async (transaction) => {
-  const rawItem = await transaction.get(itemsRef.doc(itemID));
-  const rawLikes = await transaction.get(likesRef.doc(itemID));
+  const rawItem = await transaction.get(itemsCollection.doc(itemID));
+  const rawLikes = await transaction.get(likesCollection.doc(itemID));
   const isLiked = Object.keys(rawLikes).includes(itemID);
 
   return ({
@@ -119,7 +134,7 @@ const getOneWithLikes = (itemID) => db.runTransaction(async (transaction) => {
  * @param {string} userID
  * @param {number} limit
  */
-const getItemsAtUser = (userID, limit = 10) => itemsRef
+const getItemsAtUser = (userID, limit = 10) => itemsCollection
   .where('owner', '==', userID)
   .limit(limit)
   .get();
@@ -135,7 +150,7 @@ const getItemsAtUser = (userID, limit = 10) => itemsRef
  * @param {number} limit
  */
 const getItemsToTrade = async (userID, itemID, limit = 10) => {
-  const rawItems = await itemsRef
+  const rawItems = await itemsCollection
     .where('owner', '==', userID)
     .where('isTraded', '==', false)
     .limit(limit)
@@ -151,7 +166,7 @@ const getItemsToTrade = async (userID, itemID, limit = 10) => {
     // Filter all the requested items to the itemID
     for (const rawItem of rawItems.docs) { // eslint-disable-line
       const itemInTradeRequest = await transaction.get( // eslint-disable-line
-        tradeRequestsRef
+        tradeRequestsCollection
           .doc(rawItem.id)
           .collection('requests').doc(itemID),
       );
@@ -165,7 +180,27 @@ const getItemsToTrade = async (userID, itemID, limit = 10) => {
   });
 };
 
+const remove = async (itemID) => {
+  const batch = db.batch();
+  const item = itemsCollection.doc(itemID);
+  const itemInLikes = likesCollection.doc(itemID);
+  const itemInTradeRequest = tradeRequestsCollection.doc(itemID);
+  const itemInEveryRequests = await requestsCollection.where('key', '==', itemID).get();
+
+  batch.delete(item);
+  batch.delete(itemInLikes);
+  batch.delete(itemInTradeRequest);
+
+  // remove item in every requests
+  itemInEveryRequests.forEach((itemDoc) => {
+    batch.delete(itemDoc.ref);
+  });
+
+  return batch.commit();
+};
+
 export default {
+  update,
   add,
   get,
   getOne,
@@ -173,6 +208,7 @@ export default {
   getItemsAtUser,
   getWithIsLiked,
   getItemsToTrade,
+  remove,
 
   // WARNING DON'T USE THIS FUNCTION
   reset,

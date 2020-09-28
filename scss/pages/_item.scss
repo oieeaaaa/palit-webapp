@@ -73,4 +73,12 @@
   &__trade {
     grid-column: 4 / -1;
   }
+
+  &__edit {
+    grid-column: 1 / 4;
+  }
+
+  &__delete {
+    grid-column: 6 / -1;
+  }
 }

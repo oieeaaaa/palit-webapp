@@ -5,24 +5,22 @@ Author: Joimee
 Description:
 ***************************************
 */
-import { useState, useContext } from 'react';
+import { useState, useEffect } from 'react';
 import { ReactSVG } from 'react-svg';
 import { extractFileURL } from 'js/utils';
-import storage from 'js/storage';
-import UserContext from 'js/contexts/user';
-import LayoutContext from 'js/contexts/layout';
-import ITEM from 'js/models/item';
 
-const initialFormValues = {
+export const initialFormValues = {
   name: '',
   remarks: '',
 };
 
-const ItemForm = () => {
-  const user = useContext(UserContext);
-  const { handlers } = useContext(LayoutContext);
-  const [form, setForm] = useState(initialFormValues);
-  const [isLoading, setIsLoading] = useState(false);
+const ItemForm = ({
+  onSubmit,
+  isLoading,
+  variant = 'add',
+  data = initialFormValues,
+}) => {
+  const [form, setForm] = useState(data);
 
   /**
    * handleChange.
@@ -54,53 +52,29 @@ const ItemForm = () => {
 
     setForm((prevState) => ({
       ...prevState,
-      [e.target.name]: image,
+      imageFile: image,
+      [e.target.name]: extractFileURL(image),
     }));
   };
 
   /**
    * handleSubmit.
-   *
-   * It should store the image to the firebase storage
-   * It should save the form state to the realtime db in firebase
-   * It should update the error state if something goes wrong
-   * @param {object} e
    */
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
 
-    // Disable button while waiting for the requests below
-    setIsLoading(true);
-
-    // Problem: Firebase overrides the previous image if the filename already exists
-    // TODO: Image name must be unique or find a way to prevent firebase from overriding files
-    try {
-      // fetch the public file URL then store it in the database
-      const cover = await storage.saveImage(form.image);
-
-      // add new data in the database
-      await ITEM.add(user.key, {
-        ...form,
-        cover,
-      });
-
-      // reset form
-      setForm(initialFormValues);
-
-      handlers.showBanner({
-        variant: 'success',
-        text: `Added ${form.name} 🎉`,
-      });
-    } catch (err) {
-      handlers.showBanner({
-        variant: 'error',
-        text: err.message,
-      });
-    } finally {
-      // Enable submit button
-      setIsLoading(false);
-    }
+    onSubmit(form);
   };
+
+  /**
+   * useEffect.
+   */
+  useEffect(() => {
+    setForm({
+      ...data,
+      image: data.cover,
+    });
+  }, [data]);
 
   return (
     <div className="itemForm">
@@ -108,7 +82,7 @@ const ItemForm = () => {
         <label className="input-group" htmlFor="cover">
           <figure className="itemForm__image">
             {form.image ? (
-              <img src={extractFileURL(form.image)} alt="" />
+              <img src={form.image} alt="" />
             ) : (
               <ReactSVG className="itemForm__icon" src="/icons/image-outline.svg" />
             )}
@@ -142,7 +116,7 @@ const ItemForm = () => {
           type="submit"
           disabled={isLoading}
         >
-          Add
+          {variant === 'add' ? 'Add' : 'Edit'}
         </button>
       </form>
     </div>

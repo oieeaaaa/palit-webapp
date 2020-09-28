@@ -2,6 +2,7 @@ import { useState, useEffect, useContext } from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
 import { ReactSVG } from 'react-svg';
+import useError from 'js/hooks/useError';
 import useLikes from 'js/hooks/useLikes';
 import ITEM from 'js/models/item';
 import LayoutContext from 'js/contexts/layout';
@@ -11,8 +12,10 @@ import Layout from 'components/layout/layout';
 const ItemDetails = () => {
   const { handlers } = useContext(LayoutContext);
   const user = useContext(UserContext);
+  const [displayError] = useError();
   const router = useRouter();
   const [item, setItem] = useState({});
+  const [isOwned, setIsOwned] = useState(false);
   const { setLike, setUnlike } = useLikes();
 
   /**
@@ -28,11 +31,12 @@ const ItemDetails = () => {
       const data = await ITEM.getOneWithLikes(key);
 
       setItem(data);
+
+      if (data.owner === user.key) {
+        setIsOwned(true);
+      }
     } catch (err) {
-      handlers.showBanner({
-        variant: 'error',
-        text: err.message,
-      });
+      displayError(err);
     }
   };
 
@@ -60,15 +64,34 @@ const ItemDetails = () => {
   };
 
   /**
+   * removeItem
+   */
+  const removeItem = async () => {
+    try {
+      await ITEM.remove(item.key);
+
+      // redirect to inventory after delete
+      router.push('/inventory', '/inventory');
+
+      handlers.showBanner({
+        text: `Deleted ${item.name} 🔥`,
+        variant: 'info',
+      });
+    } catch (err) {
+      displayError(err);
+    }
+  };
+
+  /**
    * useEffect.
    */
   useEffect(() => {
     const { itemID } = router.query;
 
-    if (!itemID) return;
+    if (!itemID || !user.key) return;
 
     getItem(itemID);
-  }, [router]);
+  }, [router, user]);
 
   return (
     <Layout title={item.name}>
@@ -99,38 +122,6 @@ const ItemDetails = () => {
           </div>
           <div className="item-card">
             <h2 className="item-card__title">
-              Owner Info
-            </h2>
-            <ul className="item-card__details">
-              <li className="item-card__item">
-                Name:
-                {' '}
-                <strong>{user.firstName}</strong>
-                {' '}
-                <strong>{user.lastName}</strong>
-              </li>
-              <li className="item-card__item">
-                Address:
-                {' '}
-                <strong>{user.address}</strong>
-              </li>
-              <li className="item-card__item">
-                Email:
-                {' '}
-                <strong>
-                  <a
-                    href={`mailto:${user.email}`}
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    {user.email}
-                  </a>
-                </strong>
-              </li>
-            </ul>
-          </div>
-          <div className="item-card">
-            <h2 className="item-card__title">
               Remarks
             </h2>
             <div className="item-card__details">
@@ -139,23 +130,41 @@ const ItemDetails = () => {
               </p>
             </div>
           </div>
-          <button
-            className="button --default item__like"
-            type="button"
-            onClick={onLike}
-          >
-            <ReactSVG
-              className="button-icon"
-              src={`/icons/heart-${item.isLiked ? 'filled' : 'outline'}.svg`}
-            />
-            <span>Like</span>
-          </button>
-          <Link href="/trades/request/[itemID]" as={`/trades/request/${item.key}`}>
-            <a className="button --primary-dark item__trade">
-              <ReactSVG className="button-icon" src="/icons/cart-filled.svg" />
-              <span>Trade Requests</span>
-            </a>
-          </Link>
+          {isOwned ? (
+            <Link href="/items/edit/[editItemID]" as={`/items/edit/${item.key}`}>
+              <a className="button --primary item__edit">
+                <span>Edit</span>
+              </a>
+            </Link>
+          ) : (
+            <button
+              className="button --default item__like"
+              type="button"
+              onClick={onLike}
+            >
+              <ReactSVG
+                className="button-icon"
+                src={`/icons/heart-${item.isLiked ? 'filled' : 'outline'}.svg`}
+              />
+              <span>Like</span>
+            </button>
+          )}
+          {isOwned ? (
+            <button
+              className="button --dark --red-outline item__delete"
+              type="button"
+              onClick={removeItem}
+            >
+              <span>Delete</span>
+            </button>
+          ) : (
+            <Link href="/trades/request/[itemID]" as={`/trades/request/${item.key}`}>
+              <a className="button --primary-dark item__trade">
+                <ReactSVG className="button-icon" src="/icons/cart-filled.svg" />
+                <span>Trade Requests</span>
+              </a>
+            </Link>
+          )}
         </div>
       </div>
     </Layout>

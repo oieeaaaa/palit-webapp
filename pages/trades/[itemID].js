@@ -1,7 +1,13 @@
 /* eslint no-nested-ternary: 0 */
-import { useState, useEffect, useCallback } from 'react';
+import {
+  useState,
+  useEffect,
+  useCallback,
+  useContext,
+} from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
+import LayoutContext from 'js/contexts/layout';
 import useError from 'js/hooks/useError';
 import TRADE_REQUESTS from 'js/models/tradeRequest';
 import ITEM from 'js/models/item';
@@ -10,14 +16,16 @@ import Layout from 'components/layout/layout';
 import ItemCard, { ItemCardSkeleton } from 'components/itemCard/itemCard';
 import MiniCard, { MiniCardSkeleton } from 'components/miniCard/miniCard';
 
-export default () => {
+const TradeItem = () => {
+  const { handlers } = useContext(LayoutContext);
+
   // custom hooks
   const router = useRouter();
   const [displayError] = useError();
 
   // states
   const [tradeRequestItem, setTradeRequestItem] = useState(null);
-  const [myItem, setMyItem] = useState();
+  const [myItem, setMyItem] = useState({});
 
   // callbacks
   const checkIfRequestsIsEmpty = useCallback(() => (
@@ -25,10 +33,10 @@ export default () => {
   ), [tradeRequestItem]);
 
   /**
-   * getMyItem
-   *
-   * @param {string} itemID
-   */
+       * getMyItem
+       *
+       * @param {string} itemID
+       */
   const getMyItem = async (itemID) => {
     try {
       const rawMyItem = await ITEM.getOne(itemID);
@@ -40,12 +48,12 @@ export default () => {
   };
 
   /**
-   * getItemTradeRequests
-   *
-   * It should fetch the item's trade requests
-   *
-   * @param {string} itemID
-   */
+       * getItemTradeRequests
+       *
+       * It should fetch the item's trade requests
+       *
+       * @param {string} itemID
+       */
   const getItemTradeRequests = async (itemID) => {
     try {
       const data = await TRADE_REQUESTS.getOne(itemID);
@@ -57,10 +65,10 @@ export default () => {
   };
 
   /**
-   * onCancelRequest
-   *
-   * @param {itemToTradeID}
-   */
+       * onCancelRequest
+       *
+       * @param {itemToTradeID}
+       */
   const onCancelRequest = async (itemToTradeID) => {
     try {
       await TRADE_REQUESTS.remove(myItem.key, itemToTradeID);
@@ -77,10 +85,10 @@ export default () => {
   };
 
   /**
-   * onAcceptRequest.
-   *
-   * @param {object} itemToAccept
-   */
+       * onAcceptRequest.
+       *
+       * @param {object} itemToAccept
+       */
   const onAcceptRequest = async (itemToAccept) => {
     try {
       await TRADE_REQUESTS.acceptRequest(myItem, itemToAccept);
@@ -102,11 +110,11 @@ export default () => {
   );
 
   /**
-   * getButtonVariant.
-   *
-   * @param {object} currentItem
-   * @param {string} defaultVariant
-   */
+       * getButtonVariant.
+       *
+       * @param {object} currentItem
+       * @param {string} defaultVariant
+       */
   const getButtonVariant = (currentItem, defaultVariant = '--default') => {
     let variant = '';
 
@@ -129,8 +137,27 @@ export default () => {
   };
 
   /**
-   * useEffect.
+   * removeItem
    */
+  const removeItem = async () => {
+    try {
+      await ITEM.remove(myItem.key);
+
+      // redirect to inventory after delete
+      router.push('/inventory', '/inventory');
+
+      handlers.showBanner({
+        text: `Deleted ${myItem.name} 🔥`,
+        variant: 'info',
+      });
+    } catch (err) {
+      displayError(err);
+    }
+  };
+
+  /**
+       * useEffect.
+       */
   useEffect(() => {
     const { itemID } = router.query;
     if (!itemID) return;
@@ -219,15 +246,19 @@ export default () => {
         </div>
         <div className="grid">
           <div className="trade-request__footer">
-            <button type="button" className="button --dark --red-outline">
+            <button type="button" className="button --dark --red-outline" onClick={removeItem}>
               Delete
             </button>
-            <button type="button" className="button --primary">
-              Edit
-            </button>
+            <Link href="/items/edit/[editItemID]" as={`/items/edit/${myItem.key}`}>
+              <a className="button --primary">
+                Edit
+              </a>
+            </Link>
           </div>
         </div>
       </div>
     </Layout>
   );
 };
+
+export default TradeItem;
