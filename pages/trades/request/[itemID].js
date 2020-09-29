@@ -1,5 +1,8 @@
 import {
-  useContext, useState, useEffect, useCallback,
+  useContext,
+  useState,
+  useEffect,
+  useCallback,
 } from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
@@ -8,6 +11,7 @@ import UserContext from 'js/contexts/user';
 import LayoutContext from 'js/contexts/layout';
 import ITEM from 'js/models/item';
 import TRADE_REQUEST from 'js/models/tradeRequest';
+import { normalizeData } from 'js/hooks/utils';
 
 import Layout from 'components/layout/layout';
 import MiniCard, { MiniCardSkeleton } from 'components/miniCard/miniCard';
@@ -40,7 +44,7 @@ export default () => {
     try {
       const data = await ITEM.getItemsToTrade(user.key, itemID);
 
-      setItems(data);
+      setItems(normalizeData(data));
     } catch (err) {
       displayError(err);
     }
@@ -113,11 +117,11 @@ export default () => {
   useEffect(() => {
     const { itemID } = router.query;
 
-    if (!itemID) return;
+    if (!itemID || !user.key) return;
 
     getItemsToTrade(itemID);
     getSelectedItem(itemID);
-  }, [router]);
+  }, [router, user]);
 
   return (
     <Layout title="Trade Request Form">
