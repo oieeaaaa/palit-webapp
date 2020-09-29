@@ -1,31 +1,10 @@
 import firebase from 'palit-firebase';
-import { normalizeData } from 'js/utils';
 
 const db = firebase.firestore();
 const itemsCollection = db.collection('items');
 const likesCollection = db.collection('likes');
 const tradeRequestsCollection = db.collection('tradeRequests');
 const requestsCollection = db.collectionGroup('requests');
-
-/**
- • 🚨🚨🚨🚨🚨🚨
-   DANGER
- • 🚨🚨🚨🚨🚨🚨
- */
-const reset = async () => {
-  const batch = db.batch();
-  const allItems = await itemsCollection.get();
-
-  allItems.forEach((itemRef) => {
-    batch.update(itemsCollection.doc(itemRef.id), {
-      likes: 0,
-      tradeRequests: 0,
-      isTraded: false,
-    });
-  });
-
-  batch.commit();
-};
 
 /**
  * add.
@@ -146,40 +125,19 @@ const getItemsAtUser = (userID, limit = 10) => itemsCollection
  * TODO: Validate if the user already traded the item to the current item
  *
  * @param {string} userID
- * @param {string} itemID (Selected itemID to trade)
  * @param {number} limit
  */
-const getItemsToTrade = async (userID, itemID, limit = 10) => {
-  const rawItems = await itemsCollection
-    .where('owner', '==', userID)
-    .where('isTraded', '==', false)
-    .limit(limit)
-    .get();
+const getItemsToTrade = (userID, limit = 10) => itemsCollection
+  .where('owner', '==', userID)
+  .where('isTraded', '==', false)
+  .limit(limit)
+  .get();
 
-  // Can be improved
-  // With proper db architecture
-  // Or using collection group queries
-  // TODO: Please improve this code and don't be lazy.
-  return db.runTransaction(async (transaction) => {
-    const itemsToTrade = [];
-
-    // Filter all the requested items to the itemID
-    for (const rawItem of rawItems.docs) { // eslint-disable-line
-      const itemInTradeRequest = await transaction.get( // eslint-disable-line
-        tradeRequestsCollection
-          .doc(rawItem.id)
-          .collection('requests').doc(itemID),
-      );
-
-      if (!itemInTradeRequest.exists) {
-        itemsToTrade.push(normalizeData(rawItem));
-      }
-    }
-
-    return itemsToTrade;
-  });
-};
-
+/**
+ * remove
+ *
+ * @param {string} itemID
+ */
 const remove = async (itemID) => {
   const batch = db.batch();
   const item = itemsCollection.doc(itemID);
@@ -199,6 +157,36 @@ const remove = async (itemID) => {
   return batch.commit();
 };
 
+/**
+ * search.
+ *
+ * NOTE: This is just a sample
+ * TODO: Use algolia or find a way to make full-text search work
+ *
+ * @param {string} query
+ */
+const search = async (query) => itemsCollection.where('name', '==', query).get();
+
+/**
+ • 🚨🚨🚨🚨🚨🚨
+   DANGER
+ • 🚨🚨🚨🚨🚨🚨
+ */
+const reset = async () => {
+  const batch = db.batch();
+  const allItems = await itemsCollection.get();
+
+  allItems.forEach((itemRef) => {
+    batch.update(itemsCollection.doc(itemRef.id), {
+      likes: 0,
+      tradeRequests: 0,
+      isTraded: false,
+    });
+  });
+
+  batch.commit();
+};
+
 export default {
   update,
   add,
@@ -209,6 +197,7 @@ export default {
   getWithIsLiked,
   getItemsToTrade,
   remove,
+  search,
 
   // WARNING DON'T USE THIS FUNCTION
   reset,
