@@ -18,7 +18,7 @@ const Footer = () => (
       <a className="footer__link --trades" href="/inventory">
         <ReactSVG className="footer__link-icon" src="/icons/clipboard-outline.svg" />
       </a>
-      <a className="footer__link --search" href="/">
+      <a className="footer__link --search" href="/search">
         <ReactSVG className="footer__link-icon" src="/icons/search-outline.svg" />
       </a>
     </div>
