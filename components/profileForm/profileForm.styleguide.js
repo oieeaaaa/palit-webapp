@@ -6,8 +6,8 @@ NOTE: Not for production use
 *******************************
 */
 
-import ProfileForm from './profileForm'
+import ProfileForm from './profileForm';
 
 export default () => (
   <ProfileForm />
-)
+);

@@ -6,8 +6,8 @@ NOTE: Not for production use
 *******************************
 */
 
-import AuthForm from './authForm'
+import AuthForm from './authForm';
 
 export default () => (
   <AuthForm />
-)
+);

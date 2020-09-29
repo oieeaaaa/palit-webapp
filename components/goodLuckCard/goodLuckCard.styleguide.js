@@ -6,8 +6,8 @@ NOTE: Not for production use
 *******************************
 */
 
-import GoodLuckCard from './goodLuckCard'
+import GoodLuckCard from './goodLuckCard';
 
 export default () => (
   <GoodLuckCard />
-)
+);
