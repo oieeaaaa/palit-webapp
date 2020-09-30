@@ -11,6 +11,7 @@ import UserContext from 'js/contexts/user';
 import LayoutContext from 'js/contexts/layout';
 import ITEM from 'js/models/item';
 import TRADE_REQUEST from 'js/models/tradeRequest';
+import useProtection from 'js/hooks/useProtection';
 import { normalizeData } from 'js/utils';
 
 import Layout from 'components/layout/layout';
@@ -184,4 +185,4 @@ const TradeRequestSelect = () => {
   );
 };
 
-export default TradeRequestSelect;
+export default useProtection(TradeRequestSelect);

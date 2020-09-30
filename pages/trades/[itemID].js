@@ -14,6 +14,7 @@ import useError from 'js/hooks/useError';
 import TRADE_REQUESTS from 'js/models/tradeRequest';
 import ITEM from 'js/models/item';
 import USER from 'js/models/user';
+import useProtection from 'js/hooks/useProtection';
 import { normalizeData } from 'js/utils';
 import Layout from 'components/layout/layout';
 import ItemCard, { ItemCardSkeleton } from 'components/itemCard/itemCard';
@@ -315,4 +316,4 @@ const TradeItem = () => {
   );
 };
 
-export default TradeItem;
+export default useProtection(TradeItem);

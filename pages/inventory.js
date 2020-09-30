@@ -1,11 +1,15 @@
 import {
-  useState, useEffect, useContext, useCallback,
+  useState,
+  useEffect,
+  useContext,
+  useCallback,
 } from 'react';
 import Link from 'next/link';
 import useError from 'js/hooks/useError';
 import UserContext from 'js/contexts/user';
 import ITEM from 'js/models/item';
 import { normalizeData } from 'js/utils';
+import useProtection from 'js/hooks/useProtection';
 import Layout from 'components/layout/layout';
 import ItemCard, { ItemCardSkeleton } from 'components/itemCard/itemCard';
 
@@ -44,10 +48,8 @@ const Inventory = () => {
    * It should only trigger on initial render
    */
   useEffect(() => {
-    if (!user.key) return;
-
     getItems(user.key);
-  }, [user]); // TODO: Find a way to getItems without depending on the user every time
+  }, []);
 
   return (
     <Layout title="Inventory">
@@ -85,4 +87,4 @@ const Inventory = () => {
   );
 };
 
-export default Inventory;
+export default useProtection(Inventory);

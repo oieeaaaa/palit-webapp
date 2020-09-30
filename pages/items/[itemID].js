@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { ReactSVG } from 'react-svg';
 import useError from 'js/hooks/useError';
 import useLikes from 'js/hooks/useLikes';
+import useProtection from 'js/hooks/useProtection';
 import ITEM from 'js/models/item';
 import LayoutContext from 'js/contexts/layout';
 import UserContext from 'js/contexts/user';
@@ -88,10 +89,10 @@ const ItemDetails = () => {
   useEffect(() => {
     const { itemID } = router.query;
 
-    if (!itemID || !user.key) return;
+    if (!itemID) return;
 
     getItem(itemID);
-  }, [router, user]);
+  }, [router]);
 
   return (
     <Layout title={item.name}>
@@ -171,4 +172,4 @@ const ItemDetails = () => {
   );
 };
 
-export default ItemDetails;
+export default useProtection(ItemDetails);

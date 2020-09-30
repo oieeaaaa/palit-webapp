@@ -1,0 +1,39 @@
+/*
+***************************************
+Component: LoadingScreen
+Author: Joimee
+Description:
+***************************************
+*/
+
+.loadingScreen {
+  @include flex-center;
+
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  background-color: var(--dark);
+
+  &__brand {
+    @include Avenir(900);
+
+    font-size: rem(24);
+    font-style: oblique;
+    line-height: rem(33);
+    text-transform: uppercase;
+    color: var(--light);
+    animation: fadeInOut 2s linear alternate infinite;
+  }
+}
+
+@keyframes fadeInOut {
+  from {
+    opacity: 0.4;
+  }
+
+  to {
+    opacity: 1;
+  }
+}

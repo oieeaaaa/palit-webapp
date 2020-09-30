@@ -5,6 +5,7 @@ import UserContext from 'js/contexts/user';
 import ITEM from 'js/models/item';
 import useError from 'js/hooks/useError';
 import useLikes from 'js/hooks/useLikes';
+import useProtection from 'js/hooks/useProtection';
 
 import Layout from 'components/layout/layout';
 import ItemCard, { ItemCardSkeleton } from 'components/itemCard/itemCard';
@@ -67,10 +68,8 @@ const Home = () => {
    * useEffect.
    */
   useEffect(() => {
-    if (!user.key) return;
-
     getItems(user.key);
-  }, [user]);
+  }, []);
 
   return (
     <Layout title="Palit">
@@ -106,4 +105,4 @@ const Home = () => {
   );
 };
 
-export default Home;
+export default useProtection(Home);

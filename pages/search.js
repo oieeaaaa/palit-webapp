@@ -6,6 +6,7 @@ import {
 import UserContext from 'js/contexts/user';
 import ITEM from 'js/models/item';
 import useError from 'js/hooks/useError';
+import useProtection from 'js/hooks/useProtection';
 import { normalizeData } from 'js/utils';
 import Layout from 'components/layout/layout';
 import ItemCard, { ItemCardSkeleton } from 'components/itemCard/itemCard';
@@ -121,4 +122,4 @@ const Search = () => {
   );
 };
 
-export default Search;
+export default useProtection(Search);
