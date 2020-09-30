@@ -7,8 +7,6 @@ import Header from 'components/header/header';
 import Banner from 'components/banner/banner';
 import AuthForm from 'components/authForm/authForm';
 
-// TODO: This and auth/signup can be merged into a single page using query or pathnames
-
 /**
  * Login.
  */
@@ -38,7 +36,7 @@ const Login = () => {
         formEl[fieldKeys.password].value,
       );
 
-      Router.push('/', '/', { shallow: true });
+      Router.push('/', '/');
     } catch (err) {
       displayError(err);
     }
