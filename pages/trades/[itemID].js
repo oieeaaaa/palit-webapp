@@ -5,12 +5,15 @@ import {
   useCallback,
   useContext,
 } from 'react';
+import fetch from 'node-fetch';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
+import UserContext from 'js/contexts/user';
 import LayoutContext from 'js/contexts/layout';
 import useError from 'js/hooks/useError';
 import TRADE_REQUESTS from 'js/models/tradeRequest';
 import ITEM from 'js/models/item';
+import USER from 'js/models/user';
 import { normalizeData } from 'js/utils';
 import Layout from 'components/layout/layout';
 import ItemCard, { ItemCardSkeleton } from 'components/itemCard/itemCard';
@@ -19,6 +22,7 @@ import GoodLuckCard from 'components/goodLuckCard/goodLuckCard';
 
 const TradeItem = () => {
   const { handlers } = useContext(LayoutContext);
+  const user = useContext(UserContext);
 
   // custom hooks
   const router = useRouter();
@@ -34,10 +38,10 @@ const TradeItem = () => {
   ), [tradeRequestItem]);
 
   /**
-       * getMyItem
-       *
-       * @param {string} itemID
-       */
+   * getMyItem
+   *
+   * @param {string} itemID
+   */
   const getMyItem = async (itemID) => {
     try {
       const rawMyItem = await ITEM.getOne(itemID);
@@ -49,12 +53,12 @@ const TradeItem = () => {
   };
 
   /**
-       * getItemTradeRequests
-       *
-       * It should fetch the item's trade requests
-       *
-       * @param {string} itemID
-       */
+   * getItemTradeRequests
+   *
+   * It should fetch the item's trade requests
+   *
+   * @param {string} itemID
+   */
   const getItemTradeRequests = async (itemID) => {
     try {
       const data = await TRADE_REQUESTS.getOne(itemID);
@@ -66,10 +70,10 @@ const TradeItem = () => {
   };
 
   /**
-       * onCancelRequest
-       *
-       * @param {itemToTradeID}
-       */
+   * onCancelRequest
+   *
+   * @param {itemToTradeID}
+   */
   const onCancelRequest = async (itemToTradeID) => {
     try {
       await TRADE_REQUESTS.remove(myItem.key, itemToTradeID);
@@ -86,20 +90,61 @@ const TradeItem = () => {
   };
 
   /**
-       * onAcceptRequest.
-       *
-       * @param {object} itemToAccept
-       */
+   * onAcceptRequest.
+   *
+   * Fetch Partner's data from the database
+   * Send email
+   * Save the update to the database if emails is sent
+   * Update the UI
+   *
+   * @param {object} itemToAccept
+   */
   const onAcceptRequest = async (itemToAccept) => {
     try {
-      await TRADE_REQUESTS.acceptRequest(myItem, itemToAccept);
+      const rawPartner = await USER.getOne(itemToAccept.owner);
+      const partner = normalizeData(rawPartner);
 
-      setTradeRequestItem((prevTradeRequests) => ({
-        ...prevTradeRequests,
-        isAccepted: true,
-        isTraded: true,
-        acceptedItem: itemToAccept,
-      }));
+      // Send email to the owner of the accepted item
+      const rawRes = await fetch('/api/trade-request-accepted', {
+        method: 'POST',
+        headers: { 'Content-type': 'application/json' },
+        body: JSON.stringify({
+          myItem: {
+            name: myItem.name,
+            likes: myItem.likes,
+            tradeRequests: myItem.tradeRequests,
+          },
+          myContact: {
+            email: user.email,
+            phoneNumber: user.phoneNumber,
+            messengerLink: user.messengerLink,
+          },
+          partnerItem: {
+            name: itemToAccept.name,
+            likes: itemToAccept.likes,
+            tradeRequests: itemToAccept.tradeRequests,
+          },
+          partnerContact: {
+            email: partner.email,
+            phoneNumber: partner.phoneNumber,
+            messengerLink: partner.messengerLink,
+          },
+        }),
+      });
+      const isEmailSend = await rawRes.json();
+
+      if (isEmailSend) {
+        // update database
+        await TRADE_REQUESTS.acceptRequest(myItem, itemToAccept);
+
+        // update view
+        setTradeRequestItem((prevTradeRequests) => ({
+          ...prevTradeRequests,
+          isAccepted: true,
+          isTraded: true,
+          acceptedItem: itemToAccept,
+        }));
+      }
     } catch (err) {
       displayError(err);
     }
@@ -111,11 +156,11 @@ const TradeItem = () => {
   );
 
   /**
-       * getButtonVariant.
-       *
-       * @param {object} currentItem
-       * @param {string} defaultVariant
-       */
+   * getButtonVariant.
+   *
+   * @param {object} currentItem
+   * @param {string} defaultVariant
+   */
   const getButtonVariant = (currentItem, defaultVariant = '--default') => {
     let variant = '';
 
@@ -157,8 +202,8 @@ const TradeItem = () => {
   };
 
   /**
-       * useEffect.
-       */
+   * useEffect.
+   */
   useEffect(() => {
     const { itemID } = router.query;
     if (!itemID) return;

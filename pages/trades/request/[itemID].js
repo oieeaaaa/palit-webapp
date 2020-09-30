@@ -11,12 +11,12 @@ import UserContext from 'js/contexts/user';
 import LayoutContext from 'js/contexts/layout';
 import ITEM from 'js/models/item';
 import TRADE_REQUEST from 'js/models/tradeRequest';
-import { normalizeData } from 'js/hooks/utils';
+import { normalizeData } from 'js/utils';
 
 import Layout from 'components/layout/layout';
 import MiniCard, { MiniCardSkeleton } from 'components/miniCard/miniCard';
 
-export default () => {
+const TradeRequestSelect = () => {
   // customHooks
   const router = useRouter();
   const [displayError] = useError();
@@ -40,9 +40,9 @@ export default () => {
    *
    * @type {string} itemID
    */
-  const getItemsToTrade = async (itemID) => {
+  const getItemsToTrade = async () => {
     try {
-      const data = await ITEM.getItemsToTrade(user.key, itemID);
+      const data = await ITEM.getItemsToTrade(user.key);
 
       setItems(normalizeData(data));
     } catch (err) {
@@ -183,3 +183,5 @@ export default () => {
     </Layout>
   );
 };
+
+export default TradeRequestSelect;
