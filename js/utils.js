@@ -54,9 +54,17 @@ export const normalizeData = (rawData) => {
   return data;
 };
 
+/**
+ * isObjectEmpty
+ *
+ * @param {object} obj
+ */
+export const isObjectEmpty = (obj) => Object.keys(obj).length === 0;
+
 // export as collection of utils
 export default {
   extractFileURL,
   objectToArray,
   normalizeData,
+  isObjectEmpty,
 };
