@@ -26,7 +26,6 @@ const getRequestsStats = (itemID) => tradeRequestsCollection
  *
  * So many locations to update 😱
  * The hard part and the most important one
- * TODO: Add the --stats-- in every requests collection
  *
  * @param {object} myItem
  * @param {object} itemToTrade
