@@ -7,7 +7,6 @@ import {
 } from 'react';
 import fetch from 'node-fetch';
 import { useRouter } from 'next/router';
-import Link from 'next/link';
 import UserContext from 'js/contexts/user';
 import LayoutContext from 'js/contexts/layout';
 import useError from 'js/hooks/useError';
@@ -15,22 +14,27 @@ import TRADE_REQUESTS from 'js/models/tradeRequest';
 import ITEM from 'js/models/item';
 import USER from 'js/models/user';
 import useProtection from 'js/hooks/useProtection';
-import { normalizeData } from 'js/utils';
+import useInfiniteScroll from 'js/hooks/useInfiniteScroll';
+import { normalizeData, isObjectEmpty } from 'js/utils';
+
 import Layout from 'components/layout/layout';
-import ItemCard, { ItemCardSkeleton } from 'components/itemCard/itemCard';
-import MiniCard, { MiniCardSkeleton } from 'components/miniCard/miniCard';
-import GoodLuckCard from 'components/goodLuckCard/goodLuckCard';
+import {
+  TradeRequestHeading,
+  TradeRequestMyItem,
+  TradeRequestGoodLuckCard,
+  TradeRequestItemRequests,
+  TradeRequestEmpty,
+  TradeRequestFooter,
+} from 'components/tradeRequest/tradeRequest';
 
 const TradeItem = () => {
+  // contexts
   const { handlers } = useContext(LayoutContext);
   const user = useContext(UserContext);
 
-  // custom hooks
-  const router = useRouter();
-  const [displayError] = useError();
-
   // states
   const [tradeRequestItem, setTradeRequestItem] = useState(null);
+  const [tradeRequestItemStats, setTradeRequestItemStats] = useState(null);
   const [myItem, setMyItem] = useState({});
 
   // callbacks
@@ -38,16 +42,34 @@ const TradeItem = () => {
     tradeRequestItem && !tradeRequestItem.requests.length
   ), [tradeRequestItem]);
 
+  // custom hooks
+  const router = useRouter();
+  const [displayError] = useError();
+  const { isFetching: isFetchingTradeRequests } = useInfiniteScroll(
+    getItemTradeRequests,
+    tradeRequestItemStats?.totalRequests,
+  );
+
   /**
    * getMyItem
-   *
-   * @param {string} itemID
    */
-  const getMyItem = async (itemID) => {
+  const getMyItem = async () => {
     try {
+      const { itemID } = router.query;
       const rawMyItem = await ITEM.getOne(itemID);
 
       setMyItem(normalizeData(rawMyItem));
+    } catch (err) {
+      displayError(err);
+    }
+  };
+
+  const getItemTradeRequestsStats = async () => {
+    try {
+      const { itemID } = router.query;
+      const rawStats = await TRADE_REQUESTS.getRequestsStats(itemID);
+
+      setTradeRequestItemStats(rawStats.data());
     } catch (err) {
       displayError(err);
     }
@@ -57,34 +79,39 @@ const TradeItem = () => {
    * getItemTradeRequests
    *
    * It should fetch the item's trade requests
-   *
-   * @param {string} itemID
    */
-  const getItemTradeRequests = async (itemID) => {
+  async function getItemTradeRequests(limit) {
+    if (isFetchingTradeRequests) return;
+
     try {
-      const data = await TRADE_REQUESTS.getOne(itemID);
+      const { itemID } = router.query;
+      const data = await TRADE_REQUESTS.getOne(itemID, limit);
 
       setTradeRequestItem(data);
     } catch (err) {
       displayError(err);
     }
-  };
+  }
 
   /**
    * onCancelRequest
    *
-   * @param {itemToTradeID}
+   * @param {string} requestedItemKey
    */
-  const onCancelRequest = async (itemToTradeID) => {
+  const onCancelRequest = async (requestedItemKey) => {
     try {
-      await TRADE_REQUESTS.remove(myItem.key, itemToTradeID);
+      await TRADE_REQUESTS.remove(myItem.key, requestedItemKey);
 
-      setTradeRequestItem((prevTradeRequests) => ({
-        ...prevTradeRequests,
-        requests: prevTradeRequests.requests.filter(
-          (prevTradeRequest) => (prevTradeRequest.key !== itemToTradeID),
-        ),
-      }));
+      setTradeRequestItem((prevTradeRequests) => {
+        const itemsWithoutRequestedItem = ({
+          ...prevTradeRequests,
+          requests: prevTradeRequests.requests.filter(
+            (prevTradeRequest) => (prevTradeRequest.key !== requestedItemKey),
+          ),
+        });
+
+        return itemsWithoutRequestedItem;
+      });
     } catch (err) {
       displayError(err);
     }
@@ -95,7 +122,7 @@ const TradeItem = () => {
    *
    * Fetch Partner's data from the database
    * Send email
-   * Save the update to the database if emails is sent
+   * Send the update data to the database if emails is sent
    * Update the UI
    *
    * @param {object} itemToAccept
@@ -110,28 +137,14 @@ const TradeItem = () => {
         method: 'POST',
         headers: { 'Content-type': 'application/json' },
         body: JSON.stringify({
-          myItem: {
-            name: myItem.name,
-            likes: myItem.likes,
-            tradeRequests: myItem.tradeRequests,
-          },
-          myContact: {
-            email: user.email,
-            phoneNumber: user.phoneNumber,
-            messengerLink: user.messengerLink,
-          },
-          partnerItem: {
-            name: itemToAccept.name,
-            likes: itemToAccept.likes,
-            tradeRequests: itemToAccept.tradeRequests,
-          },
-          partnerContact: {
-            email: partner.email,
-            phoneNumber: partner.phoneNumber,
-            messengerLink: partner.messengerLink,
-          },
+          myItem,
+          myContact: user,
+          partnerItem: itemToAccept,
+          partnerContact: partner,
         }),
       });
+
+      // parsed rawRes
       const isEmailSend = await rawRes.json();
 
       if (isEmailSend) {
@@ -151,38 +164,6 @@ const TradeItem = () => {
     }
   };
 
-  const checkIfCurrentItemIsAccepted = (currentItem) => (
-    tradeRequestItem.isAccepted
-    && tradeRequestItem.acceptedItem.key === currentItem.key
-  );
-
-  /**
-   * getButtonVariant.
-   *
-   * @param {object} currentItem
-   * @param {string} defaultVariant
-   */
-  const getButtonVariant = (currentItem, defaultVariant = '--default') => {
-    let variant = '';
-
-    // TODO: Make this easy to read
-    if (checkIfCurrentItemIsAccepted(currentItem)) {
-      variant = '--success';
-    } else if (
-      (
-        !checkIfCurrentItemIsAccepted(currentItem)
-        && tradeRequestItem.isAccepted
-      )
-      || currentItem.isTraded
-    ) {
-      variant = '--disabled';
-    } else {
-      variant = defaultVariant;
-    }
-
-    return `button ${variant}`;
-  };
-
   /**
    * removeItem
    */
@@ -190,7 +171,7 @@ const TradeItem = () => {
     try {
       await ITEM.remove(myItem.key);
 
-      // redirect to inventory after delete
+      // redirect to inventory
       router.push('/inventory', '/inventory');
 
       handlers.showBanner({
@@ -209,108 +190,31 @@ const TradeItem = () => {
     const { itemID } = router.query;
     if (!itemID) return;
 
-    getItemTradeRequests(itemID);
-    getMyItem(itemID);
+    if (isObjectEmpty(myItem) && !tradeRequestItemStats) {
+      getMyItem();
+      getItemTradeRequestsStats();
+      getItemTradeRequests();
+    }
   }, [router]);
 
-  // Warning: The jsx below is a little messy right now, Blame Joimee 👈
-  // TODO: Make this easy to read
   return (
     <Layout title="Trades List">
       <div className="trade-request">
         <div className="grid">
-          <h2 className="trade-request__heading">
-            My Item
-          </h2>
-          {myItem ? (
-            <Link href="/items/[itemID]" as={`/items/${myItem.key}`}>
-              <a className="trade-request__item">
-                <MiniCard data={{
-                  name: myItem.name,
-                  likes: myItem.likes,
-                  cover: myItem.cover,
-                }}
-                />
-              </a>
-            </Link>
-          ) : <MiniCardSkeleton className="trade-request__item" />}
-          {(tradeRequestItem && tradeRequestItem.isAccepted) && (
-            <>
-              <h2 className="trade-request__heading">
-                Traded Item
-              </h2>
-              <GoodLuckCard ownerID={tradeRequestItem.acceptedItem.owner} />
-            </>
-          )}
-          <h2 className="trade-request__heading">
-            Trade Requests
-          </h2>
+          <TradeRequestHeading text="My Item" />
+          <TradeRequestMyItem myItem={myItem} />
+          <TradeRequestGoodLuckCard tradeRequestItem={tradeRequestItem} />
+          <TradeRequestHeading text="Trade Requests" />
           <div className="trade-request__list">
-            {(tradeRequestItem && tradeRequestItem.requests) ? (
-              tradeRequestItem.requests.map((tradeRequest) => (
-                <div key={tradeRequest.key} className="trade-request__list-item">
-                  <ItemCard
-                    item={tradeRequest}
-                    linkOptions={{
-                      href: '/items/[itemID]',
-                      as: `/items/${tradeRequest.key}`,
-                    }}
-                  />
-                  {tradeRequest.isRequestor ? (
-                    <button
-                      type="button"
-                      className={getButtonVariant(tradeRequest)}
-                      onClick={() => onAcceptRequest(tradeRequest)}
-                      disabled={tradeRequestItem.isAccepted || tradeRequest.isTraded}
-                    >
-                      {checkIfCurrentItemIsAccepted(tradeRequest) ? 'Accepted' : tradeRequest.isTraded ? 'Traded' : 'Accept Request'}
-                    </button>
-                  ) : (
-                    <button
-                      type="button"
-                      className={getButtonVariant(tradeRequest, '--default --red-outline')}
-                      onClick={() => onCancelRequest(tradeRequest.key)}
-                      disabled={tradeRequestItem.isAccepted || tradeRequest.isTraded}
-                    >
-                      {checkIfCurrentItemIsAccepted(tradeRequest) ? 'Accepted' : tradeRequest.isTraded ? 'Traded' : 'Cancel Request'}
-                    </button>
-                  )}
-                </div>
-              ))
-            ) : (
-              Array.from({ length: 6 }).map((_, index) => <ItemCardSkeleton key={index} />)
-            )}
-
-            {checkIfRequestsIsEmpty() && (
-              <div className="tip">
-                <h2 className="tip-heading">
-                  No traded items yet:
-                </h2>
-                <p className="tip-text">
-                  Try to make a
-                  {' '}
-                  <Link href="/">
-                    <a className="tip-link">
-                      trade
-                    </a>
-                  </Link>
-                </p>
-              </div>
-            )}
+            <TradeRequestItemRequests
+              tradeRequestItem={tradeRequestItem}
+              onAcceptRequest={onAcceptRequest}
+              onCancelRequest={onCancelRequest}
+            />
+            <TradeRequestEmpty isEmpty={checkIfRequestsIsEmpty()} />
           </div>
         </div>
-        <div className="grid">
-          <div className="trade-request__footer">
-            <button type="button" className="button --dark --red-outline" onClick={removeItem}>
-              Delete
-            </button>
-            <Link href="/items/edit/[editItemID]" as={`/items/edit/${myItem.key}`}>
-              <a className="button --primary">
-                Edit
-              </a>
-            </Link>
-          </div>
-        </div>
+        <TradeRequestFooter editKey={myItem.key} onRemoveItem={removeItem} />
       </div>
     </Layout>
   );
