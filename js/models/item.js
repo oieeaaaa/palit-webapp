@@ -141,12 +141,10 @@ const getItemsAtUser = (userID, limit = 10) => itemsCollection
  * TODO: Validate if the user already traded the item to the current item
  *
  * @param {string} userID
- * @param {number} limit
  */
-const getItemsToTrade = (userID, limit = 10) => itemsCollection
+const getItemsToTrade = (userID) => itemsCollection
   .where('owner', '==', userID)
   .where('isTraded', '==', false)
-  .limit(limit)
   .get();
 
 /**
@@ -158,18 +156,36 @@ const remove = async (itemID) => {
   const batch = db.batch();
   const item = itemsCollection.doc(itemID);
   const itemInLikes = likesCollection.doc(itemID);
-  const itemInTradeRequest = tradeRequestsCollection.doc(itemID);
+  const tradeRequestItem = tradeRequestsCollection.doc(itemID);
+  const tradeRequestItemRequests = await tradeRequestItem.collection('requests').get();
   const itemInEveryRequests = await requestsCollection.where('key', '==', itemID).get();
+  const everyAffectedItemKeys = [];
 
   batch.update(itemsStats, { totalItems: firebaseApp.firestore.FieldValue.increment(-1) });
+
+  itemInEveryRequests.forEach((requestItem) => {
+    everyAffectedItemKeys.push(requestItem.ref.parent.parent.id);
+    batch.delete(requestItem.ref);
+  });
+
+  // for each affected item decrement its current tradeRequests value
+  everyAffectedItemKeys.forEach((affectedItemKey) => {
+    batch.update(itemsCollection.doc(affectedItemKey), {
+      tradeRequests: firebaseApp.firestore.FieldValue.increment(-1),
+    });
+
+    batch.update(tradeRequestsCollection.doc(affectedItemKey), {
+      tradeRequests: firebaseApp.firestore.FieldValue.increment(-1),
+    });
+  });
+
+  tradeRequestItemRequests.forEach((requestItem) => {
+    batch.delete(requestItem.ref);
+  });
+
   batch.delete(item);
   batch.delete(itemInLikes);
-  batch.delete(itemInTradeRequest);
-
-  // remove item in every requests
-  itemInEveryRequests.forEach((itemDoc) => {
-    batch.delete(itemDoc.ref);
-  });
+  batch.delete(tradeRequestItem);
 
   return batch.commit();
 };
