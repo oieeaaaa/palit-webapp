@@ -1,10 +1,17 @@
 import firebase from 'palit-firebase';
+import firebaseApp from 'firebase/app';
 
 const db = firebase.firestore();
 const itemsCollection = db.collection('items');
+const itemsStats = db.collection('items').doc('--stats--');
 const likesCollection = db.collection('likes');
 const tradeRequestsCollection = db.collection('tradeRequests');
 const requestsCollection = db.collectionGroup('requests');
+
+/**
+ * getItemsStats
+ */
+const getItemsStats = () => itemsStats.get();
 
 /**
  * add.
@@ -12,8 +19,15 @@ const requestsCollection = db.collectionGroup('requests');
  * @param {string} userID
  * @param {object} data
  */
-const add = (userID, data) => (
-  itemsCollection.add({
+const add = (userID, data) => {
+  const batch = db.batch();
+  const newDocumentID = itemsCollection.doc().id;
+
+  batch.set(itemsStats, {
+    totalItems: firebaseApp.firestore.FieldValue.increment(1),
+  }, { merge: true });
+
+  batch.set(itemsCollection.doc(newDocumentID), {
     owner: userID,
     name: data.name,
     cover: data.cover,
@@ -21,8 +35,10 @@ const add = (userID, data) => (
     likes: 0,
     tradeRequests: 0,
     isTraded: false,
-  })
-);
+  }, { merge: true });
+
+  batch.commit();
+};
 
 /**
  * update.
@@ -49,7 +65,7 @@ const update = (itemID, data) => (
 const get = (userID, limit = 10) => itemsCollection
   .where('owner', '!=', userID)
   .where('isTraded', '==', false)
-  .limit(limit)
+  .limit(limit || 10)
   .get();
 
 /**
@@ -61,7 +77,7 @@ const get = (userID, limit = 10) => itemsCollection
  * @param {string} userID
  * @param {number} limit
  */
-const getWithIsLiked = async (userID, limit = 10) => {
+const getWithIsLiked = async (userID, limit) => {
   const rawItems = await get(userID, limit);
 
   return db.runTransaction(async (transaction) => {
@@ -115,7 +131,7 @@ const getOneWithLikes = (itemID) => db.runTransaction(async (transaction) => {
  */
 const getItemsAtUser = (userID, limit = 10) => itemsCollection
   .where('owner', '==', userID)
-  .limit(limit)
+  .limit(limit || 10)
   .get();
 
 /**
@@ -145,6 +161,7 @@ const remove = async (itemID) => {
   const itemInTradeRequest = tradeRequestsCollection.doc(itemID);
   const itemInEveryRequests = await requestsCollection.where('key', '==', itemID).get();
 
+  batch.update(itemsStats, { totalItems: firebaseApp.firestore.FieldValue.increment(-1) });
   batch.delete(item);
   batch.delete(itemInLikes);
   batch.delete(itemInTradeRequest);
@@ -188,8 +205,9 @@ const reset = async () => {
 };
 
 export default {
-  update,
+  getItemsStats,
   add,
+  update,
   get,
   getOne,
   getOneWithLikes,
