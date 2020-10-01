@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import throttle from 'lodash.throttle';
 
 /**
@@ -13,13 +13,12 @@ import throttle from 'lodash.throttle';
  *
  * @return {number} limit
  */
-const useLimitChangeOnScroll = (defaultLimit = 0, toIncrement = 8, triggerOffset = 0) => {
-  const [limit, setLimit] = useState(defaultLimit);
+const useLimitChangeOnScroll = (defaultLimit, toIncrement = 8, triggerOffset = 0) => {
+  // states
+  const [limit, setLimit] = useState(defaultLimit || 0);
 
-  /**
-   * handleBottomChecker
-   */
-  const handleBottomChecker = throttle(() => {
+  // callbacks
+  const handleBottomChecker = useCallback(throttle(() => {
     const scrolled = (window.scrollY + window.innerHeight) + triggerOffset;
     const bodyHeight = document.body.offsetHeight;
     const isAtTheBottom = scrolled >= bodyHeight;
@@ -27,15 +26,25 @@ const useLimitChangeOnScroll = (defaultLimit = 0, toIncrement = 8, triggerOffset
     if (isAtTheBottom) {
       setLimit((prevLimit) => prevLimit + toIncrement);
     }
-  }, 300);
+  }, 300), [setLimit]);
 
+  /**
+   * destroyLimitListeners.
+   */
+  const destroyLimitListeners = () => {
+    window.removeEventListener('scroll', handleBottomChecker);
+  };
+
+  /**
+   * useEffect.
+   */
   useEffect(() => {
     window.addEventListener('scroll', handleBottomChecker);
 
-    return () => window.removeEventListener('scroll', handleBottomChecker);
+    return destroyLimitListeners;
   }, []);
 
-  return limit;
+  return [limit, destroyLimitListeners];
 };
 
 export default useLimitChangeOnScroll;
