@@ -25,6 +25,7 @@
   "react"
   ],
   "rules": {
+    "no-use-before-define": "off",
     "no-console": "off",
     "no-alert": "off",
     "import/no-unresolved": "off",
