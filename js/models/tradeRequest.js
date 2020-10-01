@@ -9,13 +9,24 @@ const tradeRequestsCollection = db.collection('tradeRequests');
 const itemsCollection = db.collection('items');
 
 // subcollections
-const requestsCollection = db.collectionGroup('requests');
+const requestsCollectionGroup = db.collectionGroup('requests');
+
+/**
+ * getRequestsStats.
+ *
+ * @param {string} itemID
+ */
+const getRequestsStats = (itemID) => tradeRequestsCollection
+  .doc(itemID)
+  .collection('requests')
+  .doc('--stats--').get();
 
 /**
  * add.
  *
  * So many locations to update 😱
  * The hard part and the most important one
+ * TODO: Add the --stats-- in every requests collection
  *
  * @param {object} myItem
  * @param {object} itemToTrade
@@ -26,35 +37,43 @@ const add = (myItem, itemToTrade) => {
   // My Item Refs
   const myItemRef = tradeRequestsCollection.doc(myItem.key);
   const myItemRequestsItemRef = myItemRef.collection('requests').doc(itemToTrade.key);
+  const myItemRequestsStatsRef = myItemRef.collection('requests').doc('--stats--');
 
   // Item to trade Refs
   const itemToTradeRef = tradeRequestsCollection.doc(itemToTrade.key);
   const itemToTradeRequestsItemRef = itemToTradeRef.collection('requests').doc(myItem.key);
+  const itemToTradeRequestsStatsRef = itemToTradeRef.collection('requests').doc('--stats--');
 
-  // Update 'My Item' tradeRequests count
+  // My item
   batch.update(itemsCollection.doc(myItem.key), {
     tradeRequests: firebaseApp.firestore.FieldValue.increment(1),
   });
 
-  // Update 'Item to Trade' tradeRequests count
-  batch.update(itemsCollection.doc(itemToTrade.key), {
-    tradeRequests: firebaseApp.firestore.FieldValue.increment(1),
-  });
-
-  // Update 'My Item' tradeRequests
   batch.set(myItemRef, {
     ...myItem,
     tradeRequests: myItem.tradeRequests + 1,
     isAccepted: false,
   });
+
+  batch.set(myItemRequestsStatsRef, {
+    totalRequests: firebaseApp.firestore.FieldValue.increment(1),
+  }, { merge: true });
   batch.set(myItemRequestsItemRef, itemToTrade);
 
-  // Update 'Item to Trade' tradeRequests
+  // Item to Trade
+  batch.update(itemsCollection.doc(itemToTrade.key), {
+    tradeRequests: firebaseApp.firestore.FieldValue.increment(1),
+  });
+
   batch.set(itemToTradeRef, {
     ...itemToTrade,
     tradeRequests: itemToTrade.tradeRequests + 1,
     isAccepted: false,
   });
+
+  batch.set(itemToTradeRequestsStatsRef, {
+    totalRequests: firebaseApp.firestore.FieldValue.increment(1),
+  }, { merge: true });
   batch.set(itemToTradeRequestsItemRef, {
     ...myItem,
 
@@ -111,9 +130,9 @@ const remove = (myItemID, itemToTradeID) => {
  *
  * @type {string} itemID
  */
-const getOne = async (itemID) => {
+const getOne = async (itemID, limit = 10) => {
   const tradeRequestItemRef = tradeRequestsCollection.doc(itemID);
-  const requests = await tradeRequestItemRef.collection('requests').get();
+  const requests = await tradeRequestItemRef.collection('requests').limit(limit || 10).get();
 
   return db.runTransaction(async (transaction) => {
     const rawTradeRequestItem = await transaction.get(tradeRequestItemRef);
@@ -124,8 +143,10 @@ const getOne = async (itemID) => {
     const requestsInTransaction = [];
 
     for (const doc of requests.docs) { // eslint-disable-line
-      const requestInTransaction = await transaction.get(doc.ref); // eslint-disable-line
-      requestsInTransaction.push(normalizeData(requestInTransaction));
+      if (doc.id !== '--stats--') {
+        const requestInTransaction = await transaction.get(doc.ref); // eslint-disable-line
+        requestsInTransaction.push(normalizeData(requestInTransaction));
+      }
     }
     // https://stackoverflow.com/questions/63995150/how-to-query-subcollection-inside-transaction-in-firebase/63995746#63995746
 
@@ -148,8 +169,8 @@ const acceptRequest = async (myItem, itemToAccept) => {
   const myItemRef = tradeRequestsCollection.doc(myItem.key);
   const itemToAcceptRef = tradeRequestsCollection.doc(itemToAccept.key);
 
-  const myItemRequests = await requestsCollection.where('key', '==', myItem.key).get();
-  const itemToAcceptRequests = await requestsCollection.where('key', '==', itemToAccept.key).get();
+  const myItemRequests = await requestsCollectionGroup.where('key', '==', myItem.key).get();
+  const itemToAcceptRequests = await requestsCollectionGroup.where('key', '==', itemToAccept.key).get();
   const allRequests = [].concat(myItemRequests.docs, itemToAcceptRequests.docs);
 
   batch.update(myItemRef, {
@@ -178,6 +199,7 @@ const acceptRequest = async (myItem, itemToAccept) => {
 };
 
 export default {
+  getRequestsStats,
   add,
   remove,
   getOne,
