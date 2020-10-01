@@ -31,7 +31,7 @@ const HeaderDropdown = ({ isOpen, onLogout }) => (
     <li className="header-dropdown__item">
       <Link href="/profile">
         <a className="header-dropdown__link">
-          View Profile
+          Profile
         </a>
       </Link>
     </li>
