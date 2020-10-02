@@ -1,6 +1,7 @@
 import { useState, useEffect, useContext } from 'react';
 import { useRouter } from 'next/router';
 import LayoutContext from 'js/contexts/layout';
+import UserContext from 'js/contexts/user';
 import useError from 'js/hooks/useError';
 import ITEM from 'js/models/item';
 import { normalizeData } from 'js/utils';
@@ -9,11 +10,17 @@ import Layout from 'components/layout/layout';
 import ItemForm from 'components/itemForm/itemForm';
 
 const ItemEdit = () => {
+  // contexts
+  const user = useContext(UserContext);
   const { handlers } = useContext(LayoutContext);
-  const [displayError] = useError();
-  const router = useRouter();
+
+  // states
   const [item, setItem] = useState({});
   const [isLoading, setIsLoading] = useState(false);
+
+  // custom hooks
+  const [displayError] = useError();
+  const router = useRouter();
 
   /**
    * @param {string} itemID
@@ -38,7 +45,8 @@ const ItemEdit = () => {
       let cover = form.image;
 
       if (imageFile) {
-        cover = await storage.saveImage(imageFile);
+        const fileName = `${user.key}-${imageFile.name}`;
+        cover = await storage.saveImage(imageFile, fileName);
       }
 
       await ITEM.update(item.key, {

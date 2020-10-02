@@ -26,13 +26,13 @@ const Add = () => {
     setIsLoading(true);
 
     // Problem: Firebase overrides the previous image if the filename already exists
-    // TODO: Image name must be unique or find a way to prevent firebase from overriding files
     try {
       let cover = form.image;
 
       // fetch the public file URL then store it in the database
       if (imageFile) {
-        cover = await storage.saveImage(imageFile);
+        const fileName = `${user.key}-${imageFile.name}`;
+        cover = await storage.saveImage(imageFile, fileName);
       }
 
       // add new data in the database

@@ -22,7 +22,8 @@ const Profile = () => {
 
     try {
       if (avatarFile) {
-        avatar = await storage.saveImage(avatarFile);
+        const fileName = `${userID}-${avatarFile.name}`;
+        avatar = await storage.saveImage(avatarFile, fileName);
       }
 
       await USER.update(userID, {
