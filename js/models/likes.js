@@ -1,9 +1,10 @@
-import firebaseApp from 'firebase/app';
 import firebase from 'palit-firebase';
+import firebaseApp from 'firebase/app';
 
 const db = firebase.firestore();
-const likesRef = db.collection('likes');
-const itemsRef = db.collection('items');
+const likesCollection = db.collection('likes');
+const itemsCollection = db.collection('items');
+const requestsCollectionGroup = db.collectionGroup('requests');
 
 /**
  * add.
@@ -13,17 +14,17 @@ const itemsRef = db.collection('items');
  * @param {string} userID
  * @param {string} itemID
  */
-const add = (userID, itemID) => {
+const add = async (userID, itemID) => {
   const batch = db.batch();
+  const likeRef = likesCollection.doc(itemID);
+  const itemRef = itemsCollection.doc(itemID);
+  const requests = await requestsCollectionGroup.where('id', '==', itemID).get();
 
-  const likeRef = likesRef.doc(itemID);
-  const itemRef = itemsRef.doc(itemID);
+  requests.forEach((request) => {
+    batch.update(request.ref, { likes: firebaseApp.firestore.FieldValue.increment(1) });
+  });
 
-  // TODO: Update all 'requests' subcollection documents
-
-  batch.set(likeRef, { [userID]: true });
-
-  // TODO: One like per user
+  batch.set(likeRef, { [userID]: true }, { merge: true });
   batch.update(itemRef, { likes: firebaseApp.firestore.FieldValue.increment(1) });
 
   batch.commit();
@@ -35,11 +36,15 @@ const add = (userID, itemID) => {
  * @param {string} userID
  * @param {string} itemID
  */
-const remove = (userID, itemID) => {
+const remove = async (userID, itemID) => {
   const batch = db.batch();
+  const likeRef = likesCollection.doc(itemID);
+  const itemRef = itemsCollection.doc(itemID);
+  const requests = await requestsCollectionGroup.where('id', '==', itemID).get();
 
-  const likeRef = likesRef.doc(itemID);
-  const itemRef = itemsRef.doc(itemID);
+  requests.forEach((request) => {
+    batch.update(request.ref, { likes: firebaseApp.firestore.FieldValue.increment(-1) });
+  });
 
   batch.update(likeRef, { [userID]: firebaseApp.firestore.FieldValue.delete() });
   batch.update(itemRef, { likes: firebaseApp.firestore.FieldValue.increment(-1) });
@@ -52,7 +57,7 @@ const remove = (userID, itemID) => {
  *
  * @type {string} itemID
  */
-const getOne = (itemID) => likesRef.doc(itemID).get();
+const getOne = (itemID) => likesCollection.doc(itemID).get();
 
 export default {
   add,
