@@ -13,7 +13,10 @@ import useInfiniteScroll from 'js/hooks/useInfiniteScroll';
 import { normalizeData } from 'js/utils';
 
 import Layout from 'components/layout/layout';
-import ItemCard, { ItemCardSkeleton } from 'components/itemCard/itemCard';
+import {
+  InventoryItems,
+  InventoryEmpty,
+} from 'components/inventory/inventory';
 
 const Inventory = () => {
   // contexts
@@ -82,46 +85,14 @@ const Inventory = () => {
     }
   }, []);
 
-  /**
-   * renderItems.
-   */
-  const renderItems = () => {
-    const isItemsExists = !!items;
-
-    if (isFetching || !isItemsExists) {
-      return Array.from({ length: 6 }).map((_, index) => <ItemCardSkeleton key={index} />);
-    }
-
-    return items.map((item) => (
-      <ItemCard
-        key={item.key}
-        item={item}
-        linkOptions={{
-          href: '/trades/[itemID]',
-          as: `/trades/${item.key}`,
-        }}
-      />
-    ));
-  };
-
-  /**
-   * renderEmptyState
-   */
-  const renderEmptyState = () => isItemsEmpty() && (
-    <div className="tip">
-      <h2 className="tip-heading">Tip:</h2>
-      <p className="tip-text">Add more item</p>
-    </div>
-  );
-
   return (
     <Layout title="Inventory">
       <div className="inventory">
         <div className="grid">
           <h1 className="inventory__title">Inventory</h1>
           <div className="inventory__list">
-            {renderItems()}
-            {renderEmptyState()}
+            <InventoryItems items={items} isFetching={isFetching} />
+            <InventoryEmpty isEmpty={isItemsEmpty()} />
           </div>
           <Link href="/items/add">
             <a className="button --default inventory__add">
