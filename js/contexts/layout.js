@@ -3,7 +3,7 @@ import { useState, createContext } from 'react';
 export const defaultValue = {
   banner: {
     isOpen: false,
-    text: 'Kamusta? 👋',
+    text: 'Hello? 👋',
   },
   handlers: {
     showBanner: null,

@@ -9,9 +9,9 @@ const Auth = () => {
   const [displayError] = useError();
 
   /**
-   * login.
+   * loginWithGoogle.
    */
-  const login = async () => {
+  const loginWithGoogle = async () => {
     try {
       await auth.signInWithGoogle();
 
@@ -41,7 +41,7 @@ const Auth = () => {
           <button
             className="button --primary-dark --with-icon auth__login-with-google"
             type="button"
-            onClick={login}
+            onClick={loginWithGoogle}
           >
             <ReactSVG
               className="button-icon"

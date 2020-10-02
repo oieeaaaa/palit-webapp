@@ -24,7 +24,7 @@ export const objectToArray = (data) => Object.keys(data).map((key) => ({
 /**
  * normalizeData.
  *
- * NOTE: rawData is a firestore query result
+ * NOTE: rawData should be a firestore query result
  * @param {object} rawData
  */
 export const normalizeData = (rawData) => {

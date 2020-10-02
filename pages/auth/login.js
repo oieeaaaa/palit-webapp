@@ -11,7 +11,10 @@ import AuthForm from 'components/authForm/authForm';
  * Login.
  */
 const Login = () => {
+  // contexts
   const user = useContext(UserContext);
+
+  // custom hooks
   const auth = useAuth();
   const [displayError] = useError();
 

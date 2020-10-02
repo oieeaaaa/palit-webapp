@@ -8,13 +8,14 @@ import Header from 'components/header/header';
 import Banner from 'components/banner/banner';
 import AuthForm from 'components/authForm/authForm';
 
-// TODO: This and auth/login can be merged into a single page using query or pathnames
-
 /**
  * Signup.
  */
 const Signup = () => {
+  // contexts
   const user = useContext(UserContext);
+
+  // custom hooks
   const auth = useAuth();
   const [displayError] = useError();
 
