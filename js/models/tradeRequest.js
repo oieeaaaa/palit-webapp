@@ -91,7 +91,7 @@ const add = (myItem, itemToTrade) => {
  * remove.
  *
  * Remove the myItemID from itemToTradeID requests collection 🔥
- * Reduced the count of tradeRequests in every documents affected
+ * Reduce the count of tradeRequests in every documents affected
  *
  * @param {string} myItemID
  * @param {string} itemToTradeID

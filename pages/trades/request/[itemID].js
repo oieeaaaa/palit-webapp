@@ -5,7 +5,6 @@ import {
   useCallback,
 } from 'react';
 import { useRouter } from 'next/router';
-import Link from 'next/link';
 import useError from 'js/hooks/useError';
 import UserContext from 'js/contexts/user';
 import LayoutContext from 'js/contexts/layout';
@@ -15,7 +14,12 @@ import useProtection from 'js/hooks/useProtection';
 import { normalizeData } from 'js/utils';
 
 import Layout from 'components/layout/layout';
-import MiniCard, { MiniCardSkeleton } from 'components/miniCard/miniCard';
+import {
+  TradeRequestSelectHeading,
+  TradeRequestSelectItems,
+  TradeRequestSelectEmpty,
+  TradeRequestSelectFooter,
+} from 'components/tradeRequestSelect/tradeRequestSelect';
 
 const TradeRequestSelect = () => {
   // customHooks
@@ -128,57 +132,22 @@ const TradeRequestSelect = () => {
     <Layout title="Trade Request Form">
       <div className="trade-request-select">
         <div className="grid">
-          <h2 className="trade-request-select__heading">
-            {checkItemsEmpty() ? 'No available items to trade' : 'Select an item to trade'}
-          </h2>
+          <TradeRequestSelectHeading
+            text={checkItemsEmpty() ? 'No available items to trade' : 'Select an item to trade'}
+          />
           <div className="trade-request-select__list">
-            {items ? items.map((item) => (
-              <button
-                key={item.key}
-                className={`trade-request-select__option ${item.key === selectedItemID ? ' --selected' : ''}`}
-                type="button"
-                onClick={() => onSelect(item.key)}
-              >
-                <MiniCard
-                  data={item}
-                />
-              </button>
-            )) : (
-              Array.from({ length: 5 }).map((_, index) => <MiniCardSkeleton key={index} />)
-            )}
-
-            {checkItemsEmpty() && (
-              <div className="tip">
-                <strong className="tip-heading">Tip:</strong>
-                <p className="tip-text">
-                  Add more items in your
-                  {' '}
-                  <Link href="/inventory">
-                    <a className="tip-link">
-                      inventory
-                    </a>
-                  </Link>
-                  {' '}
-                  to keep trading
-                </p>
-              </div>
-            )}
+            <TradeRequestSelectItems
+              items={items}
+              selectedItemID={selectedItemID}
+              onSelect={onSelect}
+            />
+            <TradeRequestSelectEmpty isEmpty={checkItemsEmpty()} />
           </div>
-          <div className="trade-request-select__footer">
-            <Link href="/items/[itemID]" as={`/items/${router.query.itemID}`}>
-              <a className="button --default trade-request-select__cancel">
-                Cancel
-              </a>
-            </Link>
-            <button
-              className={`button --primary trade-request-select__submit ${!selectedItemID ? '--disabled' : ''}`}
-              type="button"
-              onClick={submitRequest}
-              disabled={!selectedItemID}
-            >
-              Submit Request
-            </button>
-          </div>
+          <TradeRequestSelectFooter
+            itemID={router.query.itemID}
+            selectedItemID={selectedItemID}
+            submitRequest={submitRequest}
+          />
         </div>
       </div>
     </Layout>

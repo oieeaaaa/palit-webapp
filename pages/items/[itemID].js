@@ -94,6 +94,8 @@ const ItemDetails = () => {
     getItem(itemID);
   }, [router]);
 
+  console.log(item);
+
   return (
     <Layout title={item.name}>
       <div className="item">

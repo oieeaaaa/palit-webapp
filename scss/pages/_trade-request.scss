@@ -2,7 +2,7 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  min-height: 69.82758620689656vh;
+  min-height: 69.82758620689656vh; // nerd
 
   &__heading {
     @include Montserrat(700);
