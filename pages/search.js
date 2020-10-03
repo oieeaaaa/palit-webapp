@@ -83,7 +83,7 @@ const Search = () => {
     return (
       <div className="tip">
         <h2 className="tip-heading">Tip:</h2>
-        <p className="tip-text">Press enter after typing</p>
+        <p className="tip-text">Press enter to search</p>
       </div>
     );
   };

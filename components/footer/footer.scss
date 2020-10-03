@@ -32,7 +32,7 @@ Description:
       justify-self: center;
     }
 
-    &.--trades {
+    &.--inventory {
       grid-column: 4 / 6;
       justify-self: center;
     }
@@ -40,6 +40,12 @@ Description:
     &.--search {
       grid-column: 8 / 10;
       justify-self: center;
+    }
+
+    &.--active {
+      path {
+        fill: var(--mine-shaft) !important;
+      }
     }
   }
 }
