@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import throttle from 'lodash.throttle';
 
+const maxWidth = 768;
 const gridList = [
   {
     name: 'mobile',
@@ -12,29 +13,15 @@ const gridList = [
   {
     name: 'tablet-p',
     cols: 12,
-    gutter: 10,
-    margin: 0,
+    gutter: 15,
+    margin: 30,
     size: 768,
-  },
-  {
-    name: 'tablet-l',
-    cols: 18,
-    gutter: 10,
-    margin: 0,
-    size: 1024,
-  },
-  {
-    name: 'desktop',
-    cols: 20,
-    gutter: 10,
-    margin: 0,
-    size: 1280,
   },
 ];
 
 function getCurrentGrid(list) {
   let currentGrid = {};
-  if (window.innerWidth > 1280) {
+  if (window.innerWidth > maxWidth) {
     return list[list.length - 1];
   }
 
@@ -64,7 +51,7 @@ export default () => {
 
   useEffect(() => {
     const toggleGrid = throttle((e) => {
-      if (!(e.ctrlKey && e.key === 'g')) return;
+      if (!(e.altKey && e.shiftKey && e.keyCode === 197)) return;
 
       setIsGridOpen(!isGridOpen);
     }, 200);

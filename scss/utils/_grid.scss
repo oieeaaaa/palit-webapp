@@ -1,4 +1,5 @@
 /* stylelint-disable */
+$max-width: 768px;
 
 // GUIDES
 $grid-guides: (
@@ -11,20 +12,8 @@ $grid-guides: (
 	tablet-p: (
 		size: 768px,
 		cols: 12,
-		margin: 0,
-		gutter: 0,
-	),
-	tablet-l: (
-		size: 1024px,
-		cols: 12,
-		margin: 0,
-		gutter: 0,
-	),
-	desktop: (
-		size: 1280px,
-		cols: 20,
-		margin: 0,
-		gutter: 0,
+		margin: 30px,
+		gutter: 15px,
 	),
 );
 
@@ -50,20 +39,6 @@ $default-guide: map-get($grid-guides, "mobile");
 	}
 }
 
-// on tablet landscape screens
-@mixin tablet-l {
-	@include at-screen("tablet-l") {
-		@content;
-	}
-}
-
-// on desktop screens
-@mixin desktop {
-	@include at-screen("desktop") {
-		@content;
-	}
-}
-
 @mixin gen-cols($screen) {
 	grid-template-columns: repeat(map-get(get-guide($screen), "cols"), 1fr);
   grid-column-gap: map-get(get-guide($screen), "gutter");
@@ -78,7 +53,7 @@ $default-guide: map-get($grid-guides, "mobile");
 	grid-template-columns: repeat(map-get($default-guide, "cols"), 1fr);
 	grid-column-gap: map-get($default-guide, "gutter");
   width: 100%;
-	max-width: map-get(get-guide("desktop"), "size");
+	max-width: $max-width;
 	margin: 0 auto;
 
 	@if (map-get($default-guide, "margin") > 0px) {
@@ -87,14 +62,5 @@ $default-guide: map-get($grid-guides, "mobile");
 
 	@include tablet-p {
 		@include gen-cols("tablet-p");
-	}
-
-	@include tablet-l {
-		@include gen-cols("tablet-l");
-	}
-
-	@include desktop {
-		@include gen-cols("desktop");
-		padding: 0;
 	}
 }

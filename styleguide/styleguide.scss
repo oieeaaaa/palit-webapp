@@ -27,12 +27,4 @@ body.active-grid::before {
   @include tablet-p {
     background-size: rem(64);
   }
-
-  @include tablet-l {
-    background-size: rem(85.3333333333);
-  }
-
-  @include desktop {
-    background-size: rem(64);
-  }
 }
