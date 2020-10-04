@@ -201,17 +201,15 @@ export const TradeRequestEmpty = ({ isEmpty }) => isEmpty && (
  * @param {function} onRemoveItem
  */
 export const TradeRequestFooter = ({ editKey, onRemoveItem }) => (
-  <div className="grid">
-    <div className="trade-request__footer">
-      <button type="button" className="button --dark --red-outline" onClick={onRemoveItem}>
-        Delete
-      </button>
-      <Link href="/items/edit/[editItemID]" as={`/items/edit/${editKey}`}>
-        <a className="button --primary">
-          Edit
-        </a>
-      </Link>
-    </div>
+  <div className="trade-request__footer">
+    <button type="button" className="button --dark --red-outline" onClick={onRemoveItem}>
+      Delete
+    </button>
+    <Link href="/items/edit/[editItemID]" as={`/items/edit/${editKey}`}>
+      <a className="button --primary">
+        Edit
+      </a>
+    </Link>
   </div>
 );
 
