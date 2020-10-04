@@ -12,6 +12,7 @@
   transform: translateX(-50%);
 
   & > span {
-    background-color: rgba(yellow, .1);
+    background-color: var(--tree-poppy);
+    opacity: 0.3;
   }
 }

@@ -35,7 +35,7 @@ function getCurrentGrid(list) {
   return currentGrid;
 }
 
-export default () => {
+const GridGuide = () => {
   const [isGridOpen, setIsGridOpen] = useState(false);
   const [gridItem, setGridItem] = useState({});
 
@@ -80,3 +80,5 @@ export default () => {
     </div>
   );
 };
+
+export default GridGuide;
