@@ -56,7 +56,7 @@ const Signup = () => {
       <AuthForm
         fieldKeys={fieldKeys}
         onSubmit={handleSubmit}
-        onSubmitText="Create account"
+        onSubmitText="Signup"
       />
     </div>
   );
