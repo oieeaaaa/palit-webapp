@@ -8,6 +8,11 @@
     font-size: rem(16);
     line-height: rem(20);
     color: var(--gray);
+
+    @include tablet-p {
+      font-size: rem(18);
+      line-height: rem(22);
+    }
   }
 
   &__list {
@@ -17,6 +22,11 @@
     grid-template-columns: repeat(2, 1fr);
     grid-column-gap: (9 / 375) * 100%;
     grid-row-gap: rem(30);
+
+    @include tablet-p {
+      grid-template-columns: repeat(4, 1fr);
+      grid-column-gap: rem(15);
+    }
 
     .tip {
       grid-column: 1 / -1;
@@ -28,5 +38,10 @@
 
     grid-column: 3 / -3;
     margin-top: rem(30);
+
+    @include tablet-p {
+      grid-column: 5 / -5;
+      margin-top: rem(60);
+    }
   }
 }
