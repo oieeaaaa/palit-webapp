@@ -10,6 +10,12 @@ Description:
   display: grid;
   grid-template-columns: (76 / 335 * 100%) 1fr;
   grid-column-gap: rem(10);
+  cursor: pointer;
+
+  @include tablet-p {
+    grid-template-columns: minmax(rem(100), (100 / 708 * 100%)) 1fr;
+    grid-column-gap: rem(15);
+  }
 
   &-image {
     @include aspect-ratio(1, 1);
@@ -27,6 +33,10 @@ Description:
     border: $thin-gray-border;
     border-radius: rem(3);
     background-color: var(--light);
+
+    @include tablet-p {
+      padding: rem(20);
+    }
   }
 
   &-name {
@@ -34,10 +44,20 @@ Description:
 
     font-size: rem(16);
     line-height: rem(20);
+
+    @include tablet-p {
+      font-size: rem(18);
+      line-height: rem(22);
+    }
   }
 
   &-likes {
     font-size: rem(16);
+
+    @include tablet-p {
+      font-size: rem(18);
+      line-height: rem(22);
+    }
 
     b {
       @include Montserrat(700);
