@@ -18,6 +18,13 @@ Description:
     font-size: rem(18);
     line-height: rem(22);
     color: var(--mine-shaft);
+    text-overflow: ellipsis;
+    overflow: hidden;
+    max-width: rem(163);
+
+    @include tablet-p {
+      max-width: rem(166);
+    }
   }
 
   &__body {
@@ -61,6 +68,11 @@ Description:
     @include Montserrat(700);
 
     margin-top: rem(5);
+
+    @include tablet-p {
+      font-size: rem(18);
+      line-height: rem(22);
+    }
   }
 
   // SKELETON

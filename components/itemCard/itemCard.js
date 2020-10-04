@@ -41,7 +41,7 @@ const ItemCard = (
 
           {/* IMAGE */}
           <figure className="itemCard__image">
-            <img src={item.cover} alt="Union Patente" />
+            <img src={item.cover} alt={item.name} />
           </figure>
         </a>
       </Link>
