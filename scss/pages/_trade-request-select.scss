@@ -3,6 +3,11 @@
     display: flex;
     flex-direction: column;
     min-height: (582 / 812) * 100vh;
+
+    @include tablet-p {
+      display: grid;
+      min-height: unset;
+    }
   }
 
   &__heading {
@@ -13,13 +18,30 @@
     font-size: rem(16);
     line-height: rem(20);
     color: var(--gray);
+
+    @include tablet-p {
+      grid-column: 3 / -3;
+      margin-bottom: rem(30);
+
+      font-size: rem(18);
+      line-height: rem(22);
+    }
   }
 
   &__list {
     margin-bottom: rem(40);
 
+    @include tablet-p {
+      margin-bottom: rem(60);
+      grid-column: 3 / -3;
+    }
+
     & > *:not(:last-child) {
       margin-bottom: rem(10);
+
+      @include tablet-p {
+        margin-bottom: rem(15);
+      }
     }
   }
 
@@ -45,6 +67,10 @@
 
     display: flex;
     justify-content: space-between;
+
+    @include tablet-p {
+      grid-column: 3 / -3;
+    }
   }
 
   &__cancel {
