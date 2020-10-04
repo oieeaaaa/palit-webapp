@@ -8,6 +8,8 @@ Description:
 
 .footer {
   $height: rem(85);
+  $height--tablet: rem(30);
+  $spacer: rem(30);
 
   position: fixed;
   display: flex;
@@ -20,32 +22,81 @@ Description:
   background-color: var(--light);
   z-index: var(--z-footer);
 
+  @include tablet-p {
+    margin-top: 0;
+
+    position: static;
+    height: $height--tablet;
+    background-color: var(--dark);
+  }
+
+  &-spacer {
+    display: none;
+
+    @include tablet-p {
+      margin-top: auto;
+      display: block;
+      height: $spacer;
+      width: 100%;
+    }
+  }
+
   &-dock {
     margin-top: rem(30);
 
     height: $height;
+
+    @include tablet-p {
+      display: none;
+    }
   }
 
-  &__link {
-    &.--home {
-      grid-column: 1 / 3;
-      justify-self: center;
+  &-nav {
+    @include tablet-p {
+      display: none;
     }
 
-    &.--inventory {
-      grid-column: 4 / 6;
-      justify-self: center;
-    }
-
-    &.--search {
-      grid-column: 8 / 10;
-      justify-self: center;
-    }
-
-    &.--active {
-      path {
-        fill: var(--mine-shaft) !important;
+    &__link {
+      &.--home {
+        grid-column: 1 / 3;
+        justify-self: center;
       }
+
+      &.--inventory {
+        grid-column: 4 / 6;
+        justify-self: center;
+      }
+
+      &.--search {
+        grid-column: 8 / 10;
+        justify-self: center;
+      }
+
+      &.--active {
+        path {
+          fill: var(--mine-shaft) !important;
+        }
+      }
+    }
+  }
+
+  &-info {
+    display: none;
+
+    @include tablet-p {
+      display: flex;
+    }
+
+    &__link {
+      color: var(--light);
+    }
+
+    & > &__link:first-child {
+      margin-right: rem(20);
+    }
+
+    & > &__link:last-of-type {
+      margin-left: auto;
     }
   }
 }

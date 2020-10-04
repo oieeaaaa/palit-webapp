@@ -8,45 +8,40 @@ Description:
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { ReactSVG } from 'react-svg';
+import routes, { footerInfo } from 'js/routes';
 
 export const FooterDock = () => <div className="footer-dock" />;
-
-export const footerNav = [
-  {
-    name: 'home',
-    href: '/',
-    icon: 'home-outline',
-  },
-  {
-    name: 'inventory',
-    href: '/inventory',
-    icon: 'clipboard-outline',
-  },
-  {
-    name: 'search',
-    href: '/search',
-    icon: 'search-outline',
-  },
-];
 
 const Footer = () => {
   const router = useRouter();
 
   return (
-    <div className="footer">
-      <div className="grid">
-        {footerNav.map((footerNavItem) => (
-          <Link href={footerNavItem.href} key={footerNavItem.name}>
-            <a className={
-              `footer__link --${footerNavItem.name} ${footerNavItem.href === router.pathname ? '--active' : ''}`
-            }
-            >
-              <ReactSVG className="footer__link-icon" src={`/icons/${footerNavItem.icon}.svg`} />
-            </a>
-          </Link>
-        ))}
+    <>
+      <div className="footer-spacer" />
+      <div className="footer">
+        <div className="grid footer-nav">
+          {routes.map((route) => (
+            <Link href={route.href} key={route.name}>
+              <a className={
+                `footer-nav__link --${route.name} ${route.href === router.pathname ? '--active' : ''}`
+              }
+              >
+                <ReactSVG className="footer-nav__link-icon" src={`/icons/${route.icon}.svg`} />
+              </a>
+            </Link>
+          ))}
+        </div>
+        <div className="grid footer-info">
+          {footerInfo.map((footerInfoItem) => (
+            <Link href={footerInfoItem.href} key={footerInfoItem.name}>
+              <a className="footer-info__link">
+                {footerInfoItem.name}
+              </a>
+            </Link>
+          ))}
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 
