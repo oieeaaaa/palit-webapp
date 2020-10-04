@@ -13,6 +13,10 @@ Description:
   border-radius: rem(10);
   background-color: var(--light);
 
+  @include tablet-p {
+    padding: rem(20);
+  }
+
   &__title {
     @include Montserrat(700);
 
@@ -21,6 +25,13 @@ Description:
     font-size: rem(16);
     line-height: rem(20);
     color: var(--gray);
+
+    @include tablet-p {
+      margin-bottom: rem(20);
+
+      font-size: rem(18);
+      line-height: rem(22);
+    }
   }
 
   &__text {
@@ -29,6 +40,11 @@ Description:
     font-size: rem(16);
     line-height: rem(20);
     color: var(--gray);
+
+    @include tablet-p {
+      font-size: rem(18);
+      line-height: rem(22);
+    }
   }
 
   & > &__text:not(:last-of-type) {
