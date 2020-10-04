@@ -1,5 +1,5 @@
 .button {
-  @include Montserrat(700);
+  @include Montserrat(600);
 
   display: flex;
   justify-content: center;
@@ -12,6 +12,15 @@
   text-decoration: none;
   padding-left: rem(10);
   padding-right: rem(10);
+  cursor: pointer;
+
+  @include tablet-p {
+    height: rem(50);
+    font-size: rem(18);
+    line-height: rem(22);
+    padding-left: rem(20);
+    padding-right: rem(20);
+  }
 
   // variants
   &.--default {

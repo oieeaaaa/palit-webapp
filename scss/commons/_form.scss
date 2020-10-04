@@ -5,6 +5,10 @@
     display: block;
     width: 100%;
 
+    @include tablet-p {
+      margin-bottom: rem(30);
+    }
+
     &__label {
       @include Montserrat(600);
 
@@ -14,6 +18,11 @@
       font-size: rem(14);
       line-height: rem(17);
       color: var(--gray);
+
+      @include tablet-p {
+        font-size: rem(16);
+        line-height: rem(20);
+      }
     }
   }
 
@@ -29,6 +38,14 @@
     border: $thin-gray-border;
     border-radius: rem(10);
     background-color: var(--silver);
+
+    @include tablet-p {
+      padding-left: rem(15);
+      padding-right: rem(15);
+      height: rem(50);
+      font-size: rem(18);
+      line-height: rem(20);
+    }
 
     &:focus {
       outline: none;
