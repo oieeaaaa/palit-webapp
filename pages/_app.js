@@ -19,7 +19,7 @@ const App = ({ Component, pageProps }) => {
   return (
     <UserProvider>
       <LayoutProvider>
-        <div>
+        <div className="app">
           <Component {...pageProps} />
           <GridGuides />
         </div>
