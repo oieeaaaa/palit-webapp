@@ -213,8 +213,8 @@ const TradeItem = () => {
             />
             <TradeRequestEmpty isEmpty={checkIfRequestsIsEmpty()} />
           </div>
+          <TradeRequestFooter editKey={myItem.key} onRemoveItem={removeItem} />
         </div>
-        <TradeRequestFooter editKey={myItem.key} onRemoveItem={removeItem} />
       </div>
     </Layout>
   );

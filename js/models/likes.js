@@ -21,11 +21,19 @@ const add = async (userID, itemID) => {
   const requests = await requestsCollectionGroup.where('id', '==', itemID).get();
 
   requests.forEach((request) => {
-    batch.update(request.ref, { likes: firebaseApp.firestore.FieldValue.increment(1) });
+    batch.set(
+      request.ref,
+      { likes: firebaseApp.firestore.FieldValue.increment(1) },
+      { merge: true },
+    );
   });
 
   batch.set(likeRef, { [userID]: true }, { merge: true });
-  batch.update(itemRef, { likes: firebaseApp.firestore.FieldValue.increment(1) });
+  batch.set(
+    itemRef,
+    { likes: firebaseApp.firestore.FieldValue.increment(1) },
+    { merge: true },
+  );
 
   batch.commit();
 };
