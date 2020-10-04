@@ -8,6 +8,7 @@ Description:
 
 .header {
   $profile-height: 30;
+  $profile-height--tablet: 50;
   $bottom-padding: 10;
 
   margin-bottom: rem(30);
@@ -16,8 +17,18 @@ Description:
   height: rem(80);
   background-color: var(--dark);
 
+  @include tablet-p {
+    margin-bottom: rem(60);
+
+    height: auto;
+  }
+
   .grid {
     padding-bottom: rem($bottom-padding);
+
+    @include tablet-p {
+      padding-bottom: 0;
+    }
   }
 
   &.--no-space {
@@ -36,13 +47,56 @@ Description:
     text-decoration: none;
     text-transform: uppercase;
     color: var(--light);
+
+    @include tablet-p {
+      margin-top: rem(30);
+
+      font-size: rem(28);
+      line-height: rem(38);
+    }
   }
 
-  &-nav {
+  &-avatar {
     grid-column: 8 / 9;
     align-self: end;
 
     position: relative;
+
+    @include tablet-p {
+      grid-column: -2 / -1;
+    }
+  }
+
+  &-nav {
+    display: none;
+
+    @include tablet-p {
+      grid-column: 1 / -1;
+      margin-top: rem(30);
+      margin-bottom: rem(30);
+
+      display: flex;
+      justify-content: center;
+    }
+
+    &__item {
+      @include Montserrat(600);
+
+      display: inline-block;
+      font-size: rem(18);
+      line-height: rem(22);
+      color: var(--gray);
+      text-decoration: none;
+      text-transform: capitalize;
+
+      &.--active {
+        color: var(--light);
+      }
+    }
+
+    & > &__item:not(:last-child) {
+      margin-right: rem(40);
+    }
   }
 
   &-dropdown {
@@ -57,6 +111,10 @@ Description:
     border-bottom-right-radius: rem(5);
     z-index: var(--z-header-dropdown);
     box-shadow: $header-dropdown-box-shadow;
+
+    @include tablet-p {
+      top: rem($profile-height--tablet);
+    }
 
     &.--open {
       display: block;
@@ -76,6 +134,7 @@ Description:
       line-height: rem(20);
       color: var(--light);
       text-decoration: none;
+      cursor: pointer;
     }
 
     &__button {
@@ -86,6 +145,7 @@ Description:
       color: var(--light);
       border: none;
       background: none;
+      cursor: pointer;
     }
 
     &__button.--logout {
@@ -102,6 +162,11 @@ Description:
     border-radius: 50%;
     overflow: hidden;
     text-decoration: none;
+
+    @include tablet-p {
+      width: rem(50);
+      height: rem($profile-height--tablet);
+    }
   }
 
   &__placeholder {

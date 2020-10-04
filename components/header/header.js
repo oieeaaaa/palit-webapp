@@ -13,8 +13,10 @@ Description:
 *
 */
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/router';
 import Link from 'next/link';
 import useAuth from 'js/hooks/useAuth';
+import routes from 'js/routes';
 
 /**
  * HeaderDropdown.
@@ -48,14 +50,87 @@ const HeaderDropdown = ({ isOpen, onLogout }) => (
 );
 
 /**
+ * HeaderNav.
+ *
+ * @param {object}
+   * @param {string} currentPath
+ */
+const HeaderNav = ({ currentPath }) => (
+  <div className="header-nav">
+    {routes.map((route) => (
+      <Link href={route.href} key={route.name}>
+        <a className={
+          `header-nav__item ${currentPath === route.href ? '--active' : ''}`
+        }
+        >
+          {route.name}
+        </a>
+      </Link>
+    ))}
+  </div>
+);
+
+/**
+ * HeaderWithAvatar.
+ *
+ * @param {object}
+   * @param {string} avatar
+   * @param {boolean} isDropdownOpen
+   * @param {function} openDropdown
+   * @param {function} signout
+ */
+const HeaderWithAvatar = ({
+  avatar,
+  isDropdownOpen,
+  openDropdown,
+  signout,
+}) => (
+  avatar && (
+  <div className="header-avatar">
+    <button className="header__profile" type="button" onClick={openDropdown}>
+      <img src={avatar} alt="Joimee Tan Cajandab" />
+    </button>
+    <HeaderDropdown isOpen={isDropdownOpen} onLogout={signout} />
+  </div>
+  )
+);
+
+/**
+ * HeaderWithAvatar.
+ *
+ * @param {object}
+   * @param {object} user
+   * @param {function} openDropdown
+   * @param {boolean} isDropdownOpen
+   * @param {function} signout
+ */
+const HeaderWithoutAvatar = () => ({
+  user,
+  openDropdown,
+  isDropdownOpen,
+  signout,
+}) => (!user.avatar && user.email) && (
+  <div className="header-avatar">
+    <button className="header__profile" type="button" onClick={openDropdown}>
+      <span className="header__placeholder">{user.email[0]}</span>
+    </button>
+    <HeaderDropdown isOpen={isDropdownOpen} onLogout={signout} />
+  </div>
+);
+
+/**
  * Header.
  *
  * @param {object} props
    * @param {object} user
  */
 const Header = ({ user }) => {
+  // states
   const [isDropdownOpen, setIsDropdownOpen] = useState();
+
+  // custom hooks
   const auth = useAuth();
+  const router = useRouter();
 
   /**
    * openDropdown.
@@ -87,24 +162,19 @@ const Header = ({ user }) => {
         <a className="header__brand" href="/">
           Palit
         </a>
-
-        {user.avatar && (
-          <div className="header-nav">
-            <button className="header__profile" type="button" onClick={openDropdown}>
-              <img src={user.avatar} alt="Joimee Tan Cajandab" />
-            </button>
-            <HeaderDropdown isOpen={isDropdownOpen} onLogout={auth.signout} />
-          </div>
-        )}
-
-        {(!user.avatar && user.email) && (
-          <div className="header-nav">
-            <button className="header__profile" type="button" onClick={openDropdown}>
-              <span className="header__placeholder">{user.email[0]}</span>
-            </button>
-            <HeaderDropdown isOpen={isDropdownOpen} onLogout={auth.signout} />
-          </div>
-        )}
+        <HeaderWithAvatar
+          avatar={user.avatar}
+          isDropdownOpen={isDropdownOpen}
+          openDropdown={openDropdown}
+          signout={auth.signout}
+        />
+        <HeaderWithoutAvatar
+          user={user}
+          openDropdown={openDropdown}
+          isDropdownOpen={isDropdownOpen}
+          signout={auth.signout}
+        />
+        <HeaderNav currentPath={router.pathname} />
       </div>
     </div>
   );
