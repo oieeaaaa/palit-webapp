@@ -1,5 +1,13 @@
 .item {
-  padding-top: rem(30);
+  .grid {
+    @include tablet-p {
+      grid-template-columns: unset;
+      grid-template-areas: "title title title"
+        "image info info"
+        "image remarks remarks"
+        "image firstButton secondButton";
+    }
+  }
 
   &__image {
     @include aspect-ratio(248, 248);
@@ -9,6 +17,14 @@
     border-radius: rem(10);
     border: $thin-gray-border;
     background-color: var(--light);
+
+    @include tablet-p {
+      margin-top: rem(37);
+      grid-area: image;
+      align-self: start;
+
+      width: rem(288);
+    }
   }
 
   &__title {
@@ -20,14 +36,46 @@
     text-align: center;
     font-size: rem(24);
     line-height: rem(29);
+
+    @include tablet-p {
+      grid-area: title;
+      margin-top: 0;
+      margin-bottom: rem(40);
+
+      font-size: rem(28);
+      line-height: rem(34);
+    }
   }
 
   &-card {
     grid-column: 1 / -1;
     margin-top: rem(30);
 
+    @include tablet-p {
+      margin-top: 0;
+
+      min-width: rem(407);
+      width: 100%;
+    }
+
     &:last-of-type {
       margin-bottom: rem(60);
+
+      @include tablet-p {
+        margin-top: rem(40);
+      }
+    }
+
+    &.--info {
+      @include tablet-p {
+        grid-area: info;
+      }
+    }
+
+    &.--remarks {
+      @include tablet-p {
+        grid-area: remarks;
+      }
     }
 
     &__title {
@@ -37,6 +85,11 @@
 
       font-size: rem(18);
       line-height: rem(22);
+
+      @include tablet-p {
+        font-size: rem(22);
+        line-height: rem(27);
+      }
     }
 
     &__details {
@@ -45,16 +98,30 @@
       border-radius: rem(10);
       border: $thin-gray-border;
       background-color: var(--light);
+
+      @include tablet-p {
+        padding: rem(20);
+      }
     }
 
     &__text {
       white-space: pre;
       line-height: 1.5em;
+
+      @include tablet-p {
+        font-size: rem(18);
+        line-height: rem(30);
+      }
     }
 
     &__item {
       font-size: rem(16);
       line-height: rem(30);
+
+      @include tablet-p {
+        font-size: rem(18);
+        line-height: rem(30);
+      }
     }
 
     &__item strong {
@@ -68,17 +135,45 @@
 
   &__like {
     grid-column: 1 / 4;
+
+    @include tablet-p {
+      grid-area: firstButton;
+      justify-self: start;
+
+      width: rem(119);
+    }
   }
 
   &__trade {
     grid-column: 4 / -1;
+
+    @include tablet-p {
+      grid-area: secondButton;
+      justify-self: end;
+
+      width: rem(225);
+    }
   }
 
   &__edit {
     grid-column: 1 / 4;
+
+    @include tablet-p {
+      grid-area: firstButton;
+      justify-self: start;
+
+      width: rem(119);
+    }
   }
 
   &__delete {
     grid-column: 6 / -1;
+
+    @include tablet-p {
+      grid-area: secondButton;
+      justify-self: end;
+
+      width: rem(200);
+    }
   }
 }

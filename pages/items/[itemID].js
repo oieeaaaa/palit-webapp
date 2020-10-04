@@ -94,8 +94,6 @@ const ItemDetails = () => {
     getItem(itemID);
   }, [router]);
 
-  console.log(item);
-
   return (
     <Layout title={item.name}>
       <div className="item">
@@ -104,9 +102,9 @@ const ItemDetails = () => {
             <img src={item.cover} alt={item.name} />
           </figure>
           <h1 className="item__title">
-            {item.title}
+            {item.name}
           </h1>
-          <div className="item-card">
+          <div className="item-card --info">
             <h2 className="item-card__title">
               Product Info
             </h2>
@@ -123,7 +121,7 @@ const ItemDetails = () => {
               </li>
             </ul>
           </div>
-          <div className="item-card">
+          <div className="item-card --remarks">
             <h2 className="item-card__title">
               Remarks
             </h2>
