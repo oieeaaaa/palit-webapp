@@ -7,6 +7,13 @@
     grid-template-columns: ((118 / 335) * 100%) ((206 / 335) * 100%);
     grid-column-gap: rem(10);
     align-items: start;
+
+    @include tablet-p {
+      margin-bottom: rem(20);
+
+      grid-template-columns: (224 / 708) * 100% 1fr;
+      grid-column-gap: rem(15);
+    }
   }
 
   &__avatar {
@@ -36,6 +43,11 @@
       font-size: rem(14);
       line-height: rem(17);
       color: var(--gray);
+
+      @include tablet-p {
+        font-size: rem(16);
+        line-height: rem(20);
+      }
     }
 
     &__text {
@@ -45,6 +57,11 @@
       font-size: rem(16);
       line-height: rem(20);
       color: var(--mine-shaft);
+
+      @include tablet-p {
+        font-size: rem(18);
+        line-height: rem(22);
+      }
     }
 
     &__link {
