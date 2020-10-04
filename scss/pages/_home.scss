@@ -3,6 +3,11 @@
     grid-template-columns: repeat(2, 1fr);
     grid-column-gap: rem(9);
     grid-row-gap: rem(30);
+
+    @include tablet-p {
+      grid-template-columns: repeat(4, 1fr);
+      grid-column-gap: rem(15);
+    }
   }
 
   .tip {
