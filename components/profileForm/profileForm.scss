@@ -15,6 +15,13 @@ Description:
     grid-template-columns: ((118 / 335) * 100%) ((206 / 335) * 100%);
     grid-column-gap: rem(10);
     align-items: start;
+
+    @include tablet-p {
+      margin-bottom: rem(20);
+
+      grid-template-columns: (224 / 708) * 100% 1fr;
+      grid-column-gap: rem(15);
+    }
   }
 
   &__upload {
@@ -30,6 +37,11 @@ Description:
       line-height: rem(17);
       text-decoration: underline;
       text-align: center;
+
+      @include tablet-p {
+        font-size: rem(16);
+        line-height: rem(20);
+      }
     }
 
     input {
@@ -44,6 +56,10 @@ Description:
 
     border: $thin-gray-border;
     border-radius: rem(10);
+
+    @include tablet-p {
+      margin-bottom: rem(30);
+    }
 
     &-icon {
       width: rem(20);
@@ -63,6 +79,10 @@ Description:
     &[for="address"] {
       margin-bottom: 0;
     }
+
+    @include tablet-p {
+      grid-column: 5 / -1;
+    }
   }
 
   &-bottom {
@@ -71,5 +91,9 @@ Description:
 
     display: flex;
     justify-content: space-between;
+
+    @include tablet-p {
+      grid-column: 11 / -1;
+    }
   }
 }
