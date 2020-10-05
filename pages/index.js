@@ -6,8 +6,8 @@ import {
 } from 'react';
 import UserContext from 'js/contexts/user';
 import ITEM from 'js/models/item';
+import LIKES from 'js/models/likes';
 import useError from 'js/hooks/useError';
-import useLikes from 'js/hooks/useLikes';
 import useProtection from 'js/hooks/useProtection';
 import useInfiniteScroll from 'js/hooks/useInfiniteScroll';
 
@@ -28,7 +28,6 @@ const Home = () => {
 
   // custom hooks
   const [displayError] = useError();
-  const { setLike, setUnlike } = useLikes();
   const { isFetching } = useInfiniteScroll(getItems, itemsStats?.totalItems);
 
   /**
@@ -75,9 +74,9 @@ const Home = () => {
       const isToLiked = !payload.isLiked;
 
       if (isToLiked) {
-        await setLike(payload);
+        await LIKES.add(user.key, payload.key);
       } else {
-        await setUnlike(payload.key);
+        await LIKES.remove(user.key, payload.key);
       }
 
       setItems((prevItems) => prevItems.map((prevItem) => {

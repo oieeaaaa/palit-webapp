@@ -52,26 +52,14 @@ Description:
   }
 
   &-nav {
+    display: flex;
+    justify-content: space-around;
+
     @include tablet-p {
       display: none;
     }
 
     &__link {
-      &.--home {
-        grid-column: 1 / 3;
-        justify-self: center;
-      }
-
-      &.--inventory {
-        grid-column: 4 / 6;
-        justify-self: center;
-      }
-
-      &.--search {
-        grid-column: 8 / 10;
-        justify-self: center;
-      }
-
       &.--active {
         path {
           fill: var(--mine-shaft) !important;

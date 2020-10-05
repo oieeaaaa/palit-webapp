@@ -9,11 +9,6 @@ export const routes = [
     href: '/inventory',
     icon: 'clipboard-outline',
   },
-  {
-    name: 'search',
-    href: '/search',
-    icon: 'search-outline',
-  },
 ];
 
 export const footerInfo = [

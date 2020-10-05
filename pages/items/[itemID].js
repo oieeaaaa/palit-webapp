@@ -3,9 +3,9 @@ import { useRouter } from 'next/router';
 import Link from 'next/link';
 import { ReactSVG } from 'react-svg';
 import useError from 'js/hooks/useError';
-import useLikes from 'js/hooks/useLikes';
 import useProtection from 'js/hooks/useProtection';
 import ITEM from 'js/models/item';
+import LIKES from 'js/models/likes';
 import LayoutContext from 'js/contexts/layout';
 import UserContext from 'js/contexts/user';
 import Layout from 'components/layout/layout';
@@ -21,7 +21,6 @@ const ItemDetails = () => {
   const [isLiking, setIsLiking] = useState(false);
 
   // custom hooks
-  const { setLike, setUnlike } = useLikes();
   const [displayError] = useError();
   const router = useRouter();
   /**
@@ -53,9 +52,9 @@ const ItemDetails = () => {
       const isToLiked = !item.isLiked;
 
       if (isToLiked) {
-        await setLike(item);
+        await LIKES.add(user.key, item.key);
       } else {
-        await setUnlike(item.key);
+        await LIKES.remove(user.key, item.key);
       }
 
       setItem((prevItem) => ({
