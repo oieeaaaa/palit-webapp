@@ -11,10 +11,16 @@ import ItemCard, { ItemCardSkeleton } from 'components/itemCard/itemCard';
  * HomeItems.
  *
  * @param {boolean} isFetching
+ * @param {boolean} isLiking
  * @param {object} items
  * @param {function} onLike
  */
-export const HomeItems = ({ isFetching, items, onLike }) => {
+export const HomeItems = ({
+  isFetching,
+  items,
+  onLike,
+  isLiking,
+}) => {
   const isItemsExists = !!items;
 
   if (isFetching || !isItemsExists) {
@@ -26,6 +32,7 @@ export const HomeItems = ({ isFetching, items, onLike }) => {
       key={item.key}
       item={item}
       onLike={onLike}
+      isLiking={isLiking}
       linkOptions={{
         href: '/items/[itemID]',
         as: `/items/${item.key}`,

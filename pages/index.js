@@ -21,6 +21,7 @@ const Home = () => {
   // states
   const [items, setItems] = useState(null);
   const [itemsStats, setItemsStats] = useState(null);
+  const [isLiking, setIsLiking] = useState(false);
 
   // callbacks
   const isItemsEmpty = useCallback(() => !!(items && !items.length), [items]);
@@ -68,28 +69,34 @@ const Home = () => {
    * @param {object} payload
    */
   const onLike = async (payload) => {
-    if (!payload.isLiked) {
-      setLike(payload, (data) => {
-        setItems((prevItems) => prevItems.map((prevItem) => {
-          if (prevItem.key === data.key) {
-            prevItem.likes += 1;
-            prevItem.isLiked = true;
-          }
+    setIsLiking(true);
 
-          return prevItem;
-        }));
-      });
-    } else {
-      setUnlike(payload.key, (removedItemID) => {
-        setItems((prevItems) => prevItems.map((prevItem) => {
-          if (prevItem.key === removedItemID) {
-            prevItem.likes -= 1;
-            prevItem.isLiked = false;
-          }
+    try {
+      const isToLiked = !payload.isLiked;
 
-          return prevItem;
-        }));
-      });
+      if (isToLiked) {
+        await setLike(payload);
+      } else {
+        await setUnlike(payload.key);
+      }
+
+      setItems((prevItems) => prevItems.map((prevItem) => {
+        if (prevItem.key !== payload.key) return prevItem;
+
+        if (isToLiked) {
+          prevItem.likes += 1;
+          prevItem.isLiked = true;
+        } else {
+          prevItem.likes -= 1;
+          prevItem.isLiked = false;
+        }
+
+        return prevItem;
+      }));
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setIsLiking(false);
     }
   };
 
@@ -109,7 +116,7 @@ const Home = () => {
     <Layout title="Palit">
       <div className="home">
         <div className="grid home__list">
-          <HomeItems items={items} onLike={onLike} isFetching={isFetching} />
+          <HomeItems items={items} onLike={onLike} isFetching={isFetching} isLiking={isLiking} />
           <HomeItemsEmpty isEmpty={isItemsEmpty()} />
         </div>
       </div>

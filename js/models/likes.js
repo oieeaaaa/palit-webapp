@@ -51,11 +51,24 @@ const remove = async (userID, itemID) => {
   const requests = await requestsCollectionGroup.where('id', '==', itemID).get();
 
   requests.forEach((request) => {
-    batch.update(request.ref, { likes: firebaseApp.firestore.FieldValue.increment(-1) });
+    batch.set(
+      request.ref,
+      { likes: firebaseApp.firestore.FieldValue.increment(-1) },
+      { merge: true },
+    );
   });
 
-  batch.update(likeRef, { [userID]: firebaseApp.firestore.FieldValue.delete() });
-  batch.update(itemRef, { likes: firebaseApp.firestore.FieldValue.increment(-1) });
+  batch.set(
+    likeRef,
+    { [userID]: firebaseApp.firestore.FieldValue.delete() },
+    { merge: true },
+  );
+
+  batch.set(
+    itemRef,
+    { likes: firebaseApp.firestore.FieldValue.increment(-1) },
+    { merge: true },
+  );
 
   batch.commit();
 };

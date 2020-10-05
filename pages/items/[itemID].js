@@ -11,14 +11,19 @@ import UserContext from 'js/contexts/user';
 import Layout from 'components/layout/layout';
 
 const ItemDetails = () => {
+  // contexts
   const { handlers } = useContext(LayoutContext);
   const user = useContext(UserContext);
-  const [displayError] = useError();
-  const router = useRouter();
+
+  // states
   const [item, setItem] = useState({});
   const [isOwned, setIsOwned] = useState(false);
-  const { setLike, setUnlike } = useLikes();
+  const [isLiking, setIsLiking] = useState(false);
 
+  // custom hooks
+  const { setLike, setUnlike } = useLikes();
+  const [displayError] = useError();
+  const router = useRouter();
   /**
    * getItem
    *
@@ -29,7 +34,7 @@ const ItemDetails = () => {
    */
   const getItem = async (key) => {
     try {
-      const data = await ITEM.getOneWithLikes(key);
+      const data = await ITEM.getOneWithLikes(user.key, key);
 
       setItem(data);
 
@@ -41,26 +46,27 @@ const ItemDetails = () => {
     }
   };
 
-  /**
-   * onLike.
-   */
-  const onLike = () => {
-    if (item.isLiked) {
-      setLike(item, () => {
-        setItem((prevItem) => ({
-          ...prevItem,
-          likes: prevItem.likes - 1,
-          isLiked: false,
-        }));
-      });
-    } else {
-      setUnlike(item.key, () => {
-        setItem((prevItem) => ({
-          ...prevItem,
-          likes: prevItem.likes + 1,
-          isLiked: true,
-        }));
-      });
+  const onLike = async () => {
+    setIsLiking(true);
+
+    try {
+      const isToLiked = !item.isLiked;
+
+      if (isToLiked) {
+        await setLike(item);
+      } else {
+        await setUnlike(item.key);
+      }
+
+      setItem((prevItem) => ({
+        ...prevItem,
+        likes: isToLiked ? prevItem.likes + 1 : prevItem.likes - 1,
+        isLiked: !!isToLiked,
+      }));
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setIsLiking(false);
     }
   };
 
@@ -142,6 +148,7 @@ const ItemDetails = () => {
               className="button --default item__like"
               type="button"
               onClick={onLike}
+              disabled={isLiking}
             >
               <ReactSVG
                 className="button-icon"

@@ -26,7 +26,11 @@ export const ItemCardSkeleton = () => (
 
 const ItemCard = (
   {
-    item, onLike, onTrade, linkOptions = { href: '', as: '' },
+    item,
+    onLike,
+    onTrade,
+    isLiking,
+    linkOptions = { href: '', as: '' },
   },
 ) => (
   <div className="itemCard">
@@ -63,6 +67,7 @@ const ItemCard = (
             className="itemCard__button"
             type="button"
             onClick={() => onLike({ isLiked: item.isLiked, key: item.key })}
+            disabled={isLiking}
           >
             <ReactSVG
               className="itemCard__meta-icon"

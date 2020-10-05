@@ -16,15 +16,16 @@ const useLikes = () => {
    * It should add user's like from the selected item|payload
    *
    * @type {object} payload
-   * @type {function} onSuccess (callback function)
    */
-  const setLike = async (payload, onSuccess) => {
+  const setLike = async (payload) => {
     try {
       await LIKES.add(user.key, payload.key);
 
-      onSuccess(payload);
+      return payload;
     } catch (err) {
       displayError(err);
+
+      return err;
     }
   };
 
@@ -34,15 +35,16 @@ const useLikes = () => {
    * It should remove user's like from the specified itemID
    *
    * @type {string} itemID
-   * @type {function} onSuccess (callback function)
    */
-  const setUnlike = async (itemID, onSuccess) => {
+  const setUnlike = async (itemID) => {
     try {
       await LIKES.remove(user.key, itemID);
 
-      onSuccess(itemID);
+      return itemID;
     } catch (err) {
       displayError(err);
+
+      return err;
     }
   };
 

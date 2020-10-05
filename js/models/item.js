@@ -109,12 +109,14 @@ const getOne = (itemID) => itemsCollection.doc(itemID).get();
 /**
  * getOneWithLikes.
  *
+ * @param {string} userID
  * @param {string} itemID
  */
-const getOneWithLikes = (itemID) => db.runTransaction(async (transaction) => {
+const getOneWithLikes = (userID, itemID) => db.runTransaction(async (transaction) => {
   const rawItem = await transaction.get(itemsCollection.doc(itemID));
   const rawLikes = await transaction.get(likesCollection.doc(itemID));
-  const isLiked = Object.keys(rawLikes).includes(itemID);
+
+  const isLiked = Object.keys((rawLikes.exists && rawLikes.data()) || {}).includes(userID);
 
   return ({
     ...rawItem.data(),
