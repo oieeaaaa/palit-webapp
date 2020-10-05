@@ -52,6 +52,8 @@ Description:
   }
 
   &-likes {
+    @include Montserrat;
+
     font-size: rem(16);
 
     @include tablet-p {
@@ -70,6 +72,10 @@ Description:
     grid-template-columns: (76 / 335 * 100%) 1fr;
     grid-column-gap: rem(10);
     height: rem(76);
+
+    @include tablet-p {
+      height: rem(100);
+    }
 
     &-image {
       width: 100%;

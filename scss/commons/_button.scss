@@ -27,12 +27,26 @@
     border-color: var(--dusty-gray);
     background-color: var(--light);
     color: var(--mine-shaft);
+
+    @include tablet-p {
+      @include state(hover) {
+        border-color: var(--dark);
+        color: var(--dark);
+      }
+    }
   }
 
   &.--dark {
     border-color: var(--mine-shaft);
     background-color: var(--mine-shaft);
     color: var(--light);
+
+    @include tablet-p {
+      @include state(hover) {
+        border-color: var(--dark);
+        background-color: var(--dark);
+      }
+    }
   }
 
   &.--primary {
@@ -40,10 +54,23 @@
     background-color: var(--tree-poppy);
     color: var(--mine-shaft);
 
+    @include tablet-p {
+      @include state(hover) {
+        border-color: var(--dark);
+        color: var(--dark);
+      }
+    }
+
     &-dark {
       border-color: var(--tree-poppy);
       background-color: var(--mine-shaft);
       color: var(--tree-poppy);
+
+      @include tablet-p {
+        @include state(hover) {
+          background-color: var(--dark);
+        }
+      }
     }
 
     &-link {
@@ -69,6 +96,14 @@
     border-color: var(--gray);
     background-color: var(--silver);
     color: var(--gray);
+
+    @include tablet-p {
+      @include state(hover) {
+        border-color: var(--gray);
+        background-color: var(--silver);
+        color: var(--gray);
+      }
+    }
   }
 
   // with icon

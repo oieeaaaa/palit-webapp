@@ -25,6 +25,11 @@ Description:
     text-transform: uppercase;
     color: var(--light);
     animation: fadeInOut 2s linear alternate infinite;
+
+    @include tablet-p {
+      font-size: rem(28);
+      line-height: rem(38);
+    }
   }
 }
 

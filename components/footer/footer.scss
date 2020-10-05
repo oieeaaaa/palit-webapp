@@ -20,7 +20,7 @@ Description:
   border-top: rem(1) solid var(--gray);
   height: $height;
   background-color: var(--light);
-  z-index: var(--z-footer);
+  z-index: $footer-z;
 
   @include tablet-p {
     margin-top: 0;

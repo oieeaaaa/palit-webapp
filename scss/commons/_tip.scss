@@ -6,12 +6,21 @@
 
     display: block;
     font-size: rem(16);
+
+    @include tablet-p {
+      font-size: rem(18);
+    }
   }
 
   &-text {
     @include Montserrat(700);
 
     font-size: rem(24);
+
+    @include tablet-p {
+      font-size: rem(28);
+      line-height: rem(38);
+    }
   }
 
   &-link {

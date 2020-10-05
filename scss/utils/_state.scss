@@ -1,0 +1,15 @@
+// $states: hover | focus | active | visited
+// $parent: top level
+@mixin state($states, $parent: '') {
+  @each $state in $states {
+    @if ($parent != '') {
+      #{$parent}:#{$state} & {
+        @content;
+      }
+    } @else {
+      &:#{$state} {
+        @content;
+      }
+    }
+  }
+}

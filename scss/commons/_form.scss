@@ -47,12 +47,8 @@
       line-height: rem(20);
     }
 
-    &:focus {
+    @include state((hover, focus)) {
       outline: none;
-    }
-
-    &:focus,
-    &:hover {
       background-color: var(--mine-shaft);
       border-color: var(--dark);
       color: var(--light);
@@ -62,13 +58,12 @@
       background: none;
       border: none;
       color: var(--gray);
-    }
 
-    &.--disabled:focus,
-    &.--disabled:hover {
-      background: none;
-      border: none;
-      color: var(--gray);
+      @include state((hover, focus)) {
+        background: none;
+        border: none;
+        color: var(--gray);
+      }
     }
 
     &.--textarea {

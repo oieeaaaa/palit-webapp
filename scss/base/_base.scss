@@ -1,5 +1,3 @@
-$base-font-size: 10;
-
 * {
   margin: 0;
   padding: 0;
@@ -7,7 +5,7 @@ $base-font-size: 10;
 
   &:focus {
     outline: none;
-    box-shadow: $focus-box-shadow, $focus-span-box-shadow;
+    box-shadow: $primary-hard-shadow, $primary-soft-shadow;
   }
 }
 
@@ -15,6 +13,7 @@ html {
   @include Montserrat;
 
   font-size: $base-font-size + px;
+  background-color: var(--tree-poppy);
 }
 
 body {

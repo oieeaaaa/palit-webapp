@@ -104,7 +104,7 @@ const HeaderWithAvatar = ({
    * @param {boolean} isDropdownOpen
    * @param {function} signout
  */
-const HeaderWithoutAvatar = () => ({
+const HeaderWithoutAvatar = ({
   user,
   openDropdown,
   isDropdownOpen,
@@ -141,7 +141,7 @@ const Header = ({ user }) => {
     e.preventDefault();
     e.stopPropagation();
 
-    setIsDropdownOpen(true);
+    setIsDropdownOpen(!isDropdownOpen);
   };
 
   useEffect(() => {

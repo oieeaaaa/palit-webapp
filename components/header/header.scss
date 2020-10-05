@@ -48,6 +48,10 @@ Description:
     text-transform: uppercase;
     color: var(--light);
 
+    @include state(hover) {
+      color: var(--tree-poppy);
+    }
+
     @include tablet-p {
       margin-top: rem(30);
 
@@ -77,6 +81,14 @@ Description:
 
       display: flex;
       justify-content: center;
+
+      & > &__item:not(:last-child) {
+        margin-right: rem(40);
+      }
+
+      &:hover > &__item:not(:hover) {
+        color: var(--gray);
+      }
     }
 
     &__item {
@@ -92,10 +104,12 @@ Description:
       &.--active {
         color: var(--light);
       }
-    }
 
-    & > &__item:not(:last-child) {
-      margin-right: rem(40);
+      @include tablet-p {
+        @include state((hover, focus)) {
+          color: var(--light);
+        }
+      }
     }
   }
 
@@ -109,7 +123,7 @@ Description:
     background-color: var(--dark);
     border-bottom-left-radius: rem(5);
     border-bottom-right-radius: rem(5);
-    z-index: var(--z-header-dropdown);
+    z-index: $header-dropdown-z;
     box-shadow: $header-dropdown-box-shadow;
 
     @include tablet-p {
@@ -162,10 +176,15 @@ Description:
     border-radius: 50%;
     overflow: hidden;
     text-decoration: none;
+    cursor: pointer;
 
     @include tablet-p {
       width: rem(50);
       height: rem($profile-height--tablet);
+
+      @include state(hover) {
+        box-shadow: $primary-hard-and-soft-shadow;
+      }
     }
   }
 

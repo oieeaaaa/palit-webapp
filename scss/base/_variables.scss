@@ -1,33 +1,59 @@
-:root {
-  // Colors
-  --light: #fff;
-  --dark: #000;
-  --mine-shaft: #333;
-  --gray: #808080;
-  --dusty-gray: #959595;
-  --tree-poppy: #fa9917;
-  --alto: #e0e0e0;
-  --paarl: #9f6c27;
-  --oasis: #fde4c3;
-  --silver: #c8c8c8;
-  --persimmon: #ff5f58;
-  --dodger-blue: #3399ff;
-  --apple: #2ac940;
+/* ============================================================================
+  SCSS Variables
+============================================================================ */
 
-  // Gradients
-  --loading-gradient: linear-gradient(135.3deg, #acacac 0%, #bdbdbd 100%);
-
-  // z-indexes
-  --z-footer: 3;
-  --z-header-dropdown: 4;
-}
-
-// SCSS Variables
+// COLORS
+$light: #fff;
+$dark: #000;
+$mine-shaft: #333;
+$gray: #808080;
+$dusty-gray: #959595;
+$tree-poppy: #fa9917;
+$alto: #e0e0e0;
+$paarl: #9f6c27;
+$oasis: #fde4c3;
+$silver: #c8c8c8;
+$persimmon: #ff5f58;
+$dodger-blue: #3399ff;
+$apple: #2ac940;
 
 // BORDERS
 $thin-gray-border: 1px solid var(--gray);
 
 // BOX SHADOWS
-$focus-box-shadow: 0 0 0 2px var(--tree-poppy);
-$focus-span-box-shadow: 0 0 0 6px rgba(250, 153, 23, .5);
+$primary-hard-shadow: 0 0 0 2px var(--tree-poppy);
+$primary-soft-shadow: 0 0 0 6px rgba(250, 153, 23, .5);
+$primary-hard-and-soft-shadow: $primary-hard-shadow, $primary-soft-shadow;
+
 $header-dropdown-box-shadow: 0 5px 10px 0 rgba(0,0,0,0.3);
+
+// FONT SIZES
+$base-font-size: 10;
+
+// Z-INDEXES
+$footer-z: 3;
+$header-dropdown-z: 4;
+
+
+/* ============================================================================
+  CSS Variables
+============================================================================ */
+:root {
+  // COLORS
+  --light: #{$light};
+  --dark: #{$dark};
+  --mine-shaft: #{$mine-shaft};
+  --gray: #{$gray};
+  --dusty-gray: #{$dusty-gray};
+  --tree-poppy: #{$tree-poppy};
+  --alto: #{$alto};
+  --paarl: #{$paarl};
+  --oasis: #{$oasis};
+  --silver: #{$silver};
+  --persimmon: #{$persimmon};
+  --dodger-blue: #{$dodger-blue};
+  --apple: #{$apple};
+
+  // GRADIENTS
+  --loading-gradient: linear-gradient(135.3deg, #acacac 0%, #bdbdbd 100%);
+}

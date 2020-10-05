@@ -82,7 +82,7 @@ const ItemForm = ({
         <label className="input-group" htmlFor="cover">
           <figure className="itemForm__image">
             {form.image ? (
-              <img src={form.image} alt="" />
+              <img src={form.image} alt={form.name} />
             ) : (
               <ReactSVG className="itemForm__icon" src="/icons/image-outline.svg" />
             )}

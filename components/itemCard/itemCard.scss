@@ -7,6 +7,8 @@ Description:
 */
 
 .itemCard {
+  $this: &;
+
   text-decoration: none;
   color: var(--merlin);
 
@@ -33,6 +35,12 @@ Description:
     border-radius: rem(5);
     background-color: var(--light);
     overflow: hidden;
+
+    @include tablet-p {
+      @include state(hover, $this) {
+        border-color: var(--tree-poppy);
+      }
+    }
   }
 
   &__image {
@@ -60,6 +68,7 @@ Description:
   &__button {
     border: none;
     background: none;
+    cursor: pointer;
   }
 
   //&__meta-icon {}

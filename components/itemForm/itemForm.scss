@@ -12,6 +12,7 @@ Description:
 
     border: rem(1) solid var(--gray);
     border-radius: rem(10);
+    cursor: pointer;
   }
 
   &__icon {
@@ -19,10 +20,25 @@ Description:
     height: rem(50);
   }
 
+  .grid {
+    @include tablet-p {
+      grid-template-columns: unset;
+      grid-template-areas: "image name name"
+        "image remarks remarks"
+        "image button button";
+    }
+  }
+
   .input-group {
     @include Montserrat(700);
 
     grid-column: 2 / -2;
+
+    @include tablet-p {
+      grid-area: image;
+
+      width: rem(288);
+    }
 
     input {
       position: absolute;
@@ -58,6 +74,12 @@ Description:
     border-radius: rem(10);
     border: rem(1) solid var(--gray);
     color: var(--light);
+
+    @include tablet-p {
+      grid-area: name;
+
+      min-width: rem(407);
+    }
   }
 
   .textarea {
@@ -73,6 +95,12 @@ Description:
     background-color: var(--mine-shaft);
     border: rem(1) solid var(--gray);
     height: rem(101);
+
+    @include tablet-p {
+      grid-area: remarks;
+
+      min-width: rem(407);
+    }
   }
 
   .button {
@@ -81,5 +109,10 @@ Description:
     margin-top: rem(140);
 
     min-width: rem(65);
+
+    @include tablet-p {
+      margin-top: rem(200);
+      grid-area: button;
+    }
   }
 }

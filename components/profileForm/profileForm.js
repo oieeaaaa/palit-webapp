@@ -10,6 +10,9 @@ import { ReactSVG } from 'react-svg';
 import UserContext from 'js/contexts/user';
 import { extractFileURL } from 'js/utils';
 
+// TODO:
+// Form validation
+// Only disable email if the user is logged in with google
 const ProfileForm = ({
   onSubmit,
   isLoading,
