@@ -12,37 +12,45 @@ import routes, { footerInfo } from 'js/routes';
 
 export const FooterDock = () => <div className="footer-dock" />;
 
-const Footer = () => {
+export const FooterNav = () => {
   const router = useRouter();
 
   return (
-    <>
-      <div className="footer-spacer" />
-      <div className="footer">
-        <div className="grid footer-nav">
-          {routes.map((route) => (
-            <Link href={route.href} key={route.name}>
-              <a className={
-                `footer-nav__link --${route.name} ${route.href === router.pathname ? '--active' : ''}`
-              }
-              >
-                <ReactSVG className="footer-nav__link-icon" src={`/icons/${route.icon}.svg`} />
-              </a>
-            </Link>
-          ))}
-        </div>
-        <div className="grid footer-info">
-          {footerInfo.map((footerInfoItem) => (
-            <Link href={footerInfoItem.href} key={footerInfoItem.name}>
-              <a className="footer-info__link">
-                {footerInfoItem.name}
-              </a>
-            </Link>
-          ))}
-        </div>
-      </div>
-    </>
+    <div className="grid footer-nav">
+      {routes.map((route) => (
+        <Link href={route.href} key={route.name}>
+          <a className={
+            `footer-nav__link --${route.name} ${route.href === router.pathname ? '--active' : ''}`
+          }
+          >
+            <ReactSVG className="footer-nav__link-icon" src={`/icons/${route.icon}.svg`} />
+          </a>
+        </Link>
+      ))}
+    </div>
   );
 };
+
+export const FooterInfo = () => (
+  <div className="grid footer-info">
+    {footerInfo.map((footerInfoItem) => (
+      <Link href={footerInfoItem.href} key={footerInfoItem.name}>
+        <a className="footer-info__link">
+          {footerInfoItem.name}
+        </a>
+      </Link>
+    ))}
+  </div>
+);
+
+const Footer = () => (
+  <>
+    <div className="footer-spacer" />
+    <div className="footer">
+      <FooterNav />
+      <FooterInfo />
+    </div>
+  </>
+);
 
 export default Footer;

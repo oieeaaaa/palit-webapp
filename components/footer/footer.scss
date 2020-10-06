@@ -70,6 +70,8 @@ Description:
 
   &-info {
     display: none;
+    height: rem(30);
+    align-items: center;
 
     @include tablet-p {
       display: flex;
