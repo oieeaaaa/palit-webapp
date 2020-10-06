@@ -1,0 +1,192 @@
+/*
+***************************************
+Component: Landing
+Author: Joimee
+Description:
+***************************************
+*/
+
+.landing {
+  &-header {
+    margin-bottom: rem(50);
+    grid-column: 1 / -1;
+
+    padding-top: rem(40);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    @include tablet-p {
+      margin-bottom: rem(80);
+    }
+
+    // &-buttons {}
+
+    &__button {
+      @include Montserrat(700);
+
+      font-size: rem(16);
+      line-height: rem(20);
+      color: var(--gray);
+      text-decoration: none;
+
+      @include tablet-p {
+        font-size: rem(18);
+        line-height: rem(22);
+      }
+
+      &.--signup {
+        margin-right: rem(30);
+
+        color: var(--mine-shaft);
+
+        @include tablet-p {
+          margin-right: rem(40);
+        }
+      }
+    }
+  }
+
+  &__heading {
+    @include Montserrat(700);
+
+    font-size: rem(24);
+    line-height: rem(29);
+
+    @include tablet-p {
+      text-align: center;
+    }
+  }
+
+
+  &-hero {
+    margin-bottom: rem(60);
+    grid-column: 1 / -1;
+
+    @include tablet-p {
+      margin-bottom: rem(80);
+
+      display: grid;
+      grid-template-columns: (347 / 708 * 100%) (303 / 708 * 100%);
+      justify-content: space-between;
+    }
+
+    &__title {
+      @include Montserrat(700);
+
+      margin-bottom: rem(40);
+
+      font-size: rem(28);
+      line-height: rem(34);
+
+      @include tablet-p {
+        font-size: rem(38);
+        line-height: rem(46);
+      }
+
+      &-text {
+        display: block;
+      }
+    }
+
+    &__image {
+      width: (249 / 335) * 100%;
+
+      @include tablet-p {
+        width: 100%;
+      }
+
+      svg {
+        width: 100%;
+        height: auto;
+      }
+    }
+  }
+
+  &-guide {
+    margin-bottom: rem(60);
+    grid-column: 1 / -1;
+
+    @include tablet-p {
+      margin-bottom: rem(70);
+    }
+
+    &-list {
+      margin-top: rem(20);
+
+      @include tablet-p {
+        margin-top: rem(40);
+
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        grid-column-gap: rem(15);
+      }
+
+      &__item {
+        margin-top: rem(50);
+
+        @include tablet-p {
+          margin-top: 0;
+        }
+
+        &:first-of-type {
+          margin-top: 0;
+        }
+
+        &-icon {
+          margin-bottom: rem(20);
+        }
+
+        &-title {
+          @include Montserrat(700);
+
+          margin-bottom: rem(10);
+
+          font-size: rem(18);
+          line-height: rem(22);
+        }
+
+        &-text {
+          font-size: rem(16);
+          line-height: rem(20);
+        }
+      }
+    }
+  }
+
+  &-action {
+    grid-column: 1 / -1;
+
+    &__login {
+      margin-top: rem(40);
+      margin-bottom: rem(30);
+
+      width: rem(165);
+
+      @include tablet-p {
+        margin-top: 0;
+        margin-bottom: 0;
+        margin-right: rem(20);
+      }
+    }
+
+    &-items {
+      @include tablet-p {
+        margin-top: rem(40);
+
+        display: flex;
+        justify-content: center;
+      }
+    }
+  }
+
+  &-footer {
+    margin-top: rem(100);
+
+    background-color: var(--dark);
+
+    .footer-info {
+      display: flex;
+    }
+  }
+}
