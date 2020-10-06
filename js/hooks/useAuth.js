@@ -8,17 +8,10 @@ const useAuth = () => {
    * verifyUser
    */
   const verifyUser = () => {
-    const { pathname } = router;
-
     const unsubscribe = firebaseApp.auth().onAuthStateChanged((snapshot) => {
-      const isInAuthPage = pathname.includes('auth');
       const isLoggedIn = !!snapshot;
 
-      if (!isLoggedIn && !isInAuthPage) {
-        router.push('/auth', '/auth');
-      }
-
-      if (isLoggedIn && isInAuthPage) {
+      if (!isLoggedIn) {
         router.push('/', '/');
       }
     });
