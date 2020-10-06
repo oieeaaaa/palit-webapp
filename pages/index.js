@@ -8,10 +8,10 @@ import UserContext from 'js/contexts/user';
 import ITEM from 'js/models/item';
 import LIKES from 'js/models/likes';
 import useError from 'js/hooks/useError';
-import useProtection from 'js/hooks/useProtection';
 import useInfiniteScroll from 'js/hooks/useInfiniteScroll';
 
 import Layout from 'components/layout/layout';
+import Landing from 'components/landing/landing';
 import { HomeItems, HomeItemsEmpty } from 'components/home/home';
 
 const Home = () => {
@@ -103,6 +103,8 @@ const Home = () => {
    * useEffect.
    */
   useEffect(() => {
+    if (!user.key) return;
+
     const isNotInitalized = !itemsStats && !items;
 
     if (isNotInitalized) {
@@ -110,6 +112,8 @@ const Home = () => {
       getItems();
     }
   }, []);
+
+  if (!user.key) return <Landing />;
 
   return (
     <Layout title="Palit">
@@ -123,4 +127,4 @@ const Home = () => {
   );
 };
 
-export default useProtection(Home);
+export default Home;

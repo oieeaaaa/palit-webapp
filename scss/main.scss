@@ -18,6 +18,8 @@
 @import './commons/button';
 @import './commons/tip';
 @import './commons/form';
+@import './commons/modifiers';
+@import './commons/link';
 
 // pages
 @import './pages/home';
@@ -36,6 +38,8 @@
 @import 'styleguide/nav/nav';
 
 // components
+@import 'components/landing/landing';
+
 @import 'components/loadingScreen/loadingScreen';
 
 @import 'components/goodLuckCard/goodLuckCard';

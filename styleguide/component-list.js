@@ -1,4 +1,6 @@
 // list of components
+import Landing from 'components/landing/landing.styleguide';
+
 import LoadingScreen from 'components/loadingScreen/loadingScreen.styleguide';
 
 import GoodLuckCard from 'components/goodLuckCard/goodLuckCard.styleguide';
@@ -22,6 +24,11 @@ import ItemCard from 'components/itemCard/itemCard.styleguide';
 import Header from 'components/header/header.styleguide';
 
 export default [
+  {
+    name: 'Landing',
+    component: Landing,
+  },
+
   {
     name: 'LoadingScreen',
     component: LoadingScreen,
