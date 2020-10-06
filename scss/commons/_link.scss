@@ -1,0 +1,15 @@
+.link {
+  @include Montserrat;
+
+  display: flex;
+  align-items: center;
+  font-size: rem(16);
+  line-height: rem(20);
+  text-decoration: underline;
+  color: var(--mine-shaft);
+
+  @include tablet-p {
+    font-size: rem(18);
+    line-height: rem(22);
+  }
+}
