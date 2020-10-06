@@ -30,6 +30,7 @@ const ItemCard = (
     onLike,
     onTrade,
     isLiking,
+    isIndicatorOn,
     linkOptions = { href: '', as: '' },
   },
 ) => (
@@ -39,9 +40,11 @@ const ItemCard = (
 
     {/* BODY */}
     <div className="itemCard__body">
+      {/* INDICATOR */}
+      {(item.isDirty && isIndicatorOn) && <span className="itemCard__indicator" />}
 
       <Link {...linkOptions}>
-        <a>
+        <a className="itemCard__link">
 
           {/* IMAGE */}
           <figure className="itemCard__image">

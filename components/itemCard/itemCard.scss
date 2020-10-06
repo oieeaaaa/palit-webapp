@@ -30,6 +30,7 @@ Description:
   }
 
   &__body {
+    position: relative;
     padding-bottom: rem(20);
     border: $thin-gray-border;
     border-radius: rem(5);
@@ -41,6 +42,35 @@ Description:
         border-color: var(--tree-poppy);
       }
     }
+  }
+
+  &__indicator {
+    position: absolute;
+    top: rem(10);
+    right: rem(10);
+    display: inline-block;
+    width: rem(10);
+    height: rem(10);
+    background-color: var(--persimmon);
+    border-radius: 50%;
+    z-index: $indicator-z;
+
+    &::before {
+      content: '';
+      display: inline-block;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: rem(10);
+      height: rem(10);
+      border-radius: 50%;
+      background-color: var(--persimmon);
+      animation: ripple 1s ease infinite;
+    }
+  }
+
+  &__link {
+    display: block;
   }
 
   &__image {
@@ -154,5 +184,17 @@ Description:
 
   to {
     opacity: .5;
+  }
+}
+
+@keyframes ripple {
+  from {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+  }
+
+  to {
+    transform: translate(-50%, -50%) scale(3);
+    opacity: 0;
   }
 }

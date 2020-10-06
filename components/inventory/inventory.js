@@ -25,6 +25,7 @@ export const InventoryItems = ({ isFetching, items }) => {
     <ItemCard
       key={item.key}
       item={item}
+      isIndicatorOn
       linkOptions={{
         href: '/trades/[itemID]',
         as: `/trades/${item.key}`,

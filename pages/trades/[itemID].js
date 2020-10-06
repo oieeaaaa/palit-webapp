@@ -57,8 +57,13 @@ const TradeItem = () => {
     try {
       const { itemID } = router.query;
       const rawMyItem = await ITEM.getOne(itemID);
+      const item = normalizeData(rawMyItem);
 
-      setMyItem(normalizeData(rawMyItem));
+      if (item.isDirty) {
+        await ITEM.cleanDirty(itemID);
+      }
+
+      setMyItem(item);
     } catch (err) {
       displayError(err);
     }

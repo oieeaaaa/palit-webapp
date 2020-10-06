@@ -18,8 +18,7 @@
 # misc
 .DS_Store
 .env*
-todo.md
-journal.md
+/notes/
 
 # debug
 npm-debug.log*

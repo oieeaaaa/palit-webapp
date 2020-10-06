@@ -157,7 +157,7 @@ const Header = ({ user }) => {
   }, []);
 
   return (
-    <div className="header">
+    <div className={`header ${!user.key ? '--not-login' : ''}`}>
       <div className="grid">
         <a className="header__brand" href="/">
           Palit
@@ -174,7 +174,7 @@ const Header = ({ user }) => {
           isDropdownOpen={isDropdownOpen}
           signout={auth.signout}
         />
-        <HeaderNav currentPath={router.pathname} />
+        {user.key && <HeaderNav currentPath={router.pathname} />}
       </div>
     </div>
   );

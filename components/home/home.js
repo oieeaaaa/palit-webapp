@@ -33,6 +33,7 @@ export const HomeItems = ({
       item={item}
       onLike={onLike}
       isLiking={isLiking}
+      isIndicatorOn={false}
       linkOptions={{
         href: '/items/[itemID]',
         as: `/items/${item.key}`,

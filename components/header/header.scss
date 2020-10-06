@@ -31,26 +31,25 @@ Description:
     }
   }
 
+  &.--not-login .grid {
+    padding-bottom: rem($bottom-padding);
+  }
+
   &.--no-space {
     margin-bottom: 0;
   }
 
   &__brand {
-    @include Avenir;
+    @include Montserrat(700);
 
     grid-column: 1 / 3;
     align-self: end;
 
     font-size: rem(24);
-    font-style: oblique;
     line-height: rem(33);
     text-decoration: none;
-    text-transform: uppercase;
+    text-transform: lowercase;
     color: var(--light);
-
-    @include state(hover) {
-      color: var(--tree-poppy);
-    }
 
     @include tablet-p {
       margin-top: rem(30);

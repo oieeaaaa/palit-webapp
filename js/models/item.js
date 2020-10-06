@@ -35,6 +35,7 @@ const add = (userID, data) => {
     likes: 0,
     tradeRequests: 0,
     isTraded: false,
+    isDirty: false,
   }, { merge: true });
 
   batch.commit();
@@ -203,6 +204,15 @@ const remove = async (itemID) => {
 const search = async (query) => itemsCollection.where('name', '==', query).get();
 
 /**
+ * cleanDirty
+ *
+ * @param {string} itemID
+ */
+const cleanDirty = (itemID) => itemsCollection.doc(itemID).update({
+  isDirty: false,
+});
+
+/**
  • 🚨🚨🚨🚨🚨🚨
    DANGER
  • 🚨🚨🚨🚨🚨🚨
@@ -234,6 +244,7 @@ export default {
   getItemsToTrade,
   remove,
   search,
+  cleanDirty,
 
   // WARNING DON'T USE THIS FUNCTION
   reset,

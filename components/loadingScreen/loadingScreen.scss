@@ -17,12 +17,11 @@ Description:
   background-color: var(--dark);
 
   &__brand {
-    @include Avenir(900);
+    @include Montserrat(700);
 
     font-size: rem(24);
-    font-style: oblique;
     line-height: rem(33);
-    text-transform: uppercase;
+    text-transform: lowercase;
     color: var(--light);
     animation: fadeInOut 2s linear alternate infinite;
 

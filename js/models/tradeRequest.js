@@ -30,7 +30,7 @@ const getRequestsStats = (itemID) => tradeRequestsCollection
  * @param {object} myItem
  * @param {object} itemToTrade
  */
-const add = (myItem, itemToTrade) => {
+const add = async (myItem, itemToTrade) => {
   const batch = db.batch();
 
   // My Item Refs
@@ -49,7 +49,10 @@ const add = (myItem, itemToTrade) => {
   });
 
   batch.set(myItemRef, {
-    ...myItem,
+    key: myItem.key,
+    owner: myItem.owner,
+    isTraded: myItem.isTraded,
+    name: myItem.name,
     tradeRequests: myItem.tradeRequests + 1,
     isAccepted: false,
   });
@@ -62,10 +65,14 @@ const add = (myItem, itemToTrade) => {
   // Item to Trade
   batch.update(itemsCollection.doc(itemToTrade.key), {
     tradeRequests: firebaseApp.firestore.FieldValue.increment(1),
+    isDirty: true,
   });
 
   batch.set(itemToTradeRef, {
-    ...itemToTrade,
+    key: itemToTrade.key,
+    owner: itemToTrade.owner,
+    isTraded: itemToTrade.isTraded,
+    name: itemToTrade.name,
     tradeRequests: itemToTrade.tradeRequests + 1,
     isAccepted: false,
   });
@@ -96,28 +103,42 @@ const add = (myItem, itemToTrade) => {
  * @param {string} myItemID
  * @param {string} itemToTradeID
  */
-const remove = (myItemID, itemToTradeID) => {
+const remove = async (myItemID, itemToTradeID) => {
   const batch = db.batch();
 
   // My Item Refs
   const myItemRef = tradeRequestsCollection.doc(myItemID);
   const myItemRequestsItemRef = myItemRef.collection('requests').doc(itemToTradeID);
+  const myItemInEveryRequests = await requestsCollectionGroup.where('key', '==', myItemID).get();
 
   // Item to trade Refs
   const itemToTradeRef = tradeRequestsCollection.doc(itemToTradeID);
   const itemToTradeRequestsItemRef = itemToTradeRef.collection('requests').doc(myItemID);
+  const itemToTradeInEveryRequests = await requestsCollectionGroup.where('key', '==', itemToTradeID).get();
+
+  // bulk requests updates
+  const allAffectedItemInRequests = [
+    ...myItemInEveryRequests.docs,
+    ...itemToTradeInEveryRequests.docs,
+  ];
+
+  allAffectedItemInRequests.forEach((affectedItem) => {
+    batch.update(affectedItem.ref, {
+      tradeRequests: firebaseApp.firestore.FieldValue.increment(-1),
+    });
+  });
 
   // My Item Updates
   batch.delete(myItemRequestsItemRef);
-  batch.update(itemsCollection.doc(myItemID), {
+  batch.set(itemsCollection.doc(myItemID), {
     tradeRequests: firebaseApp.firestore.FieldValue.increment(-1),
-  });
+  }, { merge: true });
 
   // Item to trade updates
   batch.delete(itemToTradeRequestsItemRef);
-  batch.update(itemsCollection.doc(itemToTradeID), {
+  batch.set(itemsCollection.doc(itemToTradeID), {
     tradeRequests: firebaseApp.firestore.FieldValue.increment(-1),
-  });
+  }, { merge: true });
 
   return batch.commit();
 };
@@ -181,11 +202,12 @@ const acceptRequest = async (myItem, itemToAccept) => {
   batch.update(itemToAcceptRef, {
     isAccepted: true,
     isTraded: true,
+    isDirty: true,
     acceptedItem: myItem,
   });
 
   batch.update(itemsCollection.doc(myItem.key), { isTraded: true });
-  batch.update(itemsCollection.doc(itemToAccept.key), { isTraded: true });
+  batch.update(itemsCollection.doc(itemToAccept.key), { isTraded: true, isDirty: true });
 
   allRequests.forEach((requestItem) => {
     batch.update(
