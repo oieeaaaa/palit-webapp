@@ -15,7 +15,7 @@ import { FooterInfo } from 'components/footer/footer';
  * @param {object}
    * @param {string} title
  */
-const LandingHeading = ({ title }) => (
+export const LandingHeading = ({ title }) => (
   <h2 className="landing__heading">
     {title}
   </h2>
@@ -24,7 +24,7 @@ const LandingHeading = ({ title }) => (
 /**
  * LandingHeader.
  */
-const LandingHeader = () => (
+export const LandingHeader = () => (
   <header className="landing-header">
     <h2 className="--brand">
       palit
@@ -47,7 +47,7 @@ const LandingHeader = () => (
 /**
  * LandingHero.
  */
-const LandingHero = () => (
+export const LandingHero = () => (
   <div className="landing-hero">
     <h1 className="landing-hero__title">
       Save your money
@@ -74,7 +74,7 @@ const LandingHero = () => (
    * @param {string} description
    * @param {string} icon
  */
-const LandingGuideListItem = ({ title, description, icon }) => (
+export const LandingGuideListItem = ({ title, description, icon }) => (
   <li className="landing-guide-list__item">
     <ReactSVG
       className="landing-guide-list__item-icon"
@@ -92,7 +92,7 @@ const LandingGuideListItem = ({ title, description, icon }) => (
 /**
  * LandingGuide.
  */
-const LandingGuide = () => (
+export const LandingGuide = () => (
   <div className="landing-guide">
     <LandingHeading title="Starter Guide" />
     <ul className="landing-guide-list">
@@ -118,7 +118,7 @@ const LandingGuide = () => (
 /**
  * LandingAction.
  */
-const LandingAction = () => (
+export const LandingAction = () => (
   <div className="landing-action">
     <LandingHeading title="Get Started" />
     <div className="landing-action-items">
@@ -139,7 +139,7 @@ const LandingAction = () => (
 /**
  * LandingFooter.
  */
-const LandingFooter = () => (
+export const LandingFooter = () => (
   <footer className="landing-footer">
     <FooterInfo />
   </footer>
