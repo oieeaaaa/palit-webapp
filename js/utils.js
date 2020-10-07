@@ -61,10 +61,26 @@ export const normalizeData = (rawData) => {
  */
 export const isObjectEmpty = (obj) => Object.keys(obj).length === 0;
 
+/**
+ * breakpoint.
+ */
+export const breakpoint = () => {
+  if (window.innerWidth >= 375) {
+    return 'mobile';
+  }
+
+  if (window.innerWidth >= 768) {
+    return 'tablet-p';
+  }
+
+  return 'tablet-p';
+};
+
 // export as collection of utils
 export default {
   extractFileURL,
   objectToArray,
   normalizeData,
   isObjectEmpty,
+  breakpoint,
 };

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import throttle from 'lodash.throttle';
+import { breakpoint } from 'js/utils';
 
 const maxWidth = 768;
 const gridList = [
@@ -21,12 +22,12 @@ const gridList = [
 
 function getCurrentGrid(list) {
   let currentGrid = {};
-  if (window.innerWidth > maxWidth) {
+  if (window.innerWidth >= maxWidth) {
     return list[list.length - 1];
   }
 
   for (let i = 0; i <= gridList.length - 1; i += 1) {
-    if (list[i].size >= window.innerWidth) {
+    if (breakpoint() === list[i].name) {
       currentGrid = list[i];
       break;
     }
