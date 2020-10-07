@@ -10,8 +10,14 @@ import { useRouter } from 'next/router';
 import { ReactSVG } from 'react-svg';
 import routes, { footerInfo } from 'js/routes';
 
+/**
+ * FooterDock.
+ */
 export const FooterDock = () => <div className="footer-dock" />;
 
+/**
+ * FooterNav.
+ */
 export const FooterNav = () => {
   const router = useRouter();
 
@@ -31,6 +37,9 @@ export const FooterNav = () => {
   );
 };
 
+/**
+ * FooterInfo.
+ */
 export const FooterInfo = () => (
   <div className="grid footer-info">
     {footerInfo.map((footerInfoItem) => (
@@ -43,9 +52,16 @@ export const FooterInfo = () => (
   </div>
 );
 
+/**
+ * FooterSpacer.
+ */
+export const FooterSpacer = () => (
+  <div className="footer-spacer" />
+);
+
 const Footer = () => (
   <>
-    <div className="footer-spacer" />
+    <FooterSpacer />
     <div className="footer">
       <FooterNav />
       <FooterInfo />
