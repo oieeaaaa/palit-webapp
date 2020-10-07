@@ -85,14 +85,14 @@ const HeaderWithAvatar = ({
   openDropdown,
   signout,
 }) => (
-  avatar && (
-  <div className="header-avatar">
-    <button className="header__profile" type="button" onClick={openDropdown}>
-      <img src={avatar} alt="Joimee Tan Cajandab" />
-    </button>
-    <HeaderDropdown isOpen={isDropdownOpen} onLogout={signout} />
-  </div>
-  )
+  avatar ? (
+    <div className="header-avatar">
+      <button className="header__profile" type="button" onClick={openDropdown}>
+        <img src={avatar} alt="Joimee Tan Cajandab" />
+      </button>
+      <HeaderDropdown isOpen={isDropdownOpen} onLogout={signout} />
+    </div>
+  ) : null
 );
 
 /**
@@ -109,14 +109,14 @@ const HeaderWithoutAvatar = ({
   openDropdown,
   isDropdownOpen,
   signout,
-}) => (!user.avatar && user.email) && (
+}) => ((!user.avatar && user.email) ? (
   <div className="header-avatar">
     <button className="header__profile" type="button" onClick={openDropdown}>
       <span className="header__placeholder">{user.email[0]}</span>
     </button>
     <HeaderDropdown isOpen={isDropdownOpen} onLogout={signout} />
   </div>
-);
+) : null);
 
 /**
  * Header.
@@ -159,9 +159,11 @@ const Header = ({ user }) => {
   return (
     <div className={`header ${!user.key ? '--not-login' : ''}`}>
       <div className="grid">
-        <a className="header__brand" href="/">
-          Palit
-        </a>
+        <Link href="/">
+          <a className="header__brand">
+            Palit
+          </a>
+        </Link>
         <HeaderWithAvatar
           avatar={user.avatar}
           isDropdownOpen={isDropdownOpen}
