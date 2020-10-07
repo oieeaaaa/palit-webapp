@@ -1,1 +1,86 @@
-.signup {}
+.signup {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+
+  &__heading {
+    margin-top: rem(150);
+    margin-bottom: rem(40);
+    grid-column: 1 / -1;
+
+    text-align: center;
+  }
+
+  &-form {
+    margin-left: auto;
+    margin-right: auto;
+    grid-column: 1 / -1;
+
+    width: 100%;
+    max-width: rem(335);
+
+    @include tablet-p {
+      grid-column: 4 / -4;
+
+      max-width: unset;
+    }
+  }
+
+  &-buttons {
+    margin-top: rem(50);
+    margin-bottom: rem(100);
+
+    display: grid;
+    grid-template-areas: "cancel submit"
+      "divider divider"
+      "submit-with-google submit-with-google";
+
+    @include tablet-p {
+      margin-top: rem(60);
+    }
+  }
+
+  &__text {
+    @include tablet-p {
+      font-size: rem(20);
+      line-height: rem(24);
+    }
+  }
+
+  &__cancel {
+    grid-area: cancel;
+
+    width: rem(87);
+
+    @include tablet-p {
+      width: rem(125);
+    }
+  }
+
+  &__divider {
+    margin-top: rem(20);
+    margin-bottom: rem(20);
+    grid-area: divider;
+
+    text-align: center;
+  }
+
+  &__submit {
+    grid-area: submit;
+    justify-self: end;
+
+    width: rem(100);
+
+    @include tablet-p {
+      width: rem(126);
+    }
+
+    &-with-google {
+      grid-area: submit-with-google;
+    }
+  }
+
+  .landing-footer {
+    margin-top: auto;
+  }
+}

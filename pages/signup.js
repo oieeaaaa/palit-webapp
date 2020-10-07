@@ -1,19 +1,26 @@
-import { useContext } from 'react';
+import { useState, useContext } from 'react';
+import { ReactSVG } from 'react-svg';
 import Router from 'next/router';
-import UserContext from 'js/contexts/user';
+import Link from 'next/link';
+import LayoutContext from 'js/contexts/layout';
 import useError from 'js/hooks/useError';
 import useAuth from 'js/hooks/useAuth';
 import USER from 'js/models/user';
-import Header from 'components/header/header';
 import Banner from 'components/banner/banner';
-import AuthForm from 'components/authForm/authForm';
+import { LandingFooter } from 'components/landing/landing';
 
 /**
  * Signup.
  */
 const Signup = () => {
   // contexts
-  const user = useContext(UserContext);
+  const { handlers } = useContext(LayoutContext);
+
+  // states
+  const [form, setForm] = useState({
+    email: '',
+    password: '',
+  });
 
   // custom hooks
   const auth = useAuth();
@@ -30,17 +37,16 @@ const Signup = () => {
    *
    * @param {object} form
    */
-  const handleSubmit = async (form) => {
+  const handleSubmit = async () => {
     form.preventDefault();
-    const { target: formEl } = form;
 
     try {
       const result = await auth.signUpWithEmailAndPassword(
-        formEl[fieldKeys.email].value,
-        formEl[fieldKeys.password].value,
+        form[fieldKeys.email],
+        form[fieldKeys.password],
       );
 
-      await USER.add(result.user.uid, result.user.email);
+      await USER.add(result.user.uid, { email: result.user.email });
 
       // redirect to homepage
       Router.push('/', '/', { shallow: true });
@@ -49,15 +55,97 @@ const Signup = () => {
     }
   };
 
+  /**
+   * handleChange.
+   *
+   * @param {object} e
+   */
+  const handleChange = (e) => {
+    e.persist();
+
+    setForm((prevForm) => ({
+      ...prevForm,
+      [e.target.name]: e.target.value,
+    }));
+  };
+
+  const handleGoogleSignup = async () => {
+    try {
+      const result = await auth.signInWithGoogle();
+
+      if (result.additionalUserInfo.isNewUser) {
+        await USER.add(result.user.uid, {
+          email: result.user.email,
+          avatar: result.user.photoURL,
+        });
+      } else {
+        handlers.showBanner({
+          text: "You're already signed in",
+          variant: 'success',
+        });
+      }
+
+      Router.push('/', '/', { shallow: true });
+    } catch (err) {
+      displayError(err);
+    }
+  };
+
   return (
     <div className="signup">
-      <Header user={user} />
       <Banner />
-      <AuthForm
-        fieldKeys={fieldKeys}
-        onSubmit={handleSubmit}
-        onSubmitText="Signup"
-      />
+      <div className="grid">
+        <h1 className="signup__heading --brand">Palit</h1>
+        <form className="signup-form" onSubmit={handleSubmit}>
+          <label className="form-group" htmlFor={fieldKeys.email}>
+            <span className="form-group__label">Email</span>
+            <input
+              id={fieldKeys.email}
+              className="form__input"
+              name={fieldKeys.email}
+              value={form[fieldKeys.email]}
+              onChange={handleChange}
+              type="email"
+              required
+            />
+          </label>
+          <label className="form-group" htmlFor={fieldKeys.password}>
+            <span className="form-group__label">Password</span>
+            <input
+              id={fieldKeys.password}
+              className="form__input"
+              name={fieldKeys.password}
+              value={form[fieldKeys.password]}
+              onChange={handleChange}
+              type="password"
+              required
+            />
+          </label>
+          <div className="signup-buttons">
+            <Link href="/">
+              <a className="button --default signup__cancel">
+                Cancel
+              </a>
+            </Link>
+            <button className="button --primary signup__submit" type="submit">
+              Signup
+            </button>
+            <p className="signup__text signup__divider">or</p>
+            <button
+              className="button --primary-dark signup__submit-with-google"
+              type="button"
+              onClick={handleGoogleSignup}
+            >
+              <ReactSVG
+                className="button-icon"
+                src="/icons/google-social.svg"
+              />
+              Signup with google
+            </button>
+          </div>
+        </form>
+      </div>
+      <LandingFooter />
     </div>
   );
 };

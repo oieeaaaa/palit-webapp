@@ -9,13 +9,13 @@ const usersCollection = db.collection('users');
  * @param {string} userID
  * @param {object} data
  */
-const add = (userID, email) => usersCollection.doc(userID).set({
-  email,
+const add = (userID, data = {}) => usersCollection.doc(userID).set({
   firstName: '',
   lastName: '',
   avatar: '',
   address: '',
   messagerLink: '',
+  ...data,
 });
 
 /**
