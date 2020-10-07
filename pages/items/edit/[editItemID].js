@@ -1,7 +1,7 @@
 import { useState, useEffect, useContext } from 'react';
 import { useRouter } from 'next/router';
 import LayoutContext from 'js/contexts/layout';
-import UserContext from 'js/contexts/user';
+import AuthContext from 'js/contexts/auth';
 import useError from 'js/hooks/useError';
 import ITEM from 'js/models/item';
 import { normalizeData } from 'js/utils';
@@ -11,7 +11,7 @@ import ItemForm from 'components/itemForm/itemForm';
 
 const ItemEdit = () => {
   // contexts
-  const user = useContext(UserContext);
+  const { user } = useContext(AuthContext);
   const { handlers } = useContext(LayoutContext);
 
   // states

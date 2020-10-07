@@ -7,7 +7,7 @@ import {
 } from 'react';
 import fetch from 'node-fetch';
 import { useRouter } from 'next/router';
-import UserContext from 'js/contexts/user';
+import AuthContext from 'js/contexts/auth';
 import LayoutContext from 'js/contexts/layout';
 import useError from 'js/hooks/useError';
 import TRADE_REQUESTS from 'js/models/tradeRequest';
@@ -30,7 +30,7 @@ import {
 const TradeItem = () => {
   // contexts
   const { handlers } = useContext(LayoutContext);
-  const user = useContext(UserContext);
+  const { user } = useContext(AuthContext);
 
   // states
   const [tradeRequestItem, setTradeRequestItem] = useState(null);

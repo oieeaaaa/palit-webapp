@@ -7,13 +7,13 @@ import useProtection from 'js/hooks/useProtection';
 import ITEM from 'js/models/item';
 import LIKES from 'js/models/likes';
 import LayoutContext from 'js/contexts/layout';
-import UserContext from 'js/contexts/user';
+import AuthContext from 'js/contexts/auth';
 import Layout from 'components/layout/layout';
 
 const ItemDetails = () => {
   // contexts
   const { handlers } = useContext(LayoutContext);
-  const user = useContext(UserContext);
+  const { user } = useContext(AuthContext);
 
   // states
   const [item, setItem] = useState({});

@@ -7,13 +7,13 @@ Description:
 */
 import { useContext } from 'react';
 import Head from 'next/head';
-import UserContext from 'js/contexts/user';
+import AuthContext from 'js/contexts/auth';
 import Header from '../header/header';
 import Footer, { FooterDock } from '../footer/footer';
 import Banner from '../banner/banner';
 
 const Layout = ({ title, description, children }) => {
-  const user = useContext(UserContext);
+  const { user } = useContext(AuthContext);
 
   return (
     <>

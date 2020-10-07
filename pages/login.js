@@ -1,6 +1,6 @@
 import { useContext } from 'react';
 import Router from 'next/router';
-import UserContext from 'js/contexts/user';
+import AuthContext from 'js/contexts/auth';
 import useAuth from 'js/hooks/useAuth';
 import useError from 'js/hooks/useError';
 import Header from 'components/header/header';
@@ -12,7 +12,7 @@ import AuthForm from 'components/authForm/authForm';
  */
 const Login = () => {
   // contexts
-  const user = useContext(UserContext);
+  const { user } = useContext(AuthContext);
 
   // custom hooks
   const auth = useAuth();

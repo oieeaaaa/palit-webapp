@@ -1,6 +1,6 @@
 import { useContext, useState } from 'react';
 import storage from 'js/storage';
-import UserContext from 'js/contexts/user';
+import AuthContext from 'js/contexts/auth';
 import LayoutContext from 'js/contexts/layout';
 import useError from 'js/hooks/useError';
 import ITEM from 'js/models/item';
@@ -9,7 +9,7 @@ import Layout from 'components/layout/layout';
 
 const Add = () => {
   const [displayError] = useError();
-  const user = useContext(UserContext);
+  const { user } = useContext(AuthContext);
   const { handlers } = useContext(LayoutContext);
   const [isLoading, setIsLoading] = useState(false);
 

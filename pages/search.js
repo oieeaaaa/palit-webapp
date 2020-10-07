@@ -3,7 +3,7 @@ import {
   useEffect,
   useContext,
 } from 'react';
-import UserContext from 'js/contexts/user';
+import AuthContext from 'js/contexts/auth';
 import ITEM from 'js/models/item';
 import useError from 'js/hooks/useError';
 import useProtection from 'js/hooks/useProtection';
@@ -12,7 +12,7 @@ import Layout from 'components/layout/layout';
 import ItemCard, { ItemCardSkeleton } from 'components/itemCard/itemCard';
 
 const Search = () => {
-  const user = useContext(UserContext);
+  const { user } = useContext(AuthContext);
   const [displayError] = useError();
   const [query, setQuery] = useState('');
   const [results, setResults] = useState(null);

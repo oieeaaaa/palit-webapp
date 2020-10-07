@@ -1,24 +1,6 @@
-import { useRouter } from 'next/router';
 import firebaseApp from 'firebase/app';
 
 const useAuth = () => {
-  const router = useRouter();
-
-  /**
-   * verifyUser
-   */
-  const verifyUser = () => {
-    const unsubscribe = firebaseApp.auth().onAuthStateChanged((snapshot) => {
-      const isLoggedIn = !!snapshot;
-
-      if (!isLoggedIn) {
-        router.push('/', '/');
-      }
-    });
-
-    return unsubscribe;
-  };
-
   /**
    * signUpWithEmailAndPassword.
    *
@@ -55,7 +37,6 @@ const useAuth = () => {
   const signout = () => firebaseApp.auth().signOut();
 
   return {
-    verifyUser,
     signUpWithEmailAndPassword,
     signInWithEmailAndPassword,
     signInWithGoogle,

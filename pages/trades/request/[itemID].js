@@ -6,7 +6,7 @@ import {
 } from 'react';
 import { useRouter } from 'next/router';
 import useError from 'js/hooks/useError';
-import UserContext from 'js/contexts/user';
+import AuthContext from 'js/contexts/auth';
 import LayoutContext from 'js/contexts/layout';
 import ITEM from 'js/models/item';
 import TRADE_REQUEST from 'js/models/tradeRequest';
@@ -27,7 +27,7 @@ const TradeRequestSelect = () => {
   const [displayError] = useError();
 
   // contexts
-  const user = useContext(UserContext);
+  const { user } = useContext(AuthContext);
   const { handlers } = useContext(LayoutContext);
 
   // states

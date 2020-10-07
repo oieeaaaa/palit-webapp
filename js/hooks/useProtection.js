@@ -1,5 +1,5 @@
 import { useContext } from 'react';
-import UserContext from 'js/contexts/user';
+import AuthContext from 'js/contexts/auth';
 import LoadingScreen from 'components/loadingScreen/loadingScreen';
 
 /**
@@ -8,9 +8,11 @@ import LoadingScreen from 'components/loadingScreen/loadingScreen';
  * @param {object} Component
  */
 const useProtection = (Component) => () => {
-  const user = useContext(UserContext);
+  const auth = useContext(AuthContext);
 
-  if (!user.key) return <LoadingScreen />;
+  if (!auth.isVerified) {
+    return <LoadingScreen />;
+  }
 
   return <Component />;
 };

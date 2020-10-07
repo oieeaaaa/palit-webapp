@@ -4,7 +4,7 @@ import {
   useContext,
   useCallback,
 } from 'react';
-import UserContext from 'js/contexts/user';
+import AuthContext from 'js/contexts/auth';
 import ITEM from 'js/models/item';
 import LIKES from 'js/models/likes';
 import useError from 'js/hooks/useError';
@@ -13,10 +13,11 @@ import useInfiniteScroll from 'js/hooks/useInfiniteScroll';
 import Layout from 'components/layout/layout';
 import Landing from 'components/landing/landing';
 import { HomeItems, HomeItemsEmpty } from 'components/home/home';
+import LoadingScreen from 'components/loadingScreen/loadingScreen';
 
 const Home = () => {
   // contexts
-  const user = useContext(UserContext);
+  const { user, ...auth } = useContext(AuthContext);
 
   // states
   const [items, setItems] = useState(null);
@@ -103,7 +104,7 @@ const Home = () => {
    * useEffect.
    */
   useEffect(() => {
-    if (!user.key) return;
+    if (!auth.isVerified) return;
 
     const isNotInitalized = !itemsStats && !items;
 
@@ -111,9 +112,11 @@ const Home = () => {
       getItemsStats();
       getItems();
     }
-  }, []);
+  }, [auth]);
 
-  if (!user.key) return <Landing />;
+  if (auth.isVerifyingUser) return <LoadingScreen />;
+
+  if (!auth.isVerified) return <Landing />;
 
   return (
     <Layout title="Palit">

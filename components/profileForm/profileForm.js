@@ -7,7 +7,7 @@ Description:
 */
 import { useState, useContext, useEffect } from 'react';
 import { ReactSVG } from 'react-svg';
-import UserContext from 'js/contexts/user';
+import AuthContext from 'js/contexts/auth';
 import { extractFileURL } from 'js/utils';
 
 // TODO:
@@ -17,7 +17,7 @@ const ProfileForm = ({
   onSubmit,
   isLoading,
 }) => {
-  const user = useContext(UserContext);
+  const { user } = useContext(AuthContext);
   const [form, setForm] = useState(user);
   const fieldKeys = {
     firstName: 'firstName',

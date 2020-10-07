@@ -6,7 +6,7 @@ import {
 } from 'react';
 import Link from 'next/link';
 import useError from 'js/hooks/useError';
-import UserContext from 'js/contexts/user';
+import AuthContext from 'js/contexts/auth';
 import ITEM from 'js/models/item';
 import useProtection from 'js/hooks/useProtection';
 import useInfiniteScroll from 'js/hooks/useInfiniteScroll';
@@ -20,7 +20,7 @@ import {
 
 const Inventory = () => {
   // contexts
-  const user = useContext(UserContext);
+  const { user } = useContext(AuthContext);
 
   // states
   const [items, setItems] = useState(null);
