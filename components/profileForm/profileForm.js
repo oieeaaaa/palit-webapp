@@ -8,16 +8,16 @@ Description:
 import { useState, useContext, useEffect } from 'react';
 import { ReactSVG } from 'react-svg';
 import AuthContext from 'js/contexts/auth';
-import { extractFileURL } from 'js/utils';
+import LayoutContext from 'js/contexts/layout';
+import { extractFileURL, validateFields, isEqual } from 'js/utils';
 
-// TODO:
-// Form validation
-// Only disable email if the user is logged in with google
+// TODO: Support email update in firebase auth
 const ProfileForm = ({
   onSubmit,
   isLoading,
 }) => {
   const { user } = useContext(AuthContext);
+  const { handlers } = useContext(LayoutContext);
   const [form, setForm] = useState(user);
   const fieldKeys = {
     firstName: 'firstName',
@@ -28,6 +28,7 @@ const ProfileForm = ({
     address: 'address',
     email: 'email',
   };
+  const isSignedInWithGoogle = user.providerId === 'google.com';
 
   /**
    * handleFormChange.
@@ -71,6 +72,32 @@ const ProfileForm = ({
    */
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    const validatedProfile = validateFields(form, {
+      firstName: { complete: true },
+      lastName: { complete: true },
+      avatar: { complete: true },
+      phoneNumber: { complete: true },
+      email: { complete: true, email: true },
+    });
+
+    if (isEqual(form, user)) {
+      handlers.showBanner({
+        text: 'Nothing to update',
+        variant: 'info',
+      });
+
+      return;
+    }
+
+    if (validatedProfile.isInvalid) {
+      handlers.showBanner({
+        text: 'You are missing some required fields',
+        variant: 'warning',
+      });
+
+      return;
+    }
 
     onSubmit(user.key, form);
   };
@@ -119,7 +146,6 @@ const ProfileForm = ({
               value={form[fieldKeys.firstName]}
               onChange={handleFormChange}
               type="text"
-              required
             />
           </label>
           <label className="form-group" htmlFor={fieldKeys.lastName}>
@@ -131,7 +157,6 @@ const ProfileForm = ({
               value={form[fieldKeys.lastName]}
               onChange={handleFormChange}
               type="text"
-              required
             />
           </label>
         </div>
@@ -140,12 +165,12 @@ const ProfileForm = ({
         <span className="form-group__label">Email</span>
         <input
           id={fieldKeys.email}
-          className="form__input --disabled"
+          className={`form__input ${isSignedInWithGoogle ? '--disabled' : ''}`}
           name={fieldKeys.email}
           value={form[fieldKeys.email]}
           onChange={handleFormChange}
           type="email"
-          disabled
+          disabled={isSignedInWithGoogle}
         />
       </label>
       <label className="form-group" htmlFor={fieldKeys.phoneNumber}>
@@ -157,7 +182,6 @@ const ProfileForm = ({
           value={form[fieldKeys.phoneNumber]}
           onChange={handleFormChange}
           type="text"
-          required
         />
       </label>
       <label className="form-group" htmlFor={fieldKeys.messengerLink}>

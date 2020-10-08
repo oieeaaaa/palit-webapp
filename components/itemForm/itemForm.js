@@ -5,9 +5,10 @@ Author: Joimee
 Description:
 ***************************************
 */
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { ReactSVG } from 'react-svg';
-import { extractFileURL } from 'js/utils';
+import LayoutContext from 'js/contexts/layout';
+import { extractFileURL, validateFields, isEqual } from 'js/utils';
 
 export const initialFormValues = {
   name: '',
@@ -20,6 +21,10 @@ const ItemForm = ({
   variant = 'add',
   data = initialFormValues,
 }) => {
+  // contexts
+  const { handlers } = useContext(LayoutContext);
+
+  // states
   const [form, setForm] = useState(data);
 
   /**
@@ -62,6 +67,30 @@ const ItemForm = ({
    */
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    const validatedForm = validateFields(form, {
+      name: { complete: true },
+      remarks: { complete: true },
+      image: { complete: true },
+    });
+
+    if (isEqual(data, form)) {
+      handlers.showBanner({
+        text: 'Nothing to update',
+        variant: 'info',
+      });
+
+      return;
+    }
+
+    if (validatedForm.isInvalid) {
+      handlers.showBanner({
+        text: 'You are missing some required field',
+        variant: 'warning',
+      });
+
+      return;
+    }
 
     onSubmit(form);
   };

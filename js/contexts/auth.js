@@ -48,8 +48,13 @@ export const AuthProvider = ({ children }) => {
       if (isLoggedIn) {
         try {
           const rawData = await USER.getOne(snapshot.uid);
+          const data = normalizeData(rawData);
+          const { providerId } = snapshot.providerData[0];
 
-          setUser(normalizeData(rawData));
+          setUser({
+            ...data,
+            providerId,
+          });
           setIsVerified(true);
         } catch (err) {
           console.error(err);
