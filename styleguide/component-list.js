@@ -1,4 +1,6 @@
 // list of components
+import ItemDetails from 'components/itemDetails/itemDetails.styleguide';
+
 import Landing from 'components/landing/landing.styleguide';
 
 import LoadingScreen from 'components/loadingScreen/loadingScreen.styleguide';
@@ -6,8 +8,6 @@ import LoadingScreen from 'components/loadingScreen/loadingScreen.styleguide';
 import GoodLuckCard from 'components/goodLuckCard/goodLuckCard.styleguide';
 
 import ProfileForm from 'components/profileForm/profileForm.styleguide';
-
-import AuthForm from 'components/authForm/authForm.styleguide';
 
 import MiniCard from 'components/miniCard/miniCard.styleguide';
 
@@ -24,6 +24,11 @@ import ItemCard from 'components/itemCard/itemCard.styleguide';
 import Header from 'components/header/header.styleguide';
 
 export default [
+  {
+    name: 'ItemDetails',
+    component: ItemDetails,
+  },
+
   {
     name: 'Landing',
     component: Landing,
@@ -42,11 +47,6 @@ export default [
   {
     name: 'ProfileForm',
     component: ProfileForm,
-  },
-
-  {
-    name: 'AuthForm',
-    component: AuthForm,
   },
 
   {
