@@ -20,7 +20,7 @@ Description:
   @include tablet-p {
     margin-bottom: rem(60);
 
-    height: auto;
+    height: rem(150);
   }
 
   .grid {
@@ -33,10 +33,6 @@ Description:
 
   &.--not-login .grid {
     padding-bottom: rem($bottom-padding);
-  }
-
-  &.--no-space {
-    margin-bottom: 0;
   }
 
   &__brand {

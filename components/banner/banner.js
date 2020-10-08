@@ -5,7 +5,7 @@ Author: Joimee
 Description: For notifications, alerts, tips, and information of the user
 ***************************************
 */
-import { useContext, useEffect } from 'react';
+import { useRef, useContext, useEffect } from 'react';
 import LayoutContext from 'js/contexts/layout';
 
 /*
@@ -21,25 +21,26 @@ import LayoutContext from 'js/contexts/layout';
 */
 const Banner = () => {
   const { banner, handlers } = useContext(LayoutContext);
+  const bannerRef = useRef(null);
+  const bannerContentRef = useRef(null);
 
   useEffect(() => {
     if (!banner.isOpen) return;
 
-    const header = document.querySelector('.header');
-    if (!header) return;
-
-    header.classList.add('--no-space');
+    bannerRef.current.style.maxHeight = `${bannerContentRef.current.offsetHeight}px`;
 
     // close banner after 3 seconds
     setTimeout(() => {
       handlers.closeBanner();
-      header.classList.remove('--no-space');
+      bannerRef.current.style.maxHeight = 0;
     }, 3000);
   }, [banner.isOpen]);
 
   return (
-    <div className={`banner ${banner.isOpen ? '--open' : ''} --${banner.variant ? banner.variant : 'default'}`}>
-      <h3>{banner.text}</h3>
+    <div className={`banner ${banner.isOpen ? '--open' : ''} --${banner.variant ? banner.variant : 'default'}`} ref={bannerRef}>
+      <div className="banner__content" ref={bannerContentRef}>
+        <h3>{banner.text}</h3>
+      </div>
     </div>
   );
 };

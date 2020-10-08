@@ -12,17 +12,20 @@ Description: For notifications, alerts, tips, and information of the user
   @include flex-center;
   @include Montserrat(700);
 
-  padding: 0 rem(20);
+  position: absolute;
+  top: $header-height--mobile;
+  left: 0;
+  display: inline-flex;
   height: $height;
+  width: 100%;
   background-color: var(--silver);
   max-height: 0;
   transition: max-height 0.25s ease;
   overflow: hidden;
+  z-index: $banner-z;
 
-  // IF isOpen IS TRUE
-  &.--open {
-    max-height: $height;
-    margin-bottom: rem(30);
+  @include tablet-p {
+    top: $header-height--tablet;
   }
 
   // VARIANTS
@@ -49,5 +52,9 @@ Description: For notifications, alerts, tips, and information of the user
   &.--success {
     background-color: var(--apple);
     color: var(--light);
+  }
+
+  &__content {
+    padding: rem(20);
   }
 }
