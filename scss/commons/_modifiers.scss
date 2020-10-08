@@ -11,8 +11,6 @@
   text-transform: lowercase;
 
   @include tablet-p {
-    margin-top: rem(30);
-
     font-size: rem(28);
     line-height: rem(38);
   }

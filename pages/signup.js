@@ -21,6 +21,7 @@ const Signup = () => {
     email: '',
     password: '',
   });
+  const [isLoading, setIsLoading] = useState(false);
 
   // custom hooks
   const auth = useAuth();
@@ -41,6 +42,8 @@ const Signup = () => {
     form.preventDefault();
 
     try {
+      setIsLoading(true);
+
       const result = await auth.signUpWithEmailAndPassword(
         form[fieldKeys.email],
         form[fieldKeys.password],
@@ -52,6 +55,8 @@ const Signup = () => {
       Router.push('/', '/', { shallow: true });
     } catch (err) {
       displayError(err);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -127,7 +132,11 @@ const Signup = () => {
                 Cancel
               </a>
             </Link>
-            <button className="button --primary signup__submit" type="submit">
+            <button
+              className={`button --primary signup__submit ${isLoading ? '--disabled' : ''}`}
+              type="submit"
+              disabled={isLoading}
+            >
               Signup
             </button>
             <p className="signup__text signup__divider">or</p>
