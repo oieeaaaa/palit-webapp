@@ -1,7 +1,5 @@
 import { useState, useEffect, useContext } from 'react';
 import { useRouter } from 'next/router';
-import Link from 'next/link';
-import { ReactSVG } from 'react-svg';
 import useError from 'js/hooks/useError';
 import useProtection from 'js/hooks/useProtection';
 import ITEM from 'js/models/item';
@@ -9,6 +7,16 @@ import LIKES from 'js/models/likes';
 import LayoutContext from 'js/contexts/layout';
 import AuthContext from 'js/contexts/auth';
 import Layout from 'components/layout/layout';
+import {
+  ItemDetailsImage,
+  ItemDetailsTitle,
+  ItemDetailsCard,
+  ItemDetailsCardTitle,
+  ItemDetailsCardDetails,
+  ItemDetailsCardRemarks,
+  ItemDetailsOwnedActions,
+  ItemDetailsUnownedActions,
+} from 'components/itemDetails/itemDetails';
 
 const ItemDetails = () => {
   // contexts
@@ -103,74 +111,32 @@ const ItemDetails = () => {
     <Layout title={item.name}>
       <div className="item">
         <div className="grid">
-          <figure className="item__image">
-            <img src={item.cover} alt={item.name} />
-          </figure>
-          <h1 className="item__title">
-            {item.name}
-          </h1>
-          <div className="item-card --info">
-            <h2 className="item-card__title">
-              Product Info
-            </h2>
-            <ul className="item-card__details">
-              <li className="item-card__item">
-                Trade Requests:
-                {' '}
-                <strong>{item.tradeRequests}</strong>
-              </li>
-              <li className="item-card__item">
-                Likes:
-                {' '}
-                <strong>{item.likes}</strong>
-              </li>
-            </ul>
-          </div>
-          <div className="item-card --remarks">
-            <h2 className="item-card__title">
-              Remarks
-            </h2>
-            <div className="item-card__details">
-              <p className="item-card__text">
-                {item.remarks}
-              </p>
-            </div>
-          </div>
+          <ItemDetailsImage cover={item.cover} name={item.name} />
+          <ItemDetailsTitle name={item.name} />
+          <ItemDetailsCard>
+            <ItemDetailsCardTitle text="Product Info" />
+            <ItemDetailsCardDetails
+              tradeRequests={item.tradeRequests}
+              likes={item.likes}
+            />
+          </ItemDetailsCard>
+          <ItemDetailsCard variant="--remarks">
+            <ItemDetailsCardTitle text="Remarks" />
+            <ItemDetailsCardRemarks remarks={item.remarks} />
+          </ItemDetailsCard>
           {isOwned ? (
-            <Link href="/items/edit/[editItemID]" as={`/items/edit/${item.key}`}>
-              <a className="button --primary item__edit">
-                <span>Edit</span>
-              </a>
-            </Link>
+            <ItemDetailsOwnedActions
+              itemKey={item.key}
+              removeItem={removeItem}
+            />
           ) : (
-            <button
-              className="button --default item__like"
-              type="button"
-              onClick={onLike}
-              disabled={isLiking}
-            >
-              <ReactSVG
-                className="button-icon"
-                src={`/icons/heart-${item.isLiked ? 'filled' : 'outline'}.svg`}
-              />
-              <span>Like</span>
-            </button>
-          )}
-          {isOwned ? (
-            <button
-              className="button --dark --red-outline item__delete"
-              type="button"
-              onClick={removeItem}
-            >
-              <span>Delete</span>
-            </button>
-          ) : (
-            <Link href="/trades/request/[itemID]" as={`/trades/request/${item.key}`}>
-              <a className="button --primary-dark item__trade">
-                <ReactSVG className="button-icon" src="/icons/cart-filled.svg" />
-                <span>Trade Requests</span>
-              </a>
-            </Link>
+            <ItemDetailsUnownedActions
+              itemKey={item.key}
+              onLike={onLike}
+              isLiked={item.isLiked}
+              isLiking={isLiking}
+              isTraded={item.isTraded}
+            />
           )}
         </div>
       </div>
