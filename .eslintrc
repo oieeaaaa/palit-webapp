@@ -25,6 +25,8 @@
   "react"
   ],
   "rules": {
+    "no-await-in-loop": "off",
+    "no-restricted-syntax": "off",
     "no-use-before-define": "off",
     "no-console": "off",
     "no-alert": "off",

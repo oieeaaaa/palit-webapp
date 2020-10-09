@@ -154,14 +154,17 @@ const TradeItem = () => {
 
       if (isEmailSend) {
         // update database
-        await TRADE_REQUESTS.acceptRequest(myItem, itemToAccept);
+        await TRADE_REQUESTS.accept(myItem, itemToAccept);
 
         // update view
         setTradeRequestItem((prevTradeRequests) => ({
           ...prevTradeRequests,
           isAccepted: true,
           isTraded: true,
-          acceptedItem: itemToAccept,
+          acceptedItem: {
+            key: itemToAccept.key,
+            owner: itemToAccept.owner,
+          },
         }));
       }
     } catch (err) {
