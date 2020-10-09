@@ -34,6 +34,7 @@ const add = (userID, data) => {
     remarks: data.remarks,
     likes: 0,
     tradeRequests: 0,
+    isTrading: false,
     isTraded: false,
     isDirty: false,
   }, { merge: true });
@@ -47,13 +48,30 @@ const add = (userID, data) => {
  * @param {string} itemID
  * @param {object} data
  */
-const update = (itemID, data) => (
-  itemsCollection.doc(itemID).update({
+const update = async (itemID, data) => {
+  const newItem = {
     name: data.name,
     cover: data.cover,
     remarks: data.remarks,
-  })
-);
+  };
+
+  // refs
+  const itemRef = itemsCollection.doc(itemID);
+  const tradeRequestRef = tradeRequestsCollection.doc(itemID);
+
+  // subcollections
+  const itemInEveryRequests = await requestsCollection.where('key', '==', itemID).get();
+
+  // updates
+  return db.runTransaction(async (transaction) => {
+    for (const itemDoc of itemInEveryRequests.docs) {
+      transaction.update(itemDoc.ref, newItem);
+    }
+
+    transaction.update(itemRef, newItem);
+    transaction.update(tradeRequestRef, newItem);
+  });
+};
 
 /**
  * get.
@@ -84,8 +102,8 @@ const getWithIsLiked = async (userID, limit) => {
   return db.runTransaction(async (transaction) => {
     const itemsWithIsLiked = [];
 
-    for (const rawItem of rawItems.docs) { // eslint-disable-line
-      const rawLikes = await transaction.get(likesCollection.doc(rawItem.id)); // eslint-disable-line
+    for (const rawItem of rawItems.docs) {
+      const rawLikes = await transaction.get(likesCollection.doc(rawItem.id));
 
       itemsWithIsLiked.push({
         ...rawItem.data(),
@@ -140,8 +158,7 @@ const getItemsAtUser = (userID, limit = 10) => itemsCollection
 /**
  * getItemsToTrade.
  *
- * Query items that are available for trade
- * TODO: Validate if the user already traded the item to the current item
+ * Query items of user that are available for trade
  *
  * @param {string} userID
  */
@@ -156,41 +173,67 @@ const getItemsToTrade = (userID) => itemsCollection
  * @param {string} itemID
  */
 const remove = async (itemID) => {
-  const batch = db.batch();
-  const item = itemsCollection.doc(itemID);
+  const affectedRequestsParentKeys = [];
+
+  // item related documents
+  const itemRef = itemsCollection.doc(itemID);
   const itemInLikes = likesCollection.doc(itemID);
   const tradeRequestItem = tradeRequestsCollection.doc(itemID);
   const tradeRequestItemRequests = await tradeRequestItem.collection('requests').get();
+
+  // subcollections
   const itemInEveryRequests = await requestsCollection.where('key', '==', itemID).get();
-  const everyAffectedItemKeys = [];
 
-  batch.update(itemsStats, { totalItems: firebaseApp.firestore.FieldValue.increment(-1) });
+  // removal processes
+  return db.runTransaction(async (transaction) => {
+    const item = await transaction.get(itemRef);
 
-  itemInEveryRequests.forEach((requestItem) => {
-    everyAffectedItemKeys.push(requestItem.ref.parent.parent.id);
-    batch.delete(requestItem.ref);
+    /* =======================================================================
+      ONLY FOR TRADING ITEMS
+    ======================================================================= */
+    if (item.isTrading || item.isTraded) {
+      // update states
+      transaction.update(
+        itemsStats,
+        { totalItems: firebaseApp.firestore.FieldValue.increment(-1) },
+      );
+
+      // update all affected requests subcollection
+      itemInEveryRequests.forEach((requestItem) => {
+        const requestItemStatsRef = requestItem.doc('--stats--');
+
+        transaction.delete(requestItem.ref);
+        transaction.update(requestItemStatsRef, {
+          totalRequests: firebaseApp.firestore.FieldValue.increment(-1),
+        });
+
+        affectedRequestsParentKeys.push(requestItem.ref.parent.parent.id);
+      });
+
+      // for each affected parent decrement its current tradeRequests value
+      affectedRequestsParentKeys.forEach((affectedItemKey) => {
+        transaction.update(itemsCollection.doc(affectedItemKey), {
+          tradeRequests: firebaseApp.firestore.FieldValue.increment(-1),
+        });
+
+        transaction.update(tradeRequestsCollection.doc(affectedItemKey), {
+          tradeRequests: firebaseApp.firestore.FieldValue.increment(-1),
+        });
+      });
+
+      // wipe out requests subcollection of the deleted item
+      tradeRequestItemRequests.forEach((requestItem) => {
+        const requestItemStatsRef = requestItem.doc('--stats--');
+        transaction.delete(requestItem.ref);
+        transaction.delete(requestItemStatsRef);
+      });
+    }
+
+    // other deletes
+    transaction.delete(itemRef);
+    transaction.delete(itemInLikes);
+    transaction.delete(tradeRequestItem);
   });
-
-  // for each affected item decrement its current tradeRequests value
-  everyAffectedItemKeys.forEach((affectedItemKey) => {
-    batch.update(itemsCollection.doc(affectedItemKey), {
-      tradeRequests: firebaseApp.firestore.FieldValue.increment(-1),
-    });
-
-    batch.update(tradeRequestsCollection.doc(affectedItemKey), {
-      tradeRequests: firebaseApp.firestore.FieldValue.increment(-1),
-    });
-  });
-
-  tradeRequestItemRequests.forEach((requestItem) => {
-    batch.delete(requestItem.ref);
-  });
-
-  batch.delete(item);
-  batch.delete(itemInLikes);
-  batch.delete(tradeRequestItem);
-
-  return batch.commit();
 };
 
 /**
@@ -215,11 +258,14 @@ const cleanDirty = (itemID) => itemsCollection.doc(itemID).update({
 /**
  • 🚨🚨🚨🚨🚨🚨
    DANGER
+   DO NOT INCLUDE THIS IN PROD!
  • 🚨🚨🚨🚨🚨🚨
  */
 const reset = async () => {
   const batch = db.batch();
   const allItems = await itemsCollection.get();
+  const allTradeRequests = await tradeRequestsCollection.get();
+  const allLikes = await likesCollection.get();
 
   allItems.forEach((itemRef) => {
     batch.update(itemsCollection.doc(itemRef.id), {
@@ -227,6 +273,14 @@ const reset = async () => {
       tradeRequests: 0,
       isTraded: false,
     });
+  });
+
+  allTradeRequests.forEach((tradeRequest) => {
+    batch.delete(tradeRequest.ref);
+  });
+
+  allLikes.forEach((like) => {
+    batch.delete(like.ref);
   });
 
   batch.commit();
