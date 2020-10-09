@@ -23,6 +23,8 @@ Description:
     text-overflow: ellipsis;
     overflow: hidden;
     max-width: rem(163);
+    white-space: nowrap;
+    cursor: default;
 
     @include tablet-p {
       max-width: rem(166);
