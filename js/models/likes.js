@@ -4,38 +4,43 @@ import firebaseApp from 'firebase/app';
 const db = firebase.firestore();
 const likesCollection = db.collection('likes');
 const itemsCollection = db.collection('items');
+const tradeRequestsCollection = db.collection('tradeRequests');
 const requestsCollectionGroup = db.collectionGroup('requests');
 
 /**
  * add.
  *
- * Writing in batch fashion 😎
- *
  * @param {string} userID
  * @param {string} itemID
  */
 const add = async (userID, itemID) => {
-  const batch = db.batch();
+  // refs
   const likeRef = likesCollection.doc(itemID);
   const itemRef = itemsCollection.doc(itemID);
-  const requests = await requestsCollectionGroup.where('id', '==', itemID).get();
+  const tradeRequestRef = tradeRequestsCollection.doc(itemID);
 
-  requests.forEach((request) => {
-    batch.set(
-      request.ref,
-      { likes: firebaseApp.firestore.FieldValue.increment(1) },
-      { merge: true },
-    );
+  // add
+  return db.runTransaction(async (transaction) => {
+    const item = await transaction.get(itemRef);
+
+    if (item.isTrading || item.isTraded) {
+      const requests = await requestsCollectionGroup.where('id', '==', itemID).get();
+
+      requests.forEach((request) => {
+        transaction.update(
+          request.ref,
+          { likes: firebaseApp.firestore.FieldValue.increment(1) },
+        );
+      });
+
+      transaction.update(tradeRequestRef, {
+        likes: firebaseApp.firestore.FieldValue.increment(1),
+      });
+    }
+
+    transaction.set(likeRef, { [userID]: true }, { merge: true });
+    transaction.update(itemRef, { likes: firebaseApp.firestore.FieldValue.increment(1) });
   });
-
-  batch.set(likeRef, { [userID]: true }, { merge: true });
-  batch.set(
-    itemRef,
-    { likes: firebaseApp.firestore.FieldValue.increment(1) },
-    { merge: true },
-  );
-
-  batch.commit();
 };
 
 /**
@@ -45,32 +50,35 @@ const add = async (userID, itemID) => {
  * @param {string} itemID
  */
 const remove = async (userID, itemID) => {
-  const batch = db.batch();
+  // refs
   const likeRef = likesCollection.doc(itemID);
   const itemRef = itemsCollection.doc(itemID);
-  const requests = await requestsCollectionGroup.where('id', '==', itemID).get();
+  const tradeRequestRef = tradeRequestsCollection.doc(itemID);
 
-  requests.forEach((request) => {
-    batch.set(
-      request.ref,
-      { likes: firebaseApp.firestore.FieldValue.increment(-1) },
-      { merge: true },
-    );
+  // remove
+  return db.runTransaction(async (transaction) => {
+    const item = await transaction.get(itemRef);
+
+    if (item.isTrading || item.isTraded) {
+      const requests = await requestsCollectionGroup.where('id', '==', itemID).get();
+
+      requests.forEach((request) => {
+        transaction.update(
+          request.ref,
+          { likes: firebaseApp.firestore.FieldValue.increment(-1) },
+        );
+      });
+
+      transaction.update(tradeRequestRef, {
+        likes: firebaseApp.firestore.FieldValue.increment(-1),
+      });
+    }
+
+    transaction.set(likeRef, {
+      [userID]: firebaseApp.firestore.FieldValue.delete(),
+    }, { merge: true });
+    transaction.update(itemRef, { likes: firebaseApp.firestore.FieldValue.increment(-1) });
   });
-
-  batch.set(
-    likeRef,
-    { [userID]: firebaseApp.firestore.FieldValue.delete() },
-    { merge: true },
-  );
-
-  batch.set(
-    itemRef,
-    { likes: firebaseApp.firestore.FieldValue.increment(-1) },
-    { merge: true },
-  );
-
-  batch.commit();
 };
 
 /**
