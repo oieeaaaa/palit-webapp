@@ -25,77 +25,104 @@ const getRequestsStats = (itemID) => tradeRequestsCollection
  * add.
  *
  * So many locations to update 😱
- * The hard part and the most important one
+ * It's okay (maybe)
+ * TODO: Prevent two-way trade (only one user should be able to perform the trade)
  *
  * @param {object} myItem
  * @param {object} itemToTrade
  */
 const add = async (myItem, itemToTrade) => {
-  const batch = db.batch();
+  const myRequests = await requestsCollectionGroup.where('key', '==', myItem.key).get();
+  const otherRequests = await requestsCollectionGroup.where('key', '==', itemToTrade.key).get();
+  const requests = [].concat(myRequests.docs, otherRequests.docs);
 
-  // My Item Refs
-  const myItemRef = tradeRequestsCollection.doc(myItem.key);
-  const myItemRequestsItemRef = myItemRef.collection('requests').doc(itemToTrade.key);
-  const myItemRequestsStatsRef = myItemRef.collection('requests').doc('--stats--');
+  // CURRENT USER's REFS
+  const myItemRef = itemsCollection.doc(myItem.key);
+  const myTradeRequestRef = tradeRequestsCollection.doc(myItem.key);
+  const myNewRequestsItemRef = myTradeRequestRef.collection('requests').doc(itemToTrade.key);
+  const myRequestsStatsRef = myTradeRequestRef.collection('requests').doc('--stats--');
 
-  // Item to trade Refs
-  const itemToTradeRef = tradeRequestsCollection.doc(itemToTrade.key);
-  const itemToTradeRequestsItemRef = itemToTradeRef.collection('requests').doc(myItem.key);
-  const itemToTradeRequestsStatsRef = itemToTradeRef.collection('requests').doc('--stats--');
+  // OTHER USER's REFS
+  const otherItemRef = itemsCollection.doc(itemToTrade.key);
+  const otherTradeRequestRef = tradeRequestsCollection.doc(itemToTrade.key);
+  const otherNewRequestsItemRef = otherTradeRequestRef.collection('requests').doc(myItem.key);
+  const otherRequestsStatsRef = otherTradeRequestRef.collection('requests').doc('--stats--');
 
-  // My item
-  batch.update(itemsCollection.doc(myItem.key), {
-    tradeRequests: firebaseApp.firestore.FieldValue.increment(1),
+  return db.runTransaction(async (transaction) => {
+    /* ========================================================================
+      items
+    ======================================================================== */
+
+    transaction.update(myItemRef, { isTrading: true });
+
+    transaction.update(otherItemRef, { isTrading: true });
+
+    transaction.update(itemsCollection.doc(myItem.key), {
+      tradeRequests: firebaseApp.firestore.FieldValue.increment(1),
+    });
+
+    transaction.update(itemsCollection.doc(itemToTrade.key), {
+      tradeRequests: firebaseApp.firestore.FieldValue.increment(1),
+      isDirty: true,
+    });
+
+    /* ========================================================================
+      tradeRequests
+    ======================================================================== */
+
+    transaction.set(myTradeRequestRef, {
+      key: myItem.key,
+      name: myItem.name,
+      owner: myItem.owner,
+      tradeRequests: myItem.tradeRequests + 1,
+      likes: myItem.tradeRequests,
+      isTraded: myItem.isTraded,
+      isAccepted: false,
+    });
+
+    transaction.set(otherTradeRequestRef, {
+      key: itemToTrade.key,
+      owner: itemToTrade.owner,
+      isTraded: itemToTrade.isTraded,
+      name: itemToTrade.name,
+      tradeRequests: itemToTrade.tradeRequests + 1,
+      isAccepted: false,
+    });
+
+    /* ========================================================================
+      tradeRequests > requests
+    ======================================================================== */
+
+    transaction.set(myRequestsStatsRef, {
+      totalRequests: firebaseApp.firestore.FieldValue.increment(1),
+    }, { merge: true });
+
+    transaction.set(otherRequestsStatsRef, {
+      totalRequests: firebaseApp.firestore.FieldValue.increment(1),
+    }, { merge: true });
+
+    transaction.set(myNewRequestsItemRef, itemToTrade);
+
+    transaction.set(otherNewRequestsItemRef, {
+      ...myItem,
+
+      // This means that if the current user performs the request to
+      // another user's item this will be set to true
+      // Otherwise, Other user performs the request
+      // to the current user's item (which will be false or undefined)
+      isRequestor: true,
+    });
+
+    requests.forEach((request) => {
+      transaction.update(request.ref, {
+        tradeRequests: firebaseApp.firestore.FieldValue.increment(1),
+      });
+    });
   });
-
-  batch.set(myItemRef, {
-    key: myItem.key,
-    owner: myItem.owner,
-    isTraded: myItem.isTraded,
-    name: myItem.name,
-    tradeRequests: myItem.tradeRequests + 1,
-    isAccepted: false,
-  });
-
-  batch.set(myItemRequestsStatsRef, {
-    totalRequests: firebaseApp.firestore.FieldValue.increment(1),
-  }, { merge: true });
-  batch.set(myItemRequestsItemRef, itemToTrade);
-
-  // Item to Trade
-  batch.update(itemsCollection.doc(itemToTrade.key), {
-    tradeRequests: firebaseApp.firestore.FieldValue.increment(1),
-    isDirty: true,
-  });
-
-  batch.set(itemToTradeRef, {
-    key: itemToTrade.key,
-    owner: itemToTrade.owner,
-    isTraded: itemToTrade.isTraded,
-    name: itemToTrade.name,
-    tradeRequests: itemToTrade.tradeRequests + 1,
-    isAccepted: false,
-  });
-
-  batch.set(itemToTradeRequestsStatsRef, {
-    totalRequests: firebaseApp.firestore.FieldValue.increment(1),
-  }, { merge: true });
-  batch.set(itemToTradeRequestsItemRef, {
-    ...myItem,
-
-    // This means that if the current user performs the request to
-    // another user's item this will be set to true
-    // Otherwise, Other user performs the request
-    // to the current user's item (which will be false or undefined)
-    isRequestor: true,
-  });
-
-  // Done
-  batch.commit();
 };
 
 /**
- * remove.
+ * cancel.
  *
  * Remove the myItemID from itemToTradeID requests collection 🔥
  * Reduce the count of tradeRequests in every documents affected
@@ -103,50 +130,74 @@ const add = async (myItem, itemToTrade) => {
  * @param {string} myItemID
  * @param {string} itemToTradeID
  */
-const remove = async (myItemID, itemToTradeID) => {
-  const batch = db.batch();
+const cancel = async (myItemID, itemToTradeID) => {
+  // CURRENT USER'S REFS
+  const myItemRef = itemsCollection.doc(myItemID);
+  const myTradeRequestRef = tradeRequestsCollection.doc(myItemID);
+  const myRequestsItemRef = myTradeRequestRef.collection('requests').doc(itemToTradeID);
+  const myRequestsStatsRef = myTradeRequestRef.collection('requests').doc('--stats--');
+  const myRequests = await requestsCollectionGroup.where('key', '==', myItemID).get();
 
-  // My Item Refs
-  const myItemRef = tradeRequestsCollection.doc(myItemID);
-  const myItemRequestsItemRef = myItemRef.collection('requests').doc(itemToTradeID);
-  const myItemInEveryRequests = await requestsCollectionGroup.where('key', '==', myItemID).get();
+  // OTHER USER'S REFS
+  const otherItemRef = itemsCollection.doc(itemToTradeID);
+  const otherTradeRequestRef = tradeRequestsCollection.doc(itemToTradeID);
+  const otherRequestsItemRef = otherTradeRequestRef.collection('requests').doc(myItemID);
+  const otherRequestsStatsRef = otherTradeRequestRef.collection('requests').doc('--stats--');
+  const otherRequests = await requestsCollectionGroup.where('key', '==', itemToTradeID).get();
 
-  // Item to trade Refs
-  const itemToTradeRef = tradeRequestsCollection.doc(itemToTradeID);
-  const itemToTradeRequestsItemRef = itemToTradeRef.collection('requests').doc(myItemID);
-  const itemToTradeInEveryRequests = await requestsCollectionGroup.where('key', '==', itemToTradeID).get();
-
-  // bulk requests updates
-  const allAffectedItemInRequests = [
-    ...myItemInEveryRequests.docs,
-    ...itemToTradeInEveryRequests.docs,
+  // aggregated requests
+  const requests = [
+    ...myRequests.docs,
+    ...otherRequests.docs,
   ];
 
-  allAffectedItemInRequests.forEach((affectedItem) => {
-    batch.update(affectedItem.ref, {
+  return db.runTransaction(async (transaction) => {
+    /* ========================================================================
+      items
+    ======================================================================== */
+    transaction.set(myItemRef, {
       tradeRequests: firebaseApp.firestore.FieldValue.increment(-1),
+    }, { merge: true });
+
+    transaction.set(otherItemRef, {
+      tradeRequests: firebaseApp.firestore.FieldValue.increment(-1),
+    }, { merge: true });
+
+    /* ========================================================================
+      tradeRequests
+    ======================================================================== */
+    transaction.update(myTradeRequestRef, {
+      totalRequests: firebaseApp.firestore.FieldValue.increment(-1),
+    });
+
+    transaction.update(otherTradeRequestRef, {
+      totalRequests: firebaseApp.firestore.FieldValue.increment(-1),
+    });
+
+    /* ========================================================================
+      tradeRequests > requests
+    ======================================================================== */
+    transaction.delete(myRequestsItemRef);
+    transaction.delete(otherRequestsItemRef);
+
+    transaction.update(myRequestsStatsRef, {
+      totalRequests: firebaseApp.firestore.FieldValue.increment(-1),
+    });
+
+    transaction.update(otherRequestsStatsRef, {
+      totalRequests: firebaseApp.firestore.FieldValue.increment(-1),
+    });
+
+    requests.forEach((affectedItem) => {
+      transaction.update(affectedItem.ref, {
+        tradeRequests: firebaseApp.firestore.FieldValue.increment(-1),
+      });
     });
   });
-
-  // My Item Updates
-  batch.delete(myItemRequestsItemRef);
-  batch.set(itemsCollection.doc(myItemID), {
-    tradeRequests: firebaseApp.firestore.FieldValue.increment(-1),
-  }, { merge: true });
-
-  // Item to trade updates
-  batch.delete(itemToTradeRequestsItemRef);
-  batch.set(itemsCollection.doc(itemToTradeID), {
-    tradeRequests: firebaseApp.firestore.FieldValue.increment(-1),
-  }, { merge: true });
-
-  return batch.commit();
 };
 
 /**
  * getOne
- *
- * Woah.
  *
  * @type {string} itemID
  */
@@ -162,9 +213,9 @@ const getOne = async (itemID, limit = 10) => {
     // kudos to doug for providing this snippet below 🎉
     const requestsInTransaction = [];
 
-    for (const doc of requests.docs) { // eslint-disable-line
+    for (const doc of requests.docs) {
       if (doc.id !== '--stats--') {
-        const requestInTransaction = await transaction.get(doc.ref); // eslint-disable-line
+        const requestInTransaction = await transaction.get(doc.ref);
         requestsInTransaction.push(normalizeData(requestInTransaction));
       }
     }
@@ -178,51 +229,86 @@ const getOne = async (itemID, limit = 10) => {
 };
 
 /**
- * acceptRequest.
+ * accept.
  *
  * @param {object} myItem
  * @param {object} itemToAccept
  */
-const acceptRequest = async (myItem, itemToAccept) => {
-  const batch = db.batch();
+const accept = async (myItem, itemToAccept) => {
+  // refs
+  const myItemRef = itemsCollection.doc(myItem.key);
+  const itemToAcceptRef = itemsCollection.doc(itemToAccept.key);
+  const myTradeRequestsRef = tradeRequestsCollection.doc(myItem.key);
+  const itemToAcceptTradeRequestsRef = tradeRequestsCollection.doc(itemToAccept.key);
 
-  const myItemRef = tradeRequestsCollection.doc(myItem.key);
-  const itemToAcceptRef = tradeRequestsCollection.doc(itemToAccept.key);
-
-  const myItemRequests = await requestsCollectionGroup.where('key', '==', myItem.key).get();
+  // requests
+  const myRequests = await requestsCollectionGroup.where('key', '==', myItem.key).get();
   const itemToAcceptRequests = await requestsCollectionGroup.where('key', '==', itemToAccept.key).get();
-  const allRequests = [].concat(myItemRequests.docs, itemToAcceptRequests.docs);
 
-  batch.update(myItemRef, {
-    isAccepted: true,
-    isTraded: true,
-    acceptedItem: itemToAccept,
+  const requests = [
+    ...myRequests.docs,
+    ...itemToAcceptRequests.docs,
+  ];
+
+  return db.runTransaction(async (transaction) => {
+    /* ========================================================================
+      items
+    ======================================================================== */
+
+    transaction.update(myItemRef, {
+      isTraded: true,
+      isTrading: false,
+    });
+
+    transaction.update(itemToAcceptRef, {
+      isTraded: true,
+      isDirty: true,
+      isTrading: false,
+    });
+
+    /* ========================================================================
+      tradeRequests
+    ======================================================================== */
+
+    transaction.update(myTradeRequestsRef, {
+      isAccepted: true,
+      isTraded: true,
+      acceptedItem: {
+        key: itemToAccept.key,
+        owner: itemToAccept.owner,
+      },
+    });
+
+    transaction.update(itemToAcceptTradeRequestsRef, {
+      isAccepted: true,
+      isTraded: true,
+      isDirty: true,
+      acceptedItem: {
+        key: myItem.key,
+        owner: myItem.owner,
+      },
+    });
+
+    /* ========================================================================
+      tradeRequests > requests
+    ======================================================================== */
+
+    requests.forEach((requestItem) => {
+      transaction.update(
+        requestItem.ref,
+        {
+          isTraded: true,
+          isTrading: false,
+        },
+      );
+    });
   });
-
-  batch.update(itemToAcceptRef, {
-    isAccepted: true,
-    isTraded: true,
-    isDirty: true,
-    acceptedItem: myItem,
-  });
-
-  batch.update(itemsCollection.doc(myItem.key), { isTraded: true });
-  batch.update(itemsCollection.doc(itemToAccept.key), { isTraded: true, isDirty: true });
-
-  allRequests.forEach((requestItem) => {
-    batch.update(
-      requestItem.ref,
-      { isTraded: true },
-    );
-  });
-
-  return batch.commit();
 };
 
 export default {
   getRequestsStats,
   add,
-  remove,
+  cancel,
   getOne,
-  acceptRequest,
+  accept,
 };
