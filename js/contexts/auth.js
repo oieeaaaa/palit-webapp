@@ -10,17 +10,6 @@ export const defaultValue = {
 
 export const AuthContext = createContext(defaultValue);
 
-export const defaultUser = {
-  key: '',
-  avatar: '',
-  firstName: '',
-  lastName: '',
-  email: '',
-  messengerLink: '',
-  phoneNumber: '',
-  address: '',
-};
-
 /**
  * AuthProvider.
  *
@@ -30,7 +19,7 @@ export const defaultUser = {
 export const AuthProvider = ({ children }) => {
   const [isVerifyingUser, setIsVerifyingUser] = useState(false);
   const [isVerified, setIsVerified] = useState(false);
-  const [user, setUser] = useState(defaultUser);
+  const [user, setUser] = useState(USER.defaultUser);
 
   // custom hooks
   const router = useRouter();
@@ -55,16 +44,17 @@ export const AuthProvider = ({ children }) => {
           const data = normalizeData(rawData);
           const { providerId } = snapshot.providerData[0];
 
-          setUser({
+          setUser((prevUser) => ({
+            ...prevUser,
             ...data,
             providerId,
-          });
+          }));
           setIsVerified(true);
         } catch (err) {
           console.error(err);
         }
       } else {
-        setUser(defaultUser);
+        setUser(USER.defaultUser);
         setIsVerified(false);
 
         if (!isUserInAllowedPages) {

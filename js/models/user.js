@@ -3,6 +3,16 @@ import firebase from 'palit-firebase';
 const db = firebase.firestore();
 const usersCollection = db.collection('users');
 
+const defaultUser = {
+  firstName: '',
+  lastName: '',
+  avatar: '',
+  phoneNumber: '',
+  messengerLink: '',
+  address: '',
+  email: '',
+};
+
 /**
  * add.
  *
@@ -10,11 +20,7 @@ const usersCollection = db.collection('users');
  * @param {object} data
  */
 const add = (userID, data = {}) => usersCollection.doc(userID).set({
-  firstName: '',
-  lastName: '',
-  avatar: '',
-  address: '',
-  messagerLink: '',
+  ...defaultUser,
   ...data,
 });
 
@@ -36,4 +42,5 @@ export default {
   add,
   update,
   getOne,
+  defaultUser,
 };

@@ -2,6 +2,7 @@ import firebase from 'palit-firebase';
 import firebaseApp from 'firebase/app';
 
 const db = firebase.firestore();
+
 const itemsCollection = db.collection('items');
 const itemsStats = db.collection('items').doc('--stats--');
 const likesCollection = db.collection('likes');
