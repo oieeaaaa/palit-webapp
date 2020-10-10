@@ -10,7 +10,6 @@ import Head from 'next/head';
 import AuthContext from 'js/contexts/auth';
 import Header from '../header/header';
 import Footer, { FooterDock } from '../footer/footer';
-import Banner from '../banner/banner';
 
 const Layout = ({ title, description, children }) => {
   const { user } = useContext(AuthContext);
@@ -22,7 +21,6 @@ const Layout = ({ title, description, children }) => {
         <meta name="description" content={description} />
       </Head>
       <Header user={user} />
-      <Banner />
       {children}
       <Footer />
       <FooterDock />

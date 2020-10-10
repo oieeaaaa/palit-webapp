@@ -16,11 +16,11 @@ const useError = () => {
    * It should display the error.message
    * @param {object} error
    */
-  const displayError = (err) => {
+  const displayError = (err = {}) => {
     console.error(err.message);
 
     handlers.showBanner({
-      text: error.message,
+      text: err.message || 'Oops! Something bad happen.',
       variant: 'error',
     });
 

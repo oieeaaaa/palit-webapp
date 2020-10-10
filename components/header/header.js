@@ -17,6 +17,7 @@ import { useRouter } from 'next/router';
 import Link from 'next/link';
 import useAuth from 'js/hooks/useAuth';
 import routes from 'js/routes';
+import Banner from 'components/banner/banner';
 
 /**
  * HeaderDropdown.
@@ -178,6 +179,7 @@ const Header = ({ user }) => {
         />
         {user.key && <HeaderNav currentPath={router.pathname} />}
       </div>
+      <Banner />
     </div>
   );
 };

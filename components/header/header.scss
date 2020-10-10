@@ -195,4 +195,12 @@ Description:
     text-transform: uppercase;
     color: var(--mine-shaft);
   }
+
+  .banner {
+    top: $header-height--mobile;
+
+    @include tablet-p {
+      top: $header-height--tablet;
+    }
+  }
 }

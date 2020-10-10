@@ -6,6 +6,7 @@ import useAuth from 'js/hooks/useAuth';
 import useError from 'js/hooks/useError';
 
 import { LandingFooter } from 'components/landing/landing';
+import Banner from 'components/banner/banner';
 
 /**
  * Login.
@@ -86,6 +87,7 @@ const Login = () => {
 
   return (
     <div className="login">
+      <Banner />
       <div className="grid">
         <h1 className="login__heading --brand">Palit</h1>
         <form className="login-form" onSubmit={handleSubmit}>

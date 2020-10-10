@@ -9,7 +9,7 @@ import { useRef, useContext, useEffect } from 'react';
 import LayoutContext from 'js/contexts/layout';
 
 /*
-  PROPS:
+  banner:
     isOpen {bool}
     text {string}
     variant {string}
@@ -36,10 +36,31 @@ const Banner = () => {
     }, 3000);
   }, [banner.isOpen]);
 
+  /**
+   * getBannerClass.
+   */
+  const getBannerClass = () => {
+    const bannerClassList = [];
+
+    if (banner.isOpen) {
+      bannerClassList.push('open');
+    }
+
+    if (banner.variant) {
+      bannerClassList.push(banner.variant);
+    } else {
+      bannerClassList.push('default');
+    }
+
+    return `banner --${bannerClassList.join(' --')}`;
+  };
+
   return (
-    <div className={`banner ${banner.isOpen ? '--open' : ''} --${banner.variant ? banner.variant : 'default'}`} ref={bannerRef}>
-      <div className="banner__content" ref={bannerContentRef}>
-        <h3>{banner.text}</h3>
+    <div className={getBannerClass()} ref={bannerRef}>
+      <div className="grid">
+        <div className="banner__content" ref={bannerContentRef}>
+          <h3>{banner.text}</h3>
+        </div>
       </div>
     </div>
   );
