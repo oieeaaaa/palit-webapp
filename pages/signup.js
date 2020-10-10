@@ -38,8 +38,8 @@ const Signup = () => {
    *
    * @param {object} form
    */
-  const handleSubmit = async () => {
-    form.preventDefault();
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
     try {
       setIsLoading(true);
