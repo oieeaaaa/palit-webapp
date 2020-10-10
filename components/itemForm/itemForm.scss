@@ -94,7 +94,8 @@ Description:
     border-radius: rem(10);
     background-color: var(--mine-shaft);
     border: rem(1) solid var(--gray);
-    height: rem(101);
+    height: rem(206);
+    resize: vertical;
 
     @include tablet-p {
       grid-area: remarks;

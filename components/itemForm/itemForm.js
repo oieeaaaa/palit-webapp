@@ -63,6 +63,13 @@ const ItemForm = ({
   };
 
   /**
+   * clearForm.
+   */
+  const clearForm = () => {
+    setForm(initialFormValues);
+  };
+
+  /**
    * handleSubmit.
    */
   const handleSubmit = (e) => {
@@ -92,7 +99,7 @@ const ItemForm = ({
       return;
     }
 
-    onSubmit(form);
+    onSubmit(form, clearForm);
   };
 
   /**
