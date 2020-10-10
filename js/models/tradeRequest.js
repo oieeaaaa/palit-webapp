@@ -101,10 +101,14 @@ const add = async (myItem, itemToTrade) => {
       totalRequests: firebaseApp.firestore.FieldValue.increment(1),
     }, { merge: true });
 
-    transaction.set(myNewRequestsItemRef, itemToTrade);
+    transaction.set(myNewRequestsItemRef, {
+      ...itemToTrade,
+      tradeRequests: itemToTrade.tradeRequests + 1,
+    });
 
     transaction.set(otherNewRequestsItemRef, {
       ...myItem,
+      tradeRequests: myItem.tradeRequests + 1,
 
       // This means that if the current user performs the request to
       // another user's item this will be set to true
