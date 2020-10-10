@@ -1,0 +1,66 @@
+.about {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+
+  .grid:last-of-type {
+    @include tablet-p {
+      grid-template-columns: unset;
+      grid-template-areas: "title title"
+        "content image"
+        "content image";
+    }
+  }
+
+  &__image {
+    @include aspect-ratio(1, 1);
+
+    grid-column: -3 / -1;
+    grid-row: 2 / 2;
+    align-self: start;
+
+    @include tablet-p {
+      grid-area: image;
+
+      min-width: rem(233);
+    }
+  }
+
+  &__heading {
+    @include Montserrat(700);
+
+    margin-bottom: rem(15);
+    grid-column: 1 / -3;
+
+    font-size: rem(18);
+    line-height: rem(22);
+
+    @include tablet-p {
+      grid-area: title;
+
+      font-size: rem(24);
+      line-height: rem(34);
+    }
+  }
+
+  &__content {
+    grid-column: 1 / -3;
+
+    @include tablet-p {
+      grid-area: content;
+    }
+  }
+
+  &__text {
+    font-size: rem(18);
+    line-height: rem(28);
+  }
+
+  &__donate {
+    margin-top: rem(20);
+  }
+
+  .landing-footer {
+    margin-top: auto;
+  }
+}

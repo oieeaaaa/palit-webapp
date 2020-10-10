@@ -26,8 +26,12 @@ export const LandingHeading = ({ title }) => (
  */
 export const LandingHeader = () => (
   <header className="landing-header">
-    <h2 className="--brand">
-      palit
+    <h2 className="landing-header__brand --brand">
+      <Link href="/">
+        <a>
+          palit
+        </a>
+      </Link>
     </h2>
     <div className="landing-header-buttons">
       <Link href="/signup">

@@ -72,6 +72,7 @@ Description:
     display: none;
     height: rem(30);
     align-items: center;
+    justify-content: center;
 
     @include tablet-p {
       display: flex;
@@ -79,14 +80,6 @@ Description:
 
     &__link {
       color: var(--light);
-    }
-
-    & > &__link:first-child {
-      margin-right: rem(20);
-    }
-
-    & > &__link:last-of-type {
-      margin-left: auto;
     }
   }
 }

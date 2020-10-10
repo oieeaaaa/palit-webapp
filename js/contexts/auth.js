@@ -43,7 +43,11 @@ export const AuthProvider = ({ children }) => {
 
     const unsubscribe = firebaseApp.auth().onAuthStateChanged(async (snapshot) => {
       const isLoggedIn = !!snapshot;
-      const isUserInAuthPages = ['/signup', '/login'].includes(router.pathname);
+      const isUserInAllowedPages = [
+        '/signup',
+        '/login',
+        '/about',
+      ].includes(router.pathname);
 
       if (isLoggedIn) {
         try {
@@ -63,7 +67,7 @@ export const AuthProvider = ({ children }) => {
         setUser(defaultUser);
         setIsVerified(false);
 
-        if (!isUserInAuthPages) {
+        if (!isUserInAllowedPages) {
           router.push('/', '/');
         }
       }
