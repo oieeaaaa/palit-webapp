@@ -21,7 +21,7 @@ const Add = () => {
    * It should update the error state if something goes wrong
    * @param {object} e
    */
-  const handleSubmit = async ({ imageFile, ...form }) => {
+  const handleSubmit = async ({ imageFile, ...form }, clearForm) => {
     // Disable button while waiting for the requests below
     setIsLoading(true);
 
@@ -45,6 +45,8 @@ const Add = () => {
         variant: 'success',
         text: `Added ${form.name} 🎉`,
       });
+
+      clearForm();
     } catch (err) {
       displayError(err);
     } finally {
