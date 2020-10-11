@@ -7,7 +7,7 @@ import ITEM from 'js/models/item';
 import { normalizeData } from 'js/utils';
 import storage from 'js/storage';
 import Layout from 'components/layout/layout';
-import ItemForm from 'components/itemForm/itemForm';
+import ItemForm, { initialFormValues } from 'components/itemForm/itemForm';
 
 const ItemEdit = () => {
   // contexts
@@ -15,7 +15,7 @@ const ItemEdit = () => {
   const { handlers } = useContext(LayoutContext);
 
   // states
-  const [item, setItem] = useState({});
+  const [item, setItem] = useState(initialFormValues);
   const [isLoading, setIsLoading] = useState(false);
 
   // custom hooks
