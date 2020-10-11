@@ -1,8 +1,18 @@
 import firebase from 'palit-firebase';
-import firebaseApp from 'firebase/app';
+import { normalizeData } from 'js/utils';
+import {
+  incrementTotalItems,
+  newItem,
+  updatedItem,
+} from 'js/shapes/item';
+import {
+  incrementTotalRequests,
+  incrementTradeRequests,
+} from 'js/shapes/tradeRequest';
 
 const db = firebase.firestore();
 
+// collections, docs
 const itemsCollection = db.collection('items');
 const itemsStats = db.collection('items').doc('--stats--');
 const likesCollection = db.collection('likes');
@@ -24,21 +34,9 @@ const add = (userID, data) => {
   const batch = db.batch();
   const newDocumentID = itemsCollection.doc().id;
 
-  batch.set(itemsStats, {
-    totalItems: firebaseApp.firestore.FieldValue.increment(1),
-  }, { merge: true });
+  batch.set(itemsStats, incrementTotalItems(1), { merge: true });
 
-  batch.set(itemsCollection.doc(newDocumentID), {
-    owner: userID,
-    name: data.name,
-    cover: data.cover,
-    remarks: data.remarks,
-    likes: 0,
-    tradeRequests: 0,
-    isTrading: false,
-    isTraded: false,
-    isDirty: false,
-  }, { merge: true });
+  batch.set(itemsCollection.doc(newDocumentID), newItem({ userID, ...data }), { merge: true });
 
   batch.commit();
 };
@@ -50,12 +48,6 @@ const add = (userID, data) => {
  * @param {object} data
  */
 const update = async (itemID, data) => {
-  const newItem = {
-    name: data.name,
-    cover: data.cover,
-    remarks: data.remarks,
-  };
-
   // refs
   const itemRef = itemsCollection.doc(itemID);
   const tradeRequestRef = tradeRequestsCollection.doc(itemID);
@@ -65,12 +57,12 @@ const update = async (itemID, data) => {
 
   // updates
   return db.runTransaction(async (transaction) => {
-    for (const itemDoc of itemInEveryRequests.docs) {
-      transaction.update(itemDoc.ref, newItem);
-    }
+    itemInEveryRequests.forEach((requestItem) => {
+      transaction.update(requestItem.ref, updatedItem(data));
+    });
 
-    transaction.update(itemRef, newItem);
-    transaction.update(tradeRequestRef, newItem);
+    transaction.update(itemRef, updatedItem(data));
+    transaction.update(tradeRequestRef, updatedItem(data));
   });
 };
 
@@ -89,7 +81,7 @@ const get = (userID, limit = 10) => itemsCollection
   .get();
 
 /**
- * getWithIsLiked.
+ * getOthersItems.
  *
  * It should retrieve items from other users
  * It should have an association with likesRef
@@ -97,25 +89,30 @@ const get = (userID, limit = 10) => itemsCollection
  * @param {string} userID
  * @param {number} limit
  */
-const getWithIsLiked = async (userID, limit) => {
+const getOthersItems = async (userID, limit) => {
   const rawItems = await get(userID, limit);
 
   return db.runTransaction(async (transaction) => {
-    const itemsWithIsLiked = [];
+    const newItems = [];
 
     for (const rawItem of rawItems.docs) {
+      const rawRequests = await tradeRequestsCollection.doc(rawItem.id).collection('requests').get();
       const rawLikes = await transaction.get(likesCollection.doc(rawItem.id));
+      const isTradingPartner = !rawRequests.empty && rawRequests.docs.some(
+        (rawRequest) => normalizeData(rawRequest).owner === userID,
+      );
 
-      itemsWithIsLiked.push({
+      newItems.push({
         ...rawItem.data(),
         key: rawItem.id,
 
         // with this
         isLiked: rawLikes.exists ? Object.keys(rawLikes.data()).includes(userID) : false,
+        isTradingPartner,
       });
     }
 
-    return itemsWithIsLiked;
+    return newItems;
   });
 };
 
@@ -162,11 +159,31 @@ const getItemsAtUser = (userID, limit = 10) => itemsCollection
  * Query items of user that are available for trade
  *
  * @param {string} userID
+ * @param {string} itemToTradeID
  */
-const getItemsToTrade = (userID) => itemsCollection
-  .where('owner', '==', userID)
-  .where('isTraded', '==', false)
-  .get();
+const getItemsToTrade = async (userID, itemToTradeID) => {
+  const rawItems = await itemsCollection.where('owner', '==', userID).where('isTraded', '==', false).get();
+  const newItems = [];
+
+  for (const rawItem of rawItems.docs) {
+    let isItemAlreadyTraded = false;
+    const rawRequests = await tradeRequestsCollection.doc(itemToTradeID).collection('requests').get();
+
+    if (!rawRequests.empty) {
+      for (const rawRequest of rawRequests.docs) {
+        if (rawRequest.id === rawItem.id) {
+          isItemAlreadyTraded = true;
+        }
+      }
+    }
+
+    if (!isItemAlreadyTraded) {
+      newItems.push(normalizeData(rawItem));
+    }
+  }
+
+  return newItems;
+};
 
 /**
  * remove
@@ -180,60 +197,62 @@ const remove = async (itemID) => {
   const itemRef = itemsCollection.doc(itemID);
   const itemInLikes = likesCollection.doc(itemID);
   const tradeRequestItem = tradeRequestsCollection.doc(itemID);
-  const tradeRequestItemRequests = await tradeRequestItem.collection('requests').get();
+  const tradeRequestItemRequestsRef = tradeRequestItem.collection('requests');
+  const tradeRequestItemRequestsStatsRef = tradeRequestItemRequestsRef.doc('--stats--');
+
+  const tradeRequestItemRequests = await tradeRequestItemRequestsRef.get();
 
   // subcollections
   const itemInEveryRequests = await requestsCollection.where('key', '==', itemID).get();
 
   // removal processes
   return db.runTransaction(async (transaction) => {
-    const item = await transaction.get(itemRef);
+    const rawItem = await transaction.get(itemRef);
+    const item = normalizeData(rawItem);
 
-    /* =======================================================================
-      ONLY FOR TRADING ITEMS
-    ======================================================================= */
+    transaction.delete(itemRef);
+
+    transaction.delete(itemInLikes);
+
+    transaction.delete(tradeRequestItem);
+
     if (item.isTrading || item.isTraded) {
       // update states
-      transaction.update(
-        itemsStats,
-        { totalItems: firebaseApp.firestore.FieldValue.increment(-1) },
-      );
+      transaction.update(itemsStats, incrementTotalItems(-1));
 
       // update all affected requests subcollection
       itemInEveryRequests.forEach((requestItem) => {
-        const requestItemStatsRef = requestItem.doc('--stats--');
-
         transaction.delete(requestItem.ref);
-        transaction.update(requestItemStatsRef, {
-          totalRequests: firebaseApp.firestore.FieldValue.increment(-1),
-        });
 
         affectedRequestsParentKeys.push(requestItem.ref.parent.parent.id);
       });
 
       // for each affected parent decrement its current tradeRequests value
       affectedRequestsParentKeys.forEach((affectedItemKey) => {
-        transaction.update(itemsCollection.doc(affectedItemKey), {
-          tradeRequests: firebaseApp.firestore.FieldValue.increment(-1),
-        });
+        const requestItemStatsRef = tradeRequestsCollection
+          .doc(affectedItemKey)
+          .collection('requests')
+          .doc('--stats--');
 
-        transaction.update(tradeRequestsCollection.doc(affectedItemKey), {
-          tradeRequests: firebaseApp.firestore.FieldValue.increment(-1),
-        });
+        transaction.update(requestItemStatsRef, incrementTotalRequests(-1));
+
+        transaction.update(
+          itemsCollection.doc(affectedItemKey),
+          incrementTradeRequests(-1),
+        );
+
+        transaction.update(
+          tradeRequestsCollection.doc(affectedItemKey),
+          incrementTradeRequests(-1),
+        );
       });
 
       // wipe out requests subcollection of the deleted item
       tradeRequestItemRequests.forEach((requestItem) => {
-        const requestItemStatsRef = requestItem.doc('--stats--');
         transaction.delete(requestItem.ref);
-        transaction.delete(requestItemStatsRef);
+        transaction.delete(tradeRequestItemRequestsStatsRef);
       });
     }
-
-    // other deletes
-    transaction.delete(itemRef);
-    transaction.delete(itemInLikes);
-    transaction.delete(tradeRequestItem);
   });
 };
 
@@ -262,7 +281,9 @@ const cleanDirty = (itemID) => itemsCollection.doc(itemID).update({
    DO NOT INCLUDE THIS IN PROD!
  • 🚨🚨🚨🚨🚨🚨
  */
-const reset = async () => {
+const reset = async (isReset) => {
+  if (!isReset) return;
+
   const batch = db.batch();
   const allItems = await itemsCollection.get();
   const allTradeRequests = await tradeRequestsCollection.get();
@@ -273,6 +294,8 @@ const reset = async () => {
       likes: 0,
       tradeRequests: 0,
       isTraded: false,
+      isTrading: false,
+      isDirty: false,
     });
   });
 
@@ -295,7 +318,7 @@ export default {
   getOne,
   getOneWithLikes,
   getItemsAtUser,
-  getWithIsLiked,
+  getOthersItems,
   getItemsToTrade,
   remove,
   search,
