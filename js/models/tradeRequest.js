@@ -1,6 +1,13 @@
 import firebase from 'palit-firebase';
-import firebaseApp from 'firebase/app';
 import { normalizeData } from 'js/utils';
+import {
+  newTradeRequest,
+  newRequest,
+  incrementTradeRequests,
+  incrementTotalRequests,
+  acceptedItemStatus,
+  acceptedTradeRequest,
+} from 'js/shapes/tradeRequest';
 
 const db = firebase.firestore();
 
@@ -26,7 +33,6 @@ const getRequestsStats = (itemID) => tradeRequestsCollection
  *
  * So many locations to update 😱
  * It's okay (maybe)
- * TODO: Prevent two-way trade (only one user should be able to perform the trade)
  *
  * @param {object} myItem
  * @param {object} itemToTrade
@@ -34,7 +40,10 @@ const getRequestsStats = (itemID) => tradeRequestsCollection
 const add = async (myItem, itemToTrade) => {
   const myRequests = await requestsCollectionGroup.where('key', '==', myItem.key).get();
   const otherRequests = await requestsCollectionGroup.where('key', '==', itemToTrade.key).get();
-  const requests = [].concat(myRequests.docs, otherRequests.docs);
+  const requests = [
+    ...myRequests.docs,
+    ...otherRequests.docs,
+  ];
 
   // CURRENT USER's REFS
   const myItemRef = itemsCollection.doc(myItem.key);
@@ -57,12 +66,10 @@ const add = async (myItem, itemToTrade) => {
 
     transaction.update(otherItemRef, { isTrading: true });
 
-    transaction.update(itemsCollection.doc(myItem.key), {
-      tradeRequests: firebaseApp.firestore.FieldValue.increment(1),
-    });
+    transaction.update(itemsCollection.doc(myItem.key), incrementTradeRequests(1));
 
     transaction.update(itemsCollection.doc(itemToTrade.key), {
-      tradeRequests: firebaseApp.firestore.FieldValue.increment(1),
+      ...incrementTradeRequests(1),
       isDirty: true,
     });
 
@@ -70,57 +77,27 @@ const add = async (myItem, itemToTrade) => {
       tradeRequests
     ======================================================================== */
 
-    transaction.set(myTradeRequestRef, {
-      key: myItem.key,
-      name: myItem.name,
-      owner: myItem.owner,
-      tradeRequests: myItem.tradeRequests + 1,
-      likes: myItem.tradeRequests,
-      isTraded: myItem.isTraded,
-      isAccepted: false,
-    });
+    transaction.set(myTradeRequestRef, newTradeRequest(myItem));
 
-    transaction.set(otherTradeRequestRef, {
-      key: itemToTrade.key,
-      owner: itemToTrade.owner,
-      isTraded: itemToTrade.isTraded,
-      name: itemToTrade.name,
-      tradeRequests: itemToTrade.tradeRequests + 1,
-      isAccepted: false,
-    });
+    transaction.set(otherTradeRequestRef, newTradeRequest(itemToTrade));
 
     /* ========================================================================
       tradeRequests > requests
     ======================================================================== */
 
-    transaction.set(myRequestsStatsRef, {
-      totalRequests: firebaseApp.firestore.FieldValue.increment(1),
-    }, { merge: true });
+    transaction.set(myRequestsStatsRef, incrementTotalRequests(1), { merge: true });
 
-    transaction.set(otherRequestsStatsRef, {
-      totalRequests: firebaseApp.firestore.FieldValue.increment(1),
-    }, { merge: true });
+    transaction.set(otherRequestsStatsRef, incrementTotalRequests(1), { merge: true });
 
-    transaction.set(myNewRequestsItemRef, {
-      ...itemToTrade,
-      tradeRequests: itemToTrade.tradeRequests + 1,
-    });
+    transaction.set(myNewRequestsItemRef, newRequest(itemToTrade));
 
     transaction.set(otherNewRequestsItemRef, {
-      ...myItem,
-      tradeRequests: myItem.tradeRequests + 1,
-
-      // This means that if the current user performs the request to
-      // another user's item this will be set to true
-      // Otherwise, Other user performs the request
-      // to the current user's item (which will be false or undefined)
+      ...newRequest(myItem),
       isRequestor: true,
     });
 
     requests.forEach((request) => {
-      transaction.update(request.ref, {
-        tradeRequests: firebaseApp.firestore.FieldValue.increment(1),
-      });
+      transaction.update(request.ref, incrementTradeRequests(1));
     });
   });
 };
@@ -159,44 +136,31 @@ const cancel = async (myItemID, itemToTradeID) => {
     /* ========================================================================
       items
     ======================================================================== */
-    transaction.set(myItemRef, {
-      tradeRequests: firebaseApp.firestore.FieldValue.increment(-1),
-    }, { merge: true });
+    transaction.set(myItemRef, incrementTradeRequests(-1), { merge: true });
 
-    transaction.set(otherItemRef, {
-      tradeRequests: firebaseApp.firestore.FieldValue.increment(-1),
-    }, { merge: true });
+    transaction.set(otherItemRef, incrementTradeRequests(-1), { merge: true });
 
     /* ========================================================================
       tradeRequests
     ======================================================================== */
-    transaction.update(myTradeRequestRef, {
-      totalRequests: firebaseApp.firestore.FieldValue.increment(-1),
-    });
+    transaction.update(myTradeRequestRef, incrementTradeRequests(-1));
 
-    transaction.update(otherTradeRequestRef, {
-      totalRequests: firebaseApp.firestore.FieldValue.increment(-1),
-    });
+    transaction.update(otherTradeRequestRef, incrementTradeRequests(-1));
 
     /* ========================================================================
       tradeRequests > requests
     ======================================================================== */
-    transaction.delete(myRequestsItemRef);
-    transaction.delete(otherRequestsItemRef);
+    transaction.update(myRequestsStatsRef, incrementTotalRequests(-1));
 
-    transaction.update(myRequestsStatsRef, {
-      totalRequests: firebaseApp.firestore.FieldValue.increment(-1),
-    });
-
-    transaction.update(otherRequestsStatsRef, {
-      totalRequests: firebaseApp.firestore.FieldValue.increment(-1),
-    });
+    transaction.update(otherRequestsStatsRef, incrementTotalRequests(-1));
 
     requests.forEach((affectedItem) => {
-      transaction.update(affectedItem.ref, {
-        tradeRequests: firebaseApp.firestore.FieldValue.increment(-1),
-      });
+      transaction.update(affectedItem.ref, incrementTradeRequests(-1));
     });
+
+    transaction.delete(myRequestsItemRef);
+
+    transaction.delete(otherRequestsItemRef);
   });
 };
 
@@ -259,52 +223,27 @@ const accept = async (myItem, itemToAccept) => {
       items
     ======================================================================== */
 
-    transaction.update(myItemRef, {
-      isTraded: true,
-      isTrading: false,
-    });
+    transaction.update(myItemRef, acceptedItemStatus());
 
     transaction.update(itemToAcceptRef, {
-      isTraded: true,
+      ...acceptedItemStatus(),
       isDirty: true,
-      isTrading: false,
     });
 
     /* ========================================================================
       tradeRequests
     ======================================================================== */
 
-    transaction.update(myTradeRequestsRef, {
-      isAccepted: true,
-      isTraded: true,
-      acceptedItem: {
-        key: itemToAccept.key,
-        owner: itemToAccept.owner,
-      },
-    });
+    transaction.update(myTradeRequestsRef, acceptedTradeRequest(itemToAccept));
 
-    transaction.update(itemToAcceptTradeRequestsRef, {
-      isAccepted: true,
-      isTraded: true,
-      isDirty: true,
-      acceptedItem: {
-        key: myItem.key,
-        owner: myItem.owner,
-      },
-    });
+    transaction.update(itemToAcceptTradeRequestsRef, acceptedTradeRequest(myItem));
 
     /* ========================================================================
       tradeRequests > requests
     ======================================================================== */
 
     requests.forEach((requestItem) => {
-      transaction.update(
-        requestItem.ref,
-        {
-          isTraded: true,
-          isTrading: false,
-        },
-      );
+      transaction.update(requestItem.ref, acceptedItemStatus());
     });
   });
 };
