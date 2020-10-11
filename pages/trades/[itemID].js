@@ -105,7 +105,7 @@ const TradeItem = () => {
    */
   const onCancelRequest = async (requestedItemKey) => {
     try {
-      await TRADE_REQUESTS.remove(myItem.key, requestedItemKey);
+      await TRADE_REQUESTS.cancel(myItem.key, requestedItemKey);
 
       setTradeRequestItem((prevTradeRequests) => {
         const itemsWithoutRequestedItem = ({
