@@ -1,5 +1,6 @@
 import firebase from 'palit-firebase';
-import firebaseApp from 'firebase/app';
+import { incrementLikes, newUser, removeUser } from 'js/shapes/likes';
+import { normalizeData } from 'js/utils';
 
 const db = firebase.firestore();
 const likesCollection = db.collection('likes');
@@ -21,25 +22,22 @@ const add = async (userID, itemID) => {
 
   // add
   return db.runTransaction(async (transaction) => {
-    const item = await transaction.get(itemRef);
+    const rawItem = await transaction.get(itemRef);
+    const item = normalizeData(rawItem);
 
     if (item.isTrading || item.isTraded) {
-      const requests = await requestsCollectionGroup.where('id', '==', itemID).get();
+      const requests = await requestsCollectionGroup.where('key', '==', itemID).get();
 
       requests.forEach((request) => {
-        transaction.update(
-          request.ref,
-          { likes: firebaseApp.firestore.FieldValue.increment(1) },
-        );
+        transaction.set(request.ref, incrementLikes(1), { merge: true });
       });
 
-      transaction.update(tradeRequestRef, {
-        likes: firebaseApp.firestore.FieldValue.increment(1),
-      });
+      transaction.set(tradeRequestRef, incrementLikes(1), { merge: true });
     }
 
-    transaction.set(likeRef, { [userID]: true }, { merge: true });
-    transaction.update(itemRef, { likes: firebaseApp.firestore.FieldValue.increment(1) });
+    transaction.set(likeRef, newUser(userID), { merge: true });
+
+    transaction.set(itemRef, incrementLikes(1), { merge: true });
   });
 };
 
@@ -57,27 +55,22 @@ const remove = async (userID, itemID) => {
 
   // remove
   return db.runTransaction(async (transaction) => {
-    const item = await transaction.get(itemRef);
+    const rawItem = await transaction.get(itemRef);
+    const item = normalizeData(rawItem);
 
     if (item.isTrading || item.isTraded) {
-      const requests = await requestsCollectionGroup.where('id', '==', itemID).get();
+      const requests = await requestsCollectionGroup.where('key', '==', itemID).get();
 
       requests.forEach((request) => {
-        transaction.update(
-          request.ref,
-          { likes: firebaseApp.firestore.FieldValue.increment(-1) },
-        );
+        transaction.set(request.ref, incrementLikes(-1), { merge: true });
       });
 
-      transaction.update(tradeRequestRef, {
-        likes: firebaseApp.firestore.FieldValue.increment(-1),
-      });
+      transaction.set(tradeRequestRef, incrementLikes(-1), { merge: true });
     }
 
-    transaction.set(likeRef, {
-      [userID]: firebaseApp.firestore.FieldValue.delete(),
-    }, { merge: true });
-    transaction.update(itemRef, { likes: firebaseApp.firestore.FieldValue.increment(-1) });
+    transaction.set(likeRef, removeUser(userID), { merge: true });
+
+    transaction.set(itemRef, incrementLikes(-1), { merge: true });
   });
 };
 
