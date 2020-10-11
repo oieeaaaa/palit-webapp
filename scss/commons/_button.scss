@@ -96,6 +96,7 @@
     border-color: var(--gray);
     background-color: var(--silver);
     color: var(--gray);
+    cursor: not-allowed;
 
     @include tablet-p {
       @include state(hover) {
