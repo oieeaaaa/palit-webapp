@@ -180,7 +180,7 @@ export const TradeRequestItemRequests = ({
 export const TradeRequestEmpty = ({ isEmpty }) => isEmpty && (
   <div className="tip">
     <h2 className="tip-heading">
-      Empty:
+      No requests yet:
     </h2>
     <p className="tip-text">
       Try to make a
