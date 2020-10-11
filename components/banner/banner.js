@@ -26,15 +26,19 @@ const Banner = () => {
 
   useEffect(() => {
     if (!banner.isOpen) return;
-
-    bannerRef.current.style.maxHeight = `${bannerContentRef.current.offsetHeight}px`;
+    if (bannerRef?.current && bannerContentRef?.current) {
+      bannerRef.current.style.maxHeight = `${bannerContentRef.current.offsetHeight}px`;
+    }
 
     // close banner after 3 seconds
     setTimeout(() => {
       handlers.closeBanner();
-      bannerRef.current.style.maxHeight = 0;
+
+      if (bannerRef?.current) {
+        bannerRef.current.style.maxHeight = 0;
+      }
     }, 3000);
-  }, [banner.isOpen]);
+  }, [banner.isOpen, bannerRef, bannerContentRef]);
 
   /**
    * getBannerClass.
@@ -48,8 +52,6 @@ const Banner = () => {
 
     if (banner.variant) {
       bannerClassList.push(banner.variant);
-    } else {
-      bannerClassList.push('default');
     }
 
     return `banner --${bannerClassList.join(' --')}`;
@@ -57,8 +59,8 @@ const Banner = () => {
 
   return (
     <div className={getBannerClass()} ref={bannerRef}>
-      <div className="grid">
-        <div className="banner__content" ref={bannerContentRef}>
+      <div className="grid" ref={bannerContentRef}>
+        <div className="banner__content">
           <h3>{banner.text}</h3>
         </div>
       </div>
