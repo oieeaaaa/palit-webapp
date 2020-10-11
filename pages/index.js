@@ -41,7 +41,7 @@ const Home = () => {
     if (isFetching) return;
 
     try {
-      const data = await ITEM.getWithIsLiked(userKey, limit);
+      const data = await ITEM.getOthersItems(userKey, limit);
       const otherUsersItems = data.filter((item) => item.owner !== userKey);
 
       setItems(otherUsersItems);
