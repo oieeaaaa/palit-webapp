@@ -171,6 +171,7 @@ Description:
     border-radius: 50%;
     overflow: hidden;
     text-decoration: none;
+    background-color: var(--tree-poppy);
     cursor: pointer;
 
     @include tablet-p {

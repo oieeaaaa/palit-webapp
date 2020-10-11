@@ -1,10 +1,9 @@
-import { LandingHeader, LandingFooter } from 'components/landing/landing';
+import { LandingFooter } from 'components/landing/landing';
+import Header from 'components/header/header';
 
 const About = () => (
   <div className="about">
-    <div className="grid">
-      <LandingHeader />
-    </div>
+    <Header />
     <div className="grid">
       <figure className="about__image">
         <img src="/images/palit.png" alt="Palit" />

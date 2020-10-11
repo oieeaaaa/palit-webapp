@@ -25,25 +25,27 @@ export const LandingHeading = ({ title }) => (
  * LandingHeader.
  */
 export const LandingHeader = () => (
-  <header className="landing-header">
-    <h2 className="landing-header__brand --brand">
-      <Link href="/">
-        <a>
-          palit
-        </a>
-      </Link>
-    </h2>
-    <div className="landing-header-buttons">
-      <Link href="/signup">
-        <a className="landing-header__button --signup" type="button">
-          Signup
-        </a>
-      </Link>
-      <Link href="/login">
-        <a className="landing-header__button">
-          Login
-        </a>
-      </Link>
+  <header className="grid">
+    <div className="landing-header">
+      <h2 className="landing-header__brand --brand">
+        <Link href="/">
+          <a>
+            palit
+          </a>
+        </Link>
+      </h2>
+      <div className="landing-header-buttons">
+        <Link href="/signup">
+          <a className="landing-header__button --signup" type="button">
+            Signup
+          </a>
+        </Link>
+        <Link href="/login">
+          <a className="landing-header__button">
+            Login
+          </a>
+        </Link>
+      </div>
     </div>
   </header>
 );
@@ -98,21 +100,21 @@ export const LandingGuideListItem = ({ title, description, icon }) => (
  */
 export const LandingGuide = () => (
   <div className="landing-guide">
-    <LandingHeading title="Starter Guide" />
+    <LandingHeading title="Trading Process" />
     <ul className="landing-guide-list">
       <LandingGuideListItem
         title="Request a trade"
-        description="To initiate the trade you need to find items that are available for trade requests"
+        description="Find the items that you like or need then click the Trade Request button"
         icon="trade-request-outline"
       />
       <LandingGuideListItem
-        title="Wait for the review"
-        description="Your requested item&apos;s owner will review your request"
+        title="Keep Trading"
+        description="The more you trade the more chances there will be to get your item accepted"
         icon="clock-outline"
       />
       <LandingGuideListItem
         title="Trade Accepted"
-        description="Get in touch with the traded item&apos;s owner"
+        description="Congrats! Now you should see the note about what's next?..."
         icon="user-check-outline"
       />
     </ul>
@@ -154,8 +156,8 @@ export const LandingFooter = () => (
  */
 const Landing = () => (
   <div className="landing">
+    <LandingHeader />
     <div className="grid">
-      <LandingHeader />
       <LandingHero />
       <LandingGuide />
       <LandingAction />

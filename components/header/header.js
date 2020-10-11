@@ -12,12 +12,14 @@ Description:
 ***************************************
 *
 */
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useContext } from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
+import AuthContext from 'js/contexts/auth';
 import useAuth from 'js/hooks/useAuth';
 import routes from 'js/routes';
 import Banner from 'components/banner/banner';
+import { LandingHeader } from 'components/landing/landing';
 
 /**
  * HeaderDropdown.
@@ -82,6 +84,7 @@ const HeaderNav = ({ currentPath }) => (
  */
 const HeaderWithAvatar = ({
   avatar,
+  alt,
   isDropdownOpen,
   openDropdown,
   signout,
@@ -89,7 +92,7 @@ const HeaderWithAvatar = ({
   avatar ? (
     <div className="header-avatar">
       <button className="header__profile" type="button" onClick={openDropdown}>
-        <img src={avatar} alt="Joimee Tan Cajandab" />
+        <img src={avatar} alt={alt} />
       </button>
       <HeaderDropdown isOpen={isDropdownOpen} onLogout={signout} />
     </div>
@@ -122,10 +125,11 @@ const HeaderWithoutAvatar = ({
 /**
  * Header.
  *
- * @param {object} props
-   * @param {object} user
  */
-const Header = ({ user }) => {
+const Header = () => {
+  // contexts
+  const { user } = useContext(AuthContext);
+
   // states
   const [isDropdownOpen, setIsDropdownOpen] = useState();
 
@@ -157,8 +161,12 @@ const Header = ({ user }) => {
     };
   }, []);
 
+  if (!user.key) {
+    return <LandingHeader />;
+  }
+
   return (
-    <div className={`header ${!user.key ? '--not-login' : ''}`}>
+    <header className="header">
       <div className="grid">
         <Link href="/">
           <a className="header__brand">
@@ -167,6 +175,7 @@ const Header = ({ user }) => {
         </Link>
         <HeaderWithAvatar
           avatar={user.avatar}
+          alt={user.firstName}
           isDropdownOpen={isDropdownOpen}
           openDropdown={openDropdown}
           signout={auth.signout}
@@ -180,7 +189,7 @@ const Header = ({ user }) => {
         {user.key && <HeaderNav currentPath={router.pathname} />}
       </div>
       <Banner />
-    </div>
+    </header>
   );
 };
 
