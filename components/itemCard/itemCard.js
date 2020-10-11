@@ -28,7 +28,7 @@ const ItemCard = (
   {
     item,
     onLike,
-    onTrade,
+    enableTrade,
     isLiking,
     isIndicatorOn,
     linkOptions = { href: '', as: '' },
@@ -98,17 +98,15 @@ const ItemCard = (
           </p>
 
           {/* TRADE BUTTOn */}
-          {onTrade && (
-          <button
-            className="itemCard__button"
-            type="button"
-            onClick={() => onTrade(item)}
-          >
-            <ReactSVG
-              className="itemCard__meta-icon"
-              src={`/icons/cart-${item.isTraded ? 'filled' : 'outline'}.svg`}
-            />
-          </button>
+          {enableTrade && (
+          <Link href="/trades/request/[itemID]" as={`/trades/request/${item.key}`}>
+            <a className="itemCard__button">
+              <ReactSVG
+                className="itemCard__meta-icon"
+                src={`/icons/cart-${item.isTradingPartner ? 'filled' : 'outline'}.svg`}
+              />
+            </a>
+          </Link>
           )}
 
         </div>

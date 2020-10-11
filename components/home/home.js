@@ -38,6 +38,7 @@ export const HomeItems = ({
         href: '/items/[itemID]',
         as: `/items/${item.key}`,
       }}
+      enableTrade
     />
   ));
 };
