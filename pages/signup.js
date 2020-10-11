@@ -149,7 +149,7 @@ const Signup = () => {
                 className="button-icon"
                 src="/icons/google-social.svg"
               />
-              Signup with google
+              Continue with google
             </button>
           </div>
         </form>
