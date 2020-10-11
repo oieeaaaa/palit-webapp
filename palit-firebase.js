@@ -4,6 +4,8 @@ import 'firebase/database';
 import 'firebase/firestore';
 import 'firebase/storage';
 
+const env = process.env.NODE_ENV || 'development';
+
 // navigate to next.config.js to find the value of these properties
 const config = {
   apiKey: process.env.NEXT_PUBLIC_APIKEY,
@@ -17,4 +19,13 @@ const config = {
 };
 
 // Initialize Firebase (only once)
-export default !firebase.apps.length ? firebase.initializeApp(config) : firebase.app();
+const app = !firebase.apps.length ? firebase.initializeApp(config) : firebase.app();
+
+if (env === 'development') {
+  app.firestore().settings({
+    host: 'localhost:8080',
+    ssl: false,
+  });
+}
+
+export default app;
