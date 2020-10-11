@@ -1,5 +1,6 @@
 import { useState, useContext } from 'react';
 import LayoutContext from 'js/contexts/layout';
+import AuthContext from 'js/contexts/auth';
 import useError from 'js/hooks/useError';
 import USER from 'js/models/user';
 import storage from 'js/storage';
@@ -7,9 +8,15 @@ import Layout from 'components/layout/layout';
 import ProfileForm from 'components/profileForm/profileForm';
 
 const Profile = () => {
+  // contexts
   const { handlers } = useContext(LayoutContext);
-  const [displayError] = useError();
+  const { updateUser } = useContext(AuthContext);
+
+  // states
   const [isLoading, setIsLoading] = useState(false);
+
+  // custom hooks
+  const [displayError] = useError();
 
   /**
    * handleSubmit
@@ -26,10 +33,17 @@ const Profile = () => {
         avatar = await storage.saveImage(avatarFile, fileName);
       }
 
-      await USER.update(userID, {
+      const userPayload = {
         ...form,
         avatar,
-      });
+      };
+
+      await USER.update(userID, userPayload);
+
+      updateUser((prevUser) => ({
+        ...prevUser,
+        ...userPayload,
+      }));
 
       handlers.showBanner({
         text: 'Updated Profile ✨',

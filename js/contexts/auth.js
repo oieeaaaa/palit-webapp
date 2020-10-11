@@ -75,7 +75,13 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ isVerifyingUser, isVerified, user }}>
+    <AuthContext.Provider value={{
+      isVerifyingUser,
+      isVerified,
+      user,
+      updateUser: setUser,
+    }}
+    >
       {children}
     </AuthContext.Provider>
   );
