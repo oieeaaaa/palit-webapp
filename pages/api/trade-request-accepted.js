@@ -28,10 +28,11 @@ const tradeRequestAccepted = async (req, res) => {
     from: process.env.SEND_GRID_SENDER_EMAIL,
     templateId: process.env.SEND_GRID_TEMPLATE_ID,
     dynamic_template_data: {
-      subject: 'Item Accepted! 🎉',
+      subject: `Traded: ${myItem.name} - ${partnerItem.name} 🎉`,
       myItem,
       partnerItem,
       partnerContact,
+      redirectLink: `https://palitph.ml/trades/${myItem.key}`,
     },
   };
 
@@ -41,10 +42,11 @@ const tradeRequestAccepted = async (req, res) => {
     from: process.env.SEND_GRID_SENDER_EMAIL,
     templateId: process.env.SEND_GRID_TEMPLATE_ID,
     dynamic_template_data: {
-      subject: 'Item Accepted! 🎉',
+      subject: `Traded: ${partnerItem.name} - ${myItem.name} 🎉`,
       myItem: partnerItem,
       partnerItem: myItem,
       partnerContact: myContact,
+      redirectLink: `https://palitph.ml/trades/${partnerItem.key}`,
     },
   };
 
