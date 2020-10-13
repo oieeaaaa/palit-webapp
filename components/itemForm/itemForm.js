@@ -81,7 +81,7 @@ const ItemForm = ({
       image: { complete: true },
     });
 
-    if (isEqual(data, form)) {
+    if (variant === 'edit' && isEqual(data, form)) {
       handlers.showBanner({
         text: 'Nothing to update',
         variant: 'info',
@@ -92,7 +92,7 @@ const ItemForm = ({
 
     if (validatedForm.isInvalid) {
       handlers.showBanner({
-        text: 'You are missing some required field',
+        text: 'You are missing some required field/s',
         variant: 'warning',
       });
 
@@ -133,7 +133,7 @@ const ItemForm = ({
           />
         </label>
         <input
-          className="input"
+          className="form__input itemForm__input"
           name="name"
           type="text"
           placeholder="Name"
@@ -141,7 +141,7 @@ const ItemForm = ({
           value={form.name}
         />
         <textarea
-          className="textarea"
+          className="form__input --textarea itemForm__textarea"
           name="remarks"
           placeholder="Remarks"
           onChange={handleChange}
