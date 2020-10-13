@@ -60,20 +60,12 @@ Description:
     }
   }
 
-  .input {
-    @include Montserrat(700);
-
+  &__input {
     grid-column: 1 / -1;
     margin-bottom: rem(30);
 
-    height: rem(50);
-    padding: 0 rem(10);
     font-size: rem(24);
     line-height: rem(29);
-    background-color: var(--mine-shaft);
-    border-radius: rem(10);
-    border: rem(1) solid var(--gray);
-    color: var(--light);
 
     @include tablet-p {
       grid-area: name;
@@ -82,20 +74,10 @@ Description:
     }
   }
 
-  .textarea {
-    @include Montserrat;
-
+  &__textarea {
     grid-column: 1 / -1;
 
-    font-size: rem(16);
-    line-height: rem(20);
-    color: var(--light);
-    padding: rem(10);
-    border-radius: rem(10);
-    background-color: var(--mine-shaft);
-    border: rem(1) solid var(--gray);
     height: rem(206);
-    resize: vertical;
 
     @include tablet-p {
       grid-area: remarks;
@@ -107,12 +89,12 @@ Description:
   .button {
     grid-column: -4 / -1;
     justify-self: end;
-    margin-top: rem(140);
+    margin-top: rem(40);
 
     min-width: rem(65);
 
     @include tablet-p {
-      margin-top: rem(200);
+      margin-top: rem(50);
       grid-area: button;
     }
   }
