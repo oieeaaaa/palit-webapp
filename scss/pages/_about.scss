@@ -51,6 +51,12 @@
     }
   }
 
+  &__link {
+    @include Montserrat(700);
+
+    color: var(--dodger-blue);
+  }
+
   &__text {
     font-size: rem(18);
     line-height: rem(28);

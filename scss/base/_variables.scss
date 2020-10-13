@@ -25,7 +25,7 @@ $primary-hard-shadow: 0 0 0 2px var(--tree-poppy);
 $primary-soft-shadow: 0 0 0 6px rgba(250, 153, 23, .5);
 $primary-hard-and-soft-shadow: $primary-hard-shadow, $primary-soft-shadow;
 
-$header-dropdown-box-shadow: 0 5px 10px 0 rgba(0,0,0,0.3);
+$header-dropdown-box-shadow: 0 0 0 3px $tree-poppy;
 
 // FONT SIZES
 $base-font-size: 10;

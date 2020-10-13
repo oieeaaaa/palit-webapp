@@ -7,6 +7,15 @@
     outline: none;
     box-shadow: $primary-hard-shadow, $primary-soft-shadow;
   }
+
+  &:disabled {
+    cursor: not-allowed;
+  }
+
+  &::selection {
+    color: var(--mine-shaft);
+    background-color: var(--persimmon);
+  }
 }
 
 html {
