@@ -114,7 +114,7 @@ export const LandingGuide = () => (
       />
       <LandingGuideListItem
         title="Trade Accepted"
-        description="Congrats! Now you should see the note about what's next?..."
+        description="Congrats! Now you should see the note about what's next..."
         icon="user-check-outline"
       />
     </ul>
