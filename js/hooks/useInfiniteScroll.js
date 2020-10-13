@@ -8,7 +8,7 @@ import useLimitChangeOnScroll from 'js/hooks/useLimitChangeOnScroll';
  * @param {number} total
  * @param {number} itemsLimit
  */
-const useInfiniteScroll = (callback, total, itemsLimit) => {
+const useInfiniteScroll = (callback, total, itemsLimit = 0) => {
   const [limit, destroyLimitListeners] = useLimitChangeOnScroll(itemsLimit);
   const [isFetching, setIsFetching] = useState(false);
 
@@ -21,13 +21,13 @@ const useInfiniteScroll = (callback, total, itemsLimit) => {
     const isTotalReached = limit >= total;
 
     try {
-      setIsFetching(true);
-
       if (isTotalReached) {
         await callback(limit);
         destroyLimitListeners();
         return;
       }
+
+      setIsFetching(true);
 
       await callback(limit);
     } catch (err) {
