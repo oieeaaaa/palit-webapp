@@ -23,7 +23,7 @@ Description:
     height: rem(150);
   }
 
-  .grid {
+  & > .grid {
     padding-bottom: rem($bottom-padding);
 
     @include tablet-p {
@@ -111,18 +111,17 @@ Description:
   &-dropdown {
     display: none;
     position: absolute;
-    top: rem($profile-height + $bottom-padding);
+    top: rem($profile-height + $bottom-padding + 5);
     right: 0;
     min-width: rem(172);
     padding-bottom: rem(20);
     background-color: var(--dark);
-    border-bottom-left-radius: rem(5);
-    border-bottom-right-radius: rem(5);
+    border-radius: rem(5);
     z-index: $header-dropdown-z;
     box-shadow: $header-dropdown-box-shadow;
 
     @include tablet-p {
-      top: rem($profile-height--tablet);
+      top: rem($profile-height--tablet + 10);
     }
 
     &.--open {
@@ -144,6 +143,12 @@ Description:
       color: var(--light);
       text-decoration: none;
       cursor: pointer;
+
+      @include tablet-p {
+        @include state(hover) {
+          text-decoration: underline;
+        }
+      }
     }
 
     &__button {
