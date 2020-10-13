@@ -15,7 +15,6 @@ Description: For notifications, alerts, tips, and information of the user
   display: inline-flex;
   height: 100%;
   width: 100%;
-  background-color: var(--silver);
   max-height: 0;
   transition: max-height 0.25s ease;
   overflow: hidden;
@@ -50,6 +49,7 @@ Description: For notifications, alerts, tips, and information of the user
   &__content {
     grid-column: 1 / -1;
 
-    padding: rem(20);
+    padding: rem(20) 0;
+    text-align: center;
   }
 }
