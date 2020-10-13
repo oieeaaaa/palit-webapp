@@ -56,7 +56,7 @@ export const TradeRequestGoodLuckCard = ({ tradeRequestItem }) => {
 
   return (
     <>
-      <TradeRequestHeading text="Traded Item" />
+      <TradeRequestHeading text="Note" />
       <GoodLuckCard ownerID={tradeRequestItem.acceptedItem.owner} />
     </>
   );
