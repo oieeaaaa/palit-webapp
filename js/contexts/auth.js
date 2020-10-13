@@ -3,6 +3,7 @@ import { useRouter } from 'next/router';
 import firebaseApp from 'firebase/app';
 import USER from 'js/models/user';
 import { normalizeData } from 'js/utils';
+import { gotoHome } from 'js/helpers/router';
 
 export const defaultValue = {
   isVerifyingUser: false,
@@ -58,7 +59,7 @@ export const AuthProvider = ({ children }) => {
         setIsVerified(false);
 
         if (!isUserInAllowedPages) {
-          router.push('/', '/');
+          gotoHome();
         }
       }
 

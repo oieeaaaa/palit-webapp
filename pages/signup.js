@@ -1,19 +1,23 @@
 import { useState, useContext } from 'react';
 import { ReactSVG } from 'react-svg';
-import Router from 'next/router';
 import Link from 'next/link';
+import AuthContext from 'js/contexts/auth';
 import LayoutContext from 'js/contexts/layout';
 import useError from 'js/hooks/useError';
 import useAuth from 'js/hooks/useAuth';
 import USER from 'js/models/user';
+import { gotoHome } from 'js/helpers/router';
+
 import Banner from 'components/banner/banner';
 import { LandingFooter } from 'components/landing/landing';
+import LoadingScreen from 'components/loadingScreen/loadingScreen';
 
 /**
  * Signup.
  */
 const Signup = () => {
   // contexts
+  const { isVerified, isVerifyingUser } = useContext(AuthContext);
   const { handlers } = useContext(LayoutContext);
 
   // states
@@ -52,7 +56,7 @@ const Signup = () => {
       await USER.add(result.user.uid, { email: result.user.email });
 
       // redirect to homepage
-      Router.push('/', '/', { shallow: true });
+      gotoHome();
     } catch (err) {
       displayError(err);
     } finally {
@@ -74,6 +78,9 @@ const Signup = () => {
     }));
   };
 
+  /**
+   * handleGoogleSignup
+   */
   const handleGoogleSignup = async () => {
     try {
       const result = await auth.signInWithGoogle();
@@ -90,11 +97,18 @@ const Signup = () => {
         });
       }
 
-      Router.push('/', '/', { shallow: true });
+      gotoHome();
     } catch (err) {
       displayError(err);
     }
   };
+
+  if (isVerifyingUser) return <LoadingScreen />;
+  if (isVerified) {
+    gotoHome();
+
+    return <p>Redirecting...</p>;
+  }
 
   return (
     <div className="signup">

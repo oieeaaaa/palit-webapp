@@ -1,17 +1,22 @@
-import { useState } from 'react';
+import { useState, useContext } from 'react';
 import { ReactSVG } from 'react-svg';
-import Router from 'next/router';
 import Link from 'next/link';
+import AuthContext from 'js/contexts/auth';
 import useAuth from 'js/hooks/useAuth';
 import useError from 'js/hooks/useError';
+import { gotoHome } from 'js/helpers/router';
 
 import { LandingFooter } from 'components/landing/landing';
 import Banner from 'components/banner/banner';
+import LoadingScreen from 'components/loadingScreen/loadingScreen';
 
 /**
  * Login.
  */
 const Login = () => {
+  // contexts
+  const { isVerified, isVerifyingUser } = useContext(AuthContext);
+
   // states
   const [form, setForm] = useState({
     email: '',
@@ -46,7 +51,7 @@ const Login = () => {
         form[fieldKeys.password],
       );
 
-      Router.push('/', '/');
+      gotoHome();
     } catch (err) {
       displayError(err);
     } finally {
@@ -77,13 +82,20 @@ const Login = () => {
 
       await auth.signInWithGoogle();
 
-      Router.push('/', '/');
+      gotoHome();
     } catch (err) {
       displayError(err);
     } finally {
       setIsLoading(false);
     }
   };
+
+  if (isVerifyingUser) return <LoadingScreen />;
+  if (isVerified) {
+    gotoHome();
+
+    return <p>Redirecting...</p>;
+  }
 
   return (
     <div className="login">
