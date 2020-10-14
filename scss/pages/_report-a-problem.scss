@@ -1,0 +1,52 @@
+.report-a-problem {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+
+  &__group {
+    grid-column: 1 / -1;
+
+    @include tablet-p {
+      grid-column: 1 / 7;
+    }
+  }
+
+  &__screenshot {
+    grid-column: 1 / -1;
+
+    @include tablet-p {
+      grid-column: 7 / -1;
+    }
+
+    &-image {
+      @include aspect-ratio(1, 1);
+
+      border-radius: rem(5);
+      border: $thin-gray-border;
+    }
+
+    &-text {
+      @include Montserrat(700);
+      @include aspect-ratio(1, 1);
+      @include flex-center;
+
+      width: 100%;
+      border: $thin-gray-border;
+      border-radius: rem(10);
+      background-color: var(--silver);
+
+      &::before {
+        width: unset;
+      }
+    }
+  }
+
+  .button {
+    margin-bottom: rem(100);
+    grid-column: -3 / -1;
+  }
+
+  .landing-footer {
+    margin-top: auto;
+  }
+}
