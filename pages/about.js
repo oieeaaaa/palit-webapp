@@ -20,7 +20,9 @@ const About = () => {
             Palit is a trading platform for people who need to trade items.
             {' '}
             {!isVerified && (
-              <Link href="/signup"><a className="about__link">I want to experience palit</a></Link>
+              <Link href="/signup">
+                <a className="about__link">It&apos;s not rocket surgery!</a>
+              </Link>
             )}
           </p>
           <form
