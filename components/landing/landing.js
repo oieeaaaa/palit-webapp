@@ -7,7 +7,9 @@ Description:
 */
 import Link from 'next/link';
 import { ReactSVG } from 'react-svg';
+
 import { FooterInfo } from 'components/footer/footer';
+import Banner from 'components/banner/banner';
 
 /**
  * LandingHeading.
@@ -47,6 +49,7 @@ export const LandingHeader = () => (
         </Link>
       </div>
     </div>
+    <Banner />
   </header>
 );
 
