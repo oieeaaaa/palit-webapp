@@ -2,6 +2,7 @@ import { useState, createContext, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import firebaseApp from 'firebase/app';
 import USER from 'js/models/user';
+import { publicRoutes } from 'js/routes';
 import { normalizeData } from 'js/utils';
 import { gotoHome } from 'js/helpers/router';
 
@@ -33,11 +34,9 @@ export const AuthProvider = ({ children }) => {
 
     const unsubscribe = firebaseApp.auth().onAuthStateChanged(async (snapshot) => {
       const isLoggedIn = !!snapshot;
-      const isUserInAllowedPages = [
-        '/signup',
-        '/login',
-        '/about',
-      ].includes(router.pathname);
+      const isUserInAllowedPages = publicRoutes.some(
+        (publicRoute) => publicRoute.href === router.pathname,
+      );
 
       if (isLoggedIn) {
         try {
