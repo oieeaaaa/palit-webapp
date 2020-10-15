@@ -27,12 +27,17 @@ const add = async (userID, itemID) => {
 
     if (item.isTrading || item.isTraded) {
       const requests = await requestsCollectionGroup.where('key', '==', itemID).get();
+      const tradeRequest = await tradeRequestRef.get();
 
-      requests.forEach((request) => {
-        transaction.set(request.ref, incrementLikes(1), { merge: true });
-      });
+      if (!requests.empty) {
+        requests.forEach((request) => {
+          transaction.set(request.ref, incrementLikes(1), { merge: true });
+        });
+      }
 
-      transaction.set(tradeRequestRef, incrementLikes(1), { merge: true });
+      if (tradeRequest.exists) {
+        transaction.set(tradeRequestRef, incrementLikes(1), { merge: true });
+      }
     }
 
     transaction.set(likeRef, newUser(userID), { merge: true });
@@ -60,12 +65,17 @@ const remove = async (userID, itemID) => {
 
     if (item.isTrading || item.isTraded) {
       const requests = await requestsCollectionGroup.where('key', '==', itemID).get();
+      const tradeRequest = await tradeRequestRef.get();
 
-      requests.forEach((request) => {
-        transaction.set(request.ref, incrementLikes(-1), { merge: true });
-      });
+      if (!requests.empty) {
+        requests.forEach((request) => {
+          transaction.set(request.ref, incrementLikes(-1), { merge: true });
+        });
+      }
 
-      transaction.set(tradeRequestRef, incrementLikes(-1), { merge: true });
+      if (tradeRequest.exists) {
+        transaction.set(tradeRequestRef, incrementLikes(-1), { merge: true });
+      }
     }
 
     transaction.set(likeRef, removeUser(userID), { merge: true });
