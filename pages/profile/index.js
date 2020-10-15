@@ -24,13 +24,15 @@ const Profile = () => {
    * @param {string} userID
    * @param {object} form
    */
-  const handleSubmit = async (userID, { avatarFile, avatar, ...form }) => {
+  const handleSubmit = async (userID, form) => {
     setIsLoading(true);
 
     try {
-      if (avatarFile) {
-        const fileName = `${userID}-${avatarFile.name}`;
-        avatar = await storage.saveImage(avatarFile, fileName);
+      let { avatar } = form;
+
+      if (typeof avatar !== 'string') {
+        const fileName = `${userID}-${avatar.name}`;
+        avatar = await storage.saveImage(avatar, fileName);
       }
 
       const userPayload = {

@@ -5,14 +5,14 @@ Author: Joimee
 Description:
 ***************************************
 */
-import { useState, useEffect, useContext } from 'react';
+import { useEffect } from 'react';
 import { ReactSVG } from 'react-svg';
-import LayoutContext from 'js/contexts/layout';
-import { extractFileURL, validateFields, isEqual } from 'js/utils';
+import useForm from 'js/hooks/useForm';
 
 export const initialFormValues = {
   name: '',
   remarks: '',
+  cover: null,
 };
 
 const ItemForm = ({
@@ -21,53 +21,15 @@ const ItemForm = ({
   variant = 'add',
   data = initialFormValues,
 }) => {
-  // contexts
-  const { handlers } = useContext(LayoutContext);
-
-  // states
-  const [form, setForm] = useState(data);
-
-  /**
-   * handleChange.
-   * It should update the form state
-   * @param {object} e
-   */
-  const handleChange = (e) => {
-    e.persist();
-
-    setForm((prevState) => ({
-      ...prevState,
-      [e.target.name]: e.target.value,
-    }));
-  };
-
-  /**
-   * handleImageChange.
-   * It extracts the first item from the files array
-   * It should udpate the form state
-   * @param {object} e
-   */
-  const handleImageChange = (e) => {
-    e.persist();
-
-    // Stop this function if no file is selected
-    if (!e.target.value) return;
-
-    const image = e.target.files[0];
-
-    setForm((prevState) => ({
-      ...prevState,
-      imageFile: image,
-      [e.target.name]: extractFileURL(image),
-    }));
-  };
-
-  /**
-   * clearForm.
-   */
-  const clearForm = () => {
-    setForm(initialFormValues);
-  };
+  // custom hooks
+  const {
+    form,
+    setForm,
+    inputController,
+    fileController,
+    validateForm,
+    clearForm,
+  } = useForm(data);
 
   /**
    * handleSubmit.
@@ -75,40 +37,28 @@ const ItemForm = ({
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    const validatedForm = validateFields(form, {
+    const isFormValid = validateForm({
       name: { complete: true },
       remarks: { complete: true },
       image: { complete: true },
     });
 
-    if (variant === 'edit' && isEqual(data, form)) {
-      handlers.showBanner({
-        text: 'Nothing to update',
-        variant: 'info',
-      });
-
-      return;
+    if (isFormValid) {
+      onSubmit(form, clearForm);
     }
-
-    if (validatedForm.isInvalid) {
-      handlers.showBanner({
-        text: 'You are missing some required field/s',
-        variant: 'warning',
-      });
-
-      return;
-    }
-
-    onSubmit(form, clearForm);
   };
 
   /**
    * useEffect.
    */
   useEffect(() => {
+    if (variant !== 'edit') return;
+
     setForm({
-      ...data,
-      image: data.cover,
+      ...initialFormValues,
+      name: data.name,
+      remarks: data.remarks,
+      coverUrl: data.cover,
     });
   }, [data]);
 
@@ -117,19 +67,19 @@ const ItemForm = ({
       <form className="grid" onSubmit={handleSubmit}>
         <label className="input-group" htmlFor="cover">
           <figure className="itemForm__image">
-            {form.image ? (
-              <img src={form.image} alt={form.name} />
+            {form.coverUrl ? (
+              <img src={form.coverUrl} alt={form.name} />
             ) : (
               <ReactSVG className="itemForm__icon" src="/icons/image-outline.svg" />
             )}
           </figure>
-          <span>Add Image</span>
+          <span>Choose a file</span>
           <input
             id="cover"
-            name="image"
+            name="cover"
             type="file"
             accept=".png,.jpg,.jpeg"
-            onChange={handleImageChange}
+            onChange={fileController}
           />
         </label>
         <input
@@ -137,14 +87,14 @@ const ItemForm = ({
           name="name"
           type="text"
           placeholder="Name"
-          onChange={handleChange}
+          onChange={inputController}
           value={form.name}
         />
         <textarea
           className="form__input --textarea itemForm__textarea"
           name="remarks"
           placeholder="Remarks"
-          onChange={handleChange}
+          onChange={inputController}
           value={form.remarks}
         />
         <button

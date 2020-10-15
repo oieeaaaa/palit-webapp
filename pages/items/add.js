@@ -21,18 +21,19 @@ const Add = () => {
    * It should update the error state if something goes wrong
    * @param {object} e
    */
-  const handleSubmit = async ({ imageFile, ...form }, clearForm) => {
+  const handleSubmit = async (form, clearForm) => {
     // Disable button while waiting for the requests below
     setIsLoading(true);
 
     // Problem: Firebase overrides the previous image if the filename already exists
     try {
-      let cover = form.image;
+      let { cover } = form;
 
       // fetch the public file URL then store it in the database
-      if (imageFile) {
-        const fileName = `${user.key}-${imageFile.name}`;
-        cover = await storage.saveImage(imageFile, fileName);
+      if (cover) {
+        const fileName = `${user.key}-${cover.name}`;
+
+        cover = await storage.saveImage(cover, fileName);
       }
 
       // add new data in the database

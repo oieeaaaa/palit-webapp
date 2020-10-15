@@ -38,15 +38,15 @@ const ItemEdit = () => {
   /**
    * handleSubmit
    */
-  const handleSubmit = async ({ imageFile, ...form }) => {
+  const handleSubmit = async (form) => {
     setIsLoading(true);
 
     try {
-      let cover = form.image;
+      let { cover } = form;
 
-      if (imageFile) {
-        const fileName = `${user.key}-${imageFile.name}`;
-        cover = await storage.saveImage(imageFile, fileName);
+      if (typeof cover !== 'string') {
+        const fileName = `${user.key}-${cover.name}`;
+        cover = await storage.saveImage(cover, fileName);
       }
 
       await ITEM.update(item.key, {

@@ -8,62 +8,35 @@ Description:
 import { useState, useContext, useEffect } from 'react';
 import { ReactSVG } from 'react-svg';
 import AuthContext from 'js/contexts/auth';
-import LayoutContext from 'js/contexts/layout';
-import { extractFileURL, validateFields, isEqual } from 'js/utils';
+import useForm from 'js/hooks/useForm';
 
 // TODO: Support email update in firebase auth
 const ProfileForm = ({
   onSubmit,
   isLoading,
 }) => {
+  // contexts
   const { user } = useContext(AuthContext);
-  const { handlers } = useContext(LayoutContext);
-  const [form, setForm] = useState(user);
-  const fieldKeys = {
-    firstName: 'firstName',
-    lastName: 'lastName',
-    avatar: 'avatar',
-    phoneNumber: 'phoneNumber',
-    messengerLink: 'messengerLink',
-    address: 'address',
-    email: 'email',
-  };
-  const isSignedInWithGoogle = user.providerId === 'google.com';
 
-  /**
-   * handleFormChange.
-   *
-   * @param {object} e
-   */
-  const handleFormChange = (e) => {
-    const { name, value } = e.target;
+  // states
+  const [isSignedInWithGoogle, setIsSignedInWithGoogle] = useState(false);
 
-    setForm((prevState) => ({
-      ...prevState,
-      [name]: value,
-    }));
-  };
-
-  /**
-   * handleImageChange.
-   * It extracts the first item from the files array
-   * It should udpate the form state
-   * @param {object} e
-   */
-  const handleImageChange = (e) => {
-    e.persist();
-
-    // Stop this function if no file is selected
-    if (!e.target.value) return;
-
-    const image = e.target.files[0];
-
-    setForm((prevState) => ({
-      ...prevState,
-      [e.target.name]: extractFileURL(image),
-      [`${e.target.name}File`]: image,
-    }));
-  };
+  // custom hooks
+  const {
+    form,
+    setForm,
+    inputController,
+    fileController,
+    validateForm,
+  } = useForm({
+    firstName: '',
+    lastName: '',
+    avatar: null,
+    phoneNumber: '',
+    messengerLink: '',
+    address: '',
+    email: '',
+  });
 
   /**
    * handleSubmit.
@@ -73,7 +46,7 @@ const ProfileForm = ({
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    const validatedProfile = validateFields(form, {
+    const isFormValid = validateForm({
       firstName: { complete: true },
       lastName: { complete: true },
       avatar: { complete: true },
@@ -81,25 +54,9 @@ const ProfileForm = ({
       email: { complete: true, email: true },
     });
 
-    if (isEqual(form, user)) {
-      handlers.showBanner({
-        text: 'Nothing to update',
-        variant: 'info',
-      });
-
-      return;
+    if (isFormValid) {
+      onSubmit(user.key, form);
     }
-
-    if (validatedProfile.isInvalid) {
-      handlers.showBanner({
-        text: 'You are missing some required fields',
-        variant: 'warning',
-      });
-
-      return;
-    }
-
-    onSubmit(user.key, form);
   };
 
   /**
@@ -108,16 +65,21 @@ const ProfileForm = ({
   useEffect(() => {
     if (!user.key) return;
 
-    setForm(user);
+    setForm({
+      ...user,
+      avatarUrl: user.avatar,
+    });
+
+    setIsSignedInWithGoogle(user.providerId === 'google.com');
   }, [user]);
 
   return (
     <form className="profileForm grid" onSubmit={handleSubmit}>
       <div className="profileForm-top">
-        <label className="profileForm__upload" htmlFor={fieldKeys.avatar}>
+        <label className="profileForm__upload" htmlFor="avatar">
           <figure className="profileForm__avatar">
-            {form[fieldKeys.avatar] ? (
-              <img src={form[fieldKeys.avatar]} alt={form[fieldKeys.firstName]} />
+            {form.avatarUrl ? (
+              <img src={form.avatarUrl} alt={form.firstName} />
             ) : (
               <ReactSVG
                 className="profileForm__avatar-icon"
@@ -129,80 +91,80 @@ const ProfileForm = ({
             Upload Image
           </p>
           <input
-            id={fieldKeys.avatar}
-            name={fieldKeys.avatar}
+            id="avatar"
+            name="avatar"
             type="file"
             accept=".png,.jpg,.jpeg"
-            onChange={handleImageChange}
+            onChange={fileController}
           />
         </label>
         <div className="profileForm__name">
-          <label className="form-group" htmlFor={fieldKeys.firstName}>
+          <label className="form-group" htmlFor="firstName">
             <span className="form-group__label">First Name</span>
             <input
-              id={fieldKeys.firstName}
+              id="firstName"
               className="form__input"
-              name={fieldKeys.firstName}
-              value={form[fieldKeys.firstName]}
-              onChange={handleFormChange}
+              name="firstName"
+              value={form.firstName}
+              onChange={inputController}
               type="text"
             />
           </label>
-          <label className="form-group" htmlFor={fieldKeys.lastName}>
+          <label className="form-group" htmlFor="lastName">
             <span className="form-group__label">Last Name</span>
             <input
-              id={fieldKeys.lastName}
+              id="lastName"
               className="form__input"
-              name={fieldKeys.lastName}
-              value={form[fieldKeys.lastName]}
-              onChange={handleFormChange}
+              name="lastName"
+              value={form.lastName}
+              onChange={inputController}
               type="text"
             />
           </label>
         </div>
       </div>
-      <label className="form-group" htmlFor={fieldKeys.email}>
+      <label className="form-group" htmlFor="email">
         <span className="form-group__label">Email</span>
         <input
-          id={fieldKeys.email}
+          id="email"
           className={`form__input ${isSignedInWithGoogle ? '--disabled' : ''}`}
-          name={fieldKeys.email}
-          value={form[fieldKeys.email]}
-          onChange={handleFormChange}
+          name="email"
+          value={form.email}
+          onChange={inputController}
           type="email"
           disabled={isSignedInWithGoogle}
         />
       </label>
-      <label className="form-group" htmlFor={fieldKeys.phoneNumber}>
+      <label className="form-group" htmlFor="phoneNumber">
         <span className="form-group__label">Phone Number</span>
         <input
-          id={fieldKeys.phoneNumber}
+          id="phoneNumber"
           className="form__input"
-          name={fieldKeys.phoneNumber}
-          value={form[fieldKeys.phoneNumber]}
-          onChange={handleFormChange}
+          name="phoneNumber"
+          value={form.phoneNumber}
+          onChange={inputController}
           type="text"
         />
       </label>
-      <label className="form-group" htmlFor={fieldKeys.messengerLink}>
+      <label className="form-group" htmlFor="messengerLink">
         <span className="form-group__label">Messenger Link (optional)</span>
         <input
-          id={fieldKeys.messengerLink}
+          id="messengerLink"
           className="form__input"
-          name={fieldKeys.messengerLink}
-          value={form[fieldKeys.messengerLink]}
-          onChange={handleFormChange}
+          name="messengerLink"
+          value={form.messengerLink}
+          onChange={inputController}
           type="text"
         />
       </label>
-      <label className="form-group" htmlFor={fieldKeys.address}>
+      <label className="form-group" htmlFor="address">
         <span className="form-group__label">Address (optional)</span>
         <textarea
-          id={fieldKeys.address}
+          id="address"
           className="form__input --textarea"
-          name={fieldKeys.address}
-          value={form[fieldKeys.address]}
-          onChange={handleFormChange}
+          name="address"
+          value={form.address}
+          onChange={inputController}
         />
       </label>
       <div className="profileForm-bottom">
