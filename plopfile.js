@@ -36,25 +36,6 @@ module.exports = function (plop) {
         templateFile: 'templates/scss.hbs',
       },
       {
-        type: 'add',
-        path: `${componentPath}.styleguide.js`,
-        templateFile: 'templates/styleguide.hbs',
-      },
-      {
-        type: 'append',
-        pattern: /\[(?<!];)/gm,
-        path: 'styleguide/component-list.js',
-        templateFile: 'templates/object.hbs',
-        seperator: '',
-      },
-      {
-        type: 'append',
-        pattern: '// list of components',
-        path: 'styleguide/component-list.js',
-        templateFile: 'templates/import.hbs',
-        seperator: '',
-      },
-      {
         type: 'append',
         pattern: '// components',
         path: 'scss/main.scss',
