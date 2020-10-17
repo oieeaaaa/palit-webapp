@@ -2,6 +2,7 @@ import { useState, useContext } from 'react';
 import LayoutContext from 'js/contexts/layout';
 import AuthContext from 'js/contexts/auth';
 import useError from 'js/hooks/useError';
+import useAuth from 'js/hooks/useAuth';
 import USER from 'js/models/user';
 import storage from 'js/storage';
 import Layout from 'components/layout/layout';
@@ -10,13 +11,14 @@ import ProfileForm from 'components/profileForm/profileForm';
 const Profile = () => {
   // contexts
   const { handlers } = useContext(LayoutContext);
-  const { updateUser } = useContext(AuthContext);
+  const { user, updateUser } = useContext(AuthContext);
 
   // states
   const [isLoading, setIsLoading] = useState(false);
 
   // custom hooks
   const [displayError] = useError();
+  const { updateEmail } = useAuth();
 
   /**
    * handleSubmit
@@ -33,6 +35,11 @@ const Profile = () => {
       if (typeof avatar !== 'string') {
         const fileName = `${userID}-${avatar.name}`;
         avatar = await storage.saveImage(avatar, fileName);
+      }
+
+      // update email in auth
+      if (user.email !== form.email) {
+        await updateEmail(form.email);
       }
 
       const userPayload = {
@@ -52,7 +59,7 @@ const Profile = () => {
         variant: 'success',
       });
     } catch (err) {
-      displayError(err.message);
+      displayError(err);
     } finally {
       setIsLoading(false);
     }
