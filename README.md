@@ -3,9 +3,12 @@
 Get yourself a palit by doing this: `git clone git@github.com:oieeaaaa/palit-webapp.git`
 
 ### Table of Contents
-- [Quick Start]()
-- [Scripts]()
-- [The Dos and the Don'ts]()
+- [Quick Start](https://github.com/oieeaaaa/palit-webapp#quick-start)
+- [Scripts](https://github.com/oieeaaaa/palit-webapp#scripts)
+- [The Dos and the Don'ts](https://github.com/oieeaaaa/palit-webapp#the-dos-and-the-donts)
+  - [Global](https://github.com/oieeaaaa/palit-webapp#global)
+  - [JS](https://github.com/oieeaaaa/palit-webapp#js)
+  - [CSS](https://github.com/oieeaaaa/palit-webapp#css)
 
 
 ### Quick Start
@@ -49,12 +52,13 @@ So, before you dive in to our codebase and writing your code in your own style a
 
 Please read this first. Its' important (trust me, i'm not sarcastic)
 
-#### THE DO'S!
-**GLOBAL**
+Let's begin with the Do's.
+
+#### Global
 - The first and most important of 'em all is to be obedient to our linters. They are the POD of our codebase and we need to respect that.
 - Write comments if you think you're the only one who can read the code.
 
-**JS/JSX**
+#### JS
 - When naming your functions use an easy to understand verbs (e.g., `getItems`, `acceptRequest`, `handleChange`).
 - When naming your variables use an easy to understand nouns (e.g., `items`, `user`, `form`).
 - If the variable has a value of boolean use questions to indicate that it is a boolean (e.g., `isLoading`, `isFetching`, `isTraded`).
@@ -65,7 +69,7 @@ Please read this first. Its' important (trust me, i'm not sarcastic)
 - When you're making an awesome api use the `/api` folder.
 - Before you write an algorithm to your problem check our `/js` folder first if it is already there. We want to avoid duplications in our codebase
 
-**CSS/SCSS**
+#### CSS
 - For components use pascalCase names (e.g., `userProfile`, `userInfo`, `itemCard`).
 - For pages use kebab-case names (e.g., `trade-request-select`, `user-profile`, `trade-request`).
 - Declare the variables first in our `scss/base/_variables.scss`.
