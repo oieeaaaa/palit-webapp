@@ -37,11 +37,11 @@
 @import './pages/report-a-problem';
 
 // styleguide
-@import 'styleguide/styleguide';
 @import 'styleguide/grid-guide';
-@import 'styleguide/nav/nav';
 
 // components
+@import 'components/reportAProblemForm/reportAProblemForm';
+
 @import 'components/itemDetails/itemDetails';
 
 @import 'components/landing/landing';

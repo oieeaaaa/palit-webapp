@@ -57,12 +57,19 @@ const update = async (itemID, data) => {
 
   // updates
   return db.runTransaction(async (transaction) => {
-    itemInEveryRequests.forEach((requestItem) => {
-      transaction.update(requestItem.ref, updatedItem(data));
-    });
+    const tradeRequest = await tradeRequestRef.get();
+
+    if (!itemInEveryRequests.empty) {
+      itemInEveryRequests.forEach((requestItem) => {
+        transaction.update(requestItem.ref, updatedItem(data));
+      });
+    }
+
+    if (tradeRequest.exists) {
+      transaction.update(tradeRequestRef, updatedItem(data));
+    }
 
     transaction.update(itemRef, updatedItem(data));
-    transaction.update(tradeRequestRef, updatedItem(data));
   });
 };
 
@@ -275,41 +282,6 @@ const cleanDirty = (itemID) => itemsCollection.doc(itemID).update({
   isDirty: false,
 });
 
-/**
- • 🚨🚨🚨🚨🚨🚨
-   DANGER
-   DO NOT INCLUDE THIS IN PROD!
- • 🚨🚨🚨🚨🚨🚨
- */
-const reset = async (isReset) => {
-  if (!isReset) return;
-
-  const batch = db.batch();
-  const allItems = await itemsCollection.get();
-  const allTradeRequests = await tradeRequestsCollection.get();
-  const allLikes = await likesCollection.get();
-
-  allItems.forEach((itemRef) => {
-    batch.update(itemsCollection.doc(itemRef.id), {
-      likes: 0,
-      tradeRequests: 0,
-      isTraded: false,
-      isTrading: false,
-      isDirty: false,
-    });
-  });
-
-  allTradeRequests.forEach((tradeRequest) => {
-    batch.delete(tradeRequest.ref);
-  });
-
-  allLikes.forEach((like) => {
-    batch.delete(like.ref);
-  });
-
-  batch.commit();
-};
-
 export default {
   getItemsStats,
   add,
@@ -323,7 +295,4 @@ export default {
   remove,
   search,
   cleanDirty,
-
-  // WARNING DON'T USE THIS FUNCTION
-  reset,
 };

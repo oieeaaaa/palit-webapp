@@ -32,6 +32,13 @@ const useAuth = () => {
   };
 
   /**
+   * updateEmail.
+   *
+   * @param {string} newEmail
+   */
+  const updateEmail = (newEmail) => firebaseApp.auth().currentUser.updateEmail(newEmail);
+
+  /**
    * signout.
    */
   const signout = () => firebaseApp.auth().signOut();
@@ -41,6 +48,7 @@ const useAuth = () => {
     signInWithEmailAndPassword,
     signInWithGoogle,
     signout,
+    updateEmail,
   };
 };
 

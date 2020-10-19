@@ -42,8 +42,8 @@ export const InventoryItems = ({ isFetching, items }) => {
  */
 export const InventoryEmpty = ({ isEmpty }) => isEmpty && (
   <div className="tip">
-    <h2 className="tip-heading">Tip:</h2>
-    <p className="tip-text">Add more item</p>
+    <h2 className="tip-heading">Your inventory is empty:</h2>
+    <p className="tip-text">There is nothing here</p>
   </div>
 );
 
