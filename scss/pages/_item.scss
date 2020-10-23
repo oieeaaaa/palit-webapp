@@ -3,7 +3,8 @@
     @include tablet-p {
       grid-template-columns: unset;
       grid-template-areas: "title title title"
-        "image info info"
+        "image product product"
+        "image owner owner"
         "image remarks remarks"
         "image firstButton secondButton";
     }
@@ -25,6 +26,11 @@
 
       width: rem(288);
     }
+  }
+
+  &__link {
+    margin-top: rem(10);
+    align-self: center;
   }
 
   &__title {
@@ -51,6 +57,9 @@
     grid-column: 1 / -1;
     margin-top: rem(30);
 
+    display: flex;
+    flex-direction: column;
+
     @include tablet-p {
       margin-top: 0;
 
@@ -58,17 +67,25 @@
       width: 100%;
     }
 
-    &:last-of-type {
-      margin-bottom: rem(60);
-
+    &:not(:last-of-type) {
       @include tablet-p {
-        margin-top: rem(40);
+        margin-bottom: rem(40);
       }
     }
 
-    &.--info {
+    &:last-of-type {
+      margin-bottom: rem(60);
+    }
+
+    &.--product {
       @include tablet-p {
-        grid-area: info;
+        grid-area: product;
+      }
+    }
+
+    &.--owner {
+      @include tablet-p {
+        grid-area: owner;
       }
     }
 
@@ -79,8 +96,6 @@
     }
 
     &__title {
-      margin-bottom: rem(10);
-
       @include Montserrat(700);
 
       font-size: rem(18);
@@ -92,7 +107,24 @@
       }
     }
 
+    &__link {
+      margin-top: rem(20);
+      align-self: center;
+
+      @include Montserrat(600);
+
+      display: inline-block;
+      font-size: rem(16);
+      color: var(--dodger-blue);
+
+      @include tablet-p {
+        font-size: rem(18);
+      }
+    }
+
     &__details {
+      margin-top: rem(10);
+
       padding: rem(10);
       min-height: rem(46);
       border-radius: rem(10);
