@@ -4,6 +4,7 @@
 
 // COLORS
 $light: #fff;
+$concrete: #f2f2f2;
 $dark: #000;
 $mine-shaft: #333;
 $gray: #808080;
@@ -47,6 +48,7 @@ $header-dropdown-z: 6;
 :root {
   // COLORS
   --light: #{$light};
+  --concrete: #{$concrete};
   --dark: #{$dark};
   --mine-shaft: #{$mine-shaft};
   --gray: #{$gray};
