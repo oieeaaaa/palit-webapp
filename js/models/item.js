@@ -27,16 +27,16 @@ const getItemsStats = () => itemsStats.get();
 /**
  * add.
  *
- * @param {string} userID
+ * @param {object} owner
  * @param {object} data
  */
-const add = (userID, data) => {
+const add = (owner, data) => {
   const batch = db.batch();
   const newDocumentID = itemsCollection.doc().id;
 
   batch.set(itemsStats, incrementTotalItems(1), { merge: true });
 
-  batch.set(itemsCollection.doc(newDocumentID), newItem({ userID, ...data }), { merge: true });
+  batch.set(itemsCollection.doc(newDocumentID), newItem({ owner, ...data }), { merge: true });
 
   batch.commit();
 };
