@@ -1,5 +1,7 @@
 import firebase from 'palit-firebase';
 
+// TODO: DATA CONSISTENCY -> Update ownerInfo in items collection
+
 const db = firebase.firestore();
 const usersCollection = db.collection('users');
 
