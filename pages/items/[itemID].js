@@ -8,10 +8,11 @@ import LayoutContext from 'js/contexts/layout';
 import AuthContext from 'js/contexts/auth';
 import Layout from 'components/layout/layout';
 import {
-  ItemDetailsImage,
+  ItemDetailsImageGroup,
   ItemDetailsTitle,
   ItemDetailsCard,
   ItemDetailsCardTitle,
+  ItemDetailsCardLink,
   ItemDetailsCardDetails,
   ItemDetailsCardRemarks,
   ItemDetailsOwnedActions,
@@ -111,18 +112,44 @@ const ItemDetails = () => {
     <Layout title={item.name}>
       <div className="item">
         <div className="grid">
-          <ItemDetailsImage cover={item.cover} name={item.name} />
+          <ItemDetailsImageGroup cover={item.cover} name={item.name} />
           <ItemDetailsTitle name={item.name} />
-          <ItemDetailsCard>
+          <ItemDetailsCard variant="product">
             <ItemDetailsCardTitle text="Product Info" />
             <ItemDetailsCardDetails
-              tradeRequests={item.tradeRequests}
-              likes={item.likes}
+              details={[
+                {
+                  label: '🔁 Trade Requests',
+                  value: item.tradeRequests,
+                },
+                {
+                  label: '❤️  Likes',
+                  value: item.likes,
+                },
+              ]}
             />
           </ItemDetailsCard>
-          <ItemDetailsCard variant="--remarks">
+          <ItemDetailsCard variant="owner">
+            <ItemDetailsCardTitle text="Owner Info" />
+            <ItemDetailsCardDetails
+              details={[
+                {
+                  label: '👤 Name',
+                  value: item.ownerInfo?.name,
+                },
+                {
+                  label: '📌 Address',
+                  value: item.ownerInfo?.address,
+                },
+              ]}
+            />
+          </ItemDetailsCard>
+          <ItemDetailsCard variant="remarks">
             <ItemDetailsCardTitle text="Remarks" />
             <ItemDetailsCardRemarks remarks={item.remarks} />
+            <ItemDetailsCardLink href={`/chat?owner=${item.owner}`}>
+              Send a message
+            </ItemDetailsCardLink>
           </ItemDetailsCard>
           {isOwned ? (
             <ItemDetailsOwnedActions

@@ -9,13 +9,13 @@ import { ReactSVG } from 'react-svg';
 import Link from 'next/link';
 
 /**
- * ItemDetailsImage.
+ * ItemDetailsImageGroup.
  *
  * @param {object}
    * @param {string} cover
    * @param {string} name
  */
-export const ItemDetailsImage = ({ cover, name }) => (
+export const ItemDetailsImageGroup = ({ cover, name }) => (
   <figure className="item__image">
     <img src={cover} alt={name} />
   </figure>
@@ -41,7 +41,7 @@ export const ItemDetailsTitle = ({ name }) => (
    * @param {string} variant
  */
 export const ItemDetailsCard = ({ children, variant = '--info' }) => (
-  <div className={`item-card ${variant}`}>
+  <div className={`item-card --${variant}`}>
     {children}
   </div>
 );
@@ -59,24 +59,34 @@ export const ItemDetailsCardTitle = ({ text }) => (
 );
 
 /**
+ * ItemDetailsCardLink.
+ *
+ * @param {object}
+   * @param {string} text
+ */
+export const ItemDetailsCardLink = ({ children, ...rest }) => (
+  <Link {...rest}>
+    <a className="item-card__link">
+      {children}
+    </a>
+  </Link>
+);
+
+/**
  * ItemDetailsCardDetails.
  *
  * @param {object}
-   * @param {number} tradeRequests
-   * @param {number} likes
  */
-export const ItemDetailsCardDetails = ({ tradeRequests, likes }) => (
+export const ItemDetailsCardDetails = ({ details }) => (
   <ul className="item-card__details">
-    <li className="item-card__item">
-      Trade Requests:
-      {' '}
-      <strong>{tradeRequests}</strong>
-    </li>
-    <li className="item-card__item">
-      Likes:
-      {' '}
-      <strong>{likes}</strong>
-    </li>
+    {details.map((detail) => (
+      <li className="item-card__item" key={detail.label}>
+        {detail.label}
+        :
+        {' '}
+        <strong>{detail.value}</strong>
+      </li>
+    ))}
   </ul>
 );
 
@@ -166,7 +176,7 @@ export const ItemDetailsUnownedActions = ({
 );
 
 export default {
-  ItemDetailsImage,
+  ItemDetailsImageGroup,
   ItemDetailsTitle,
   ItemDetailsCard,
   ItemDetailsCardTitle,
@@ -174,4 +184,5 @@ export default {
   ItemDetailsCardRemarks,
   ItemDetailsOwnedActions,
   ItemDetailsUnownedActions,
+  ItemDetailsCardLink,
 };

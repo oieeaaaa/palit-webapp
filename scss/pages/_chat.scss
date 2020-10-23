@@ -1,0 +1,122 @@
+.chat {
+  &__heading {
+    @include Montserrat(600);
+
+    margin-bottom: rem(10);
+
+    font-size: rem(16);
+    line-height: rem(20);
+    color: var(--gray);
+  }
+
+  &-users {
+    margin-bottom: rem(40);
+    grid-column: 1 / -1;
+
+    &__list {
+      display: flex;
+      justify-content: flex-start;
+      align-items: start;
+      height: rem(60);
+      overflow-x: scroll;
+    }
+  }
+
+  &__user {
+    margin-right: rem(20);
+
+    position: relative;
+
+    &.--active::after {
+      content: '';
+      position: absolute;
+      display: block;
+      bottom: rem(-10);
+      left: 50%;
+      width: 50%;
+      height: rem(5);
+      background-color: var(--tree-poppy);
+      transform: translateX(-50%);
+    }
+
+    &-button {
+      @include aspect-ratio(1, 1);
+
+      display: flex;
+      width: rem(50);
+      height: rem(50);
+      border-radius: rem(5);
+    }
+  }
+
+  &-room {
+    grid-column: 1 / -1;
+
+    margin-bottom: rem(30);
+  }
+
+  &-messages {
+    padding: rem(20);
+    height: rem(470);
+    background-color: var(--light);
+    border: $thin-gray-border;
+    border-radius: rem(10);
+    overflow-y: scroll;
+  }
+
+  &-message {
+    $message: &;
+
+    display: flex;
+    flex-direction: column;
+
+    &:not(:first-of-type) {
+      margin-top: rem(20);
+    }
+
+    &__user {
+      @include Montserrat(700);
+
+      margin-bottom: rem(10);
+
+      font-size: rem(16);
+      line-height: rem(20);
+
+      #{$message}.--sender & {
+        text-align: right;
+      }
+    }
+
+    &__content {
+      padding: rem(10) rem(15);
+      border-radius: rem(10);
+      font-size: rem(16);
+      line-height: rem(20);
+      width: auto;
+      white-space: pre-wrap;
+
+      #{$message}.--receiver & {
+        align-self: flex-start;
+
+        border-top-left-radius: 0;
+        background-color: var(--concrete);
+      }
+
+      #{$message}.--sender & {
+        align-self: flex-end;
+
+        border-top-right-radius: 0;
+        background-color: var(--alto);
+      }
+    }
+  }
+
+  &-write {
+    grid-column: 1 / -1;
+
+    .button {
+      margin-top: rem(20);
+      margin-left: auto;
+    }
+  }
+}

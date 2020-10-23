@@ -37,7 +37,7 @@ const Add = () => {
       }
 
       // add new data in the database
-      await ITEM.add(user.key, {
+      await ITEM.add(user, {
         ...form,
         cover,
       });

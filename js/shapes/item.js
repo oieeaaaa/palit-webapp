@@ -12,10 +12,10 @@ export const incrementTotalItems = (amount = 0) => ({
 /**
  * newItem.
  *
+ * @param {object} owner
  * @param {object} data
  */
-export const newItem = (data = {}) => ({
-  owner: data.userID,
+export const newItem = (owner, data = {}) => ({
   name: data.name,
   cover: data.cover,
   remarks: data.remarks,
@@ -24,6 +24,11 @@ export const newItem = (data = {}) => ({
   isTrading: false,
   isTraded: false,
   isDirty: false,
+  owner: owner.key,
+  ownerInfo: {
+    name: owner.name,
+    address: owner.address,
+  },
 });
 
 /**
