@@ -9,6 +9,11 @@ export const routes = [
     href: '/inventory',
     icon: 'clipboard-outline',
   },
+  {
+    name: 'chat',
+    href: '/chat',
+    icon: 'message',
+  },
 ];
 
 export const publicRoutes = [
