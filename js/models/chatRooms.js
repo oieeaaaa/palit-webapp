@@ -3,6 +3,7 @@ import {
   newChatRoom,
   newChatRoomUser,
   newUserChatRoom,
+  newMessage,
 } from 'js/shapes/chatRooms';
 import { normalizeData } from 'js/utils';
 
@@ -83,6 +84,33 @@ const getAllUserChatRooms = (userID) => (
 );
 
 /**
+ * messagesListener.
+ *
+ * @param {string} chatRoomID
+ * @param {function} listener
+ */
+const messagesListener = (chatRoomID, listener) => (
+  chatRoomsCollection
+    .doc(chatRoomID)
+    .collection('messages')
+    .orderBy('timestamp', 'asc')
+    .onSnapshot(listener)
+);
+
+/**
+ * addMessage.
+ *
+ * @param {string} chatRoomID
+ * @param {object} data
+ */
+const addMessage = (chatRoomID, data) => (
+  chatRoomsCollection
+    .doc(chatRoomID)
+    .collection('messages')
+    .add(newMessage(data))
+);
+
+/**
  * openChatRoom.
  * Check, Create, Fetch
  *
@@ -99,23 +127,17 @@ const openChatRoom = async (userID, memberID) => {
   }
 
   // fetch
-  const rawUsersChatRooms = await getAllUserChatRooms(userID);
-  const usersChatRooms = normalizeData(rawUsersChatRooms);
+  const newRawUserChatRoomWithMember = await getUserChatRoomsWithMember(userID, memberID);
+  const newUserChatRoomWithMember = normalizeData(newRawUserChatRoomWithMember)[0];
 
-  // return with isActive state
-  return usersChatRooms.map((userChatRoom) => {
-    userChatRoom.isActive = false;
-
-    if (userChatRoom.userID === memberID) {
-      userChatRoom.isActive = true;
-    }
-
-    return userChatRoom;
-  });
+  return newUserChatRoomWithMember;
 };
 
 export default {
   add,
-  getUserChatRoom: getUserChatRoomsWithMember,
+  getUserChatRoomsWithMember,
   openChatRoom,
+  messagesListener,
+  getAllUserChatRooms,
+  addMessage,
 };
