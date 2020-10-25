@@ -61,11 +61,11 @@ const Chat = () => {
     try {
       const chatRoom = await CHATROOM.openChatRoom(user.key, memberID);
 
-      setActiveRoom(chatRoom);
-
       if (memberID !== router.query?.member) {
         router.push(`/chat?member=${memberID}`);
       }
+
+      setActiveRoom(chatRoom);
     } catch (err) {
       console.error(err);
     }
@@ -157,7 +157,9 @@ const Chat = () => {
    * useEffect.
    */
   useEffect(() => {
-    if (isSending && messageBox?.current) {
+    const isMessageBoxClear = isSending && messageBox?.current;
+
+    if (isMessageBoxClear) {
       messageBox.current.innerHTML = '';
     }
   }, [isSending, messageBox]);
@@ -169,24 +171,34 @@ const Chat = () => {
     const activeRoomKey = activeRoom?.key;
 
     // stop this effect
-    if (!activeRoomKey) return () => {};
+    if (!activeRoomKey || !rooms) return () => {};
+
+    // find if the room exists
+    const isChatRoomExists = rooms?.some((room) => room.key === activeRoom.key);
+
+    // add new room
+    if (!isChatRoomExists) {
+      setRooms((prevRooms) => prevRooms.concat(activeRoom));
+    }
 
     // listener
     const unsubscribe = CHATROOM.messagesListener(activeRoomKey, (snapshot) => {
       const newMessages = normalizeData(snapshot);
       const isEmpty = !newMessages.length;
 
-      // stop if empty
-      if (isEmpty) return;
+      // clear messages
+      if (isEmpty) {
+        setMessages(null);
+        return;
+      }
 
-      // proceed if not
+      // display messages with a fancy auto-scroll
       setMessages(newMessages);
-
       messageAnchor.current.scrollIntoView({ behavior: 'smooth' });
     });
 
     return unsubscribe;
-  }, [activeRoom?.key]);
+  }, [activeRoom?.key, rooms]);
 
   /**
    * useEffect. initializer.
@@ -204,11 +216,11 @@ const Chat = () => {
   return (
     <Layout title="Palit | Chat">
       <div className="chat">
-        {/* HEADER */}
-        <div className="grid chat-header-container">
+        <div className="grid">
+          {/* HEADER */}
           <div className="chat-header">
             <h1 className="chat-header__title">
-              {`${activeRoom?.firstName || 'Chat Room'} ${activeRoom?.lastName || ''}`}
+              {`${activeRoom?.firstName || 'Anonymous'} ${activeRoom?.lastName || ''}`}
             </h1>
             <button className="chat-header__settings" type="button">
               <ReactSVG
@@ -217,30 +229,38 @@ const Chat = () => {
               />
             </button>
           </div>
-        </div>
-        <div className="grid">
+
           {/* BODY */}
           <div className="chat-body">
             {/* MESSAGES */}
             <ul className="chat-messages">
               {messages && (
-                messages.map((message) => (
-                  <li
-                    className={`chat-message ${message.sender.key === user.key ? '--sender' : ''}`}
-                    key={message.key}
-                  >
-                    <figure className="chat-message__avatar">
-                      <img src={message.sender?.avatar} alt="Palit" />
-                    </figure>
-                    <div className="chat-message__info">
-                      <div
-                        className="chat-message__info-text"
-                        dangerouslySetInnerHTML={{__html: message.content}} // eslint-disable-line
-                      />
-                      <p className="chat-message__info-time">{format(message?.timestamp?.toMillis())}</p>
-                    </div>
-                  </li>
-                ))
+                messages.map((message) => {
+                  const isSender = message.sender.key === user.key;
+
+                  return (
+                    <li
+                      className={`chat-message ${isSender ? '--sender' : ''}`}
+                      key={message.key}
+                    >
+                      <figure className="chat-message__avatar">
+                        <img src={message.sender?.avatar} alt="Palit" />
+                      </figure>
+                      <div className="chat-message__info">
+                        {!isSender && (
+                          <p className="chat-message__info-name">
+                            {`${message.sender?.firstName || 'Anonymous'} ${message.sender?.lastName || ''}`}
+                          </p>
+                        )}
+                        <div
+                          className="chat-message__info-text"
+                          dangerouslySetInnerHTML={{__html: message.content}} // eslint-disable-line
+                        />
+                        <p className="chat-message__info-time">{format(message?.timestamp?.toMillis())}</p>
+                      </div>
+                    </li>
+                  );
+                })
               )}
               <li ref={messageAnchor} />
             </ul>
