@@ -40,6 +40,7 @@ export const newMessage = (data) => ({
     key: data.user.key,
     firstName: data.user.firstName,
     lastName: data.user.lastName,
+    avatar: data.user.avatar,
   },
   content: data.content,
   timestamp: firebaseApp.firestore.FieldValue.serverTimestamp(),
