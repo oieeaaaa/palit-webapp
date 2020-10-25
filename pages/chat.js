@@ -4,10 +4,13 @@ import {
   useContext,
   useRef,
 } from 'react';
+import { ReactSVG } from 'react-svg';
+import { format } from 'timeago.js';
 import { useRouter } from 'next/router';
 import CHATROOM from 'js/models/chatRooms';
-import useProtection from 'js/hooks/useProtection';
 import AuthContext from 'js/contexts/auth';
+import LayoutContext from 'js/contexts/layout';
+import useProtection from 'js/hooks/useProtection';
 import useForm from 'js/hooks/useForm';
 import { normalizeData } from 'js/utils';
 import Layout from 'components/layout/layout';
@@ -15,6 +18,7 @@ import Layout from 'components/layout/layout';
 const Chat = () => {
   // contexts
   const { user } = useContext(AuthContext);
+  const { handlers } = useContext(LayoutContext);
 
   // states
   const [isSending, setIsSending] = useState(false);
@@ -24,9 +28,14 @@ const Chat = () => {
 
   // refs
   const messageAnchor = useRef(null);
+  const messageBox = useRef(null);
 
   // custom hooks
-  const { form, inputController, clearForm } = useForm({ message: '' });
+  const {
+    form,
+    setForm,
+    validateForm,
+  } = useForm({ message: '' });
   const router = useRouter();
 
   /**
@@ -63,14 +72,39 @@ const Chat = () => {
   };
 
   /**
+   * handleMessage.
+   *
+   * @param {object} e
+   */
+  const handleMessage = (e) => {
+    e.persist();
+    let value = e.target.innerHTML;
+
+    if (value && value === '<br>') {
+      value = '';
+    }
+
+    setForm((prevForm) => ({
+      ...prevForm,
+      message: value,
+    }));
+  };
+
+  /**
    * sendMessage.
    *
    * @param {object} e
    */
   const sendMessage = async (e) => {
-    e.persist();
+    if (e.type !== 'click') {
+      if (!(!e.shiftKey && e.key === 'Enter')) return;
+    }
 
-    if (!(e.type === 'keypress' && !e.shiftKey && e.key === 'Enter')) return;
+    const isFormValid = validateForm({
+      message: { complete: true },
+    });
+
+    if (!isFormValid) return;
 
     setIsSending(true);
 
@@ -89,13 +123,44 @@ const Chat = () => {
   };
 
   /**
+   * copyToClipboard.
+   */
+  const copyToClipboard = () => {
+    if (!messageBox?.current || !form.message) return;
+
+    const messageBoxEl = messageBox.current;
+    const range = document.createRange();
+
+    // 1. cleanup
+    messageBoxEl.focus();
+    window.getSelection().removeAllRanges();
+
+    // 2. create a selection
+    range.setStartBefore(messageBoxEl.firstChild);
+    range.setEndAfter(messageBoxEl.lastChild);
+    window.getSelection().addRange(range);
+
+    /* 3. Copy the text inside the text field */
+    document.execCommand('copy');
+
+    // 4. deselect, so the browser doesn't leave the element visibly selected
+    window.getSelection().removeAllRanges();
+
+    // 5. Let the user know the text is copied
+    handlers.showBanner({
+      text: 'Copied text ✨',
+      variant: 'info',
+    });
+  };
+
+  /**
    * useEffect.
    */
   useEffect(() => {
-    if (isSending) {
-      clearForm();
+    if (isSending && messageBox?.current) {
+      messageBox.current.innerHTML = '';
     }
-  }, [isSending]);
+  }, [isSending, messageBox]);
 
   /**
    * useEffect.
@@ -117,7 +182,6 @@ const Chat = () => {
       // proceed if not
       setMessages(newMessages);
 
-      // show the new message
       messageAnchor.current.scrollIntoView({ behavior: 'smooth' });
     });
 
@@ -140,61 +204,109 @@ const Chat = () => {
   return (
     <Layout title="Palit | Chat">
       <div className="chat">
+        {/* HEADER */}
+        <div className="grid chat-header-container">
+          <div className="chat-header">
+            <h1 className="chat-header__title">
+              {`${activeRoom?.firstName || 'Chat Room'} ${activeRoom?.lastName || ''}`}
+            </h1>
+            <button className="chat-header__settings" type="button">
+              <ReactSVG
+                className="chat-header__settings-icon"
+                src="/icons/settings-outline.svg"
+              />
+            </button>
+          </div>
+        </div>
         <div className="grid">
-          <div className="chat-users">
-            <h2 className="chat__heading">
-              Users
-            </h2>
-            <ul className="chat-users__list hide-scrollbar">
-              {rooms && rooms.map((room) => (
-                <li
-                  className={`chat__user ${room.key === activeRoom?.key ? '--active' : ''}`}
-                  key={room.userID}
+          {/* BODY */}
+          <div className="chat-body">
+            {/* MESSAGES */}
+            <ul className="chat-messages">
+              {messages && (
+                messages.map((message) => (
+                  <li
+                    className={`chat-message ${message.sender.key === user.key ? '--sender' : ''}`}
+                    key={message.key}
+                  >
+                    <figure className="chat-message__avatar">
+                      <img src={message.sender?.avatar} alt="Palit" />
+                    </figure>
+                    <div className="chat-message__info">
+                      <div
+                        className="chat-message__info-text"
+                        dangerouslySetInnerHTML={{__html: message.content}} // eslint-disable-line
+                      />
+                      <p className="chat-message__info-time">{format(message?.timestamp?.toMillis())}</p>
+                    </div>
+                  </li>
+                ))
+              )}
+              <li ref={messageAnchor} />
+            </ul>
+
+            {/* CHAT FORM */}
+            <div className="chat-form">
+              <button className="chat-form__util" type="button" onClick={copyToClipboard}>
+                <ReactSVG
+                  className="chat-form__util-icon"
+                  src="/icons/copy-outline.svg"
+                />
+              </button>
+              <div className="chat-form-container">
+                <div className="chat-form__input-group">
+                  <div
+                    ref={messageBox}
+                    contentEditable
+                    className="chat-form__input"
+                    type="text"
+                    name="message"
+                    onInput={handleMessage}
+                    onKeyPress={sendMessage}
+                    role="textbox"
+                    aria-label="Editor"
+                    tabIndex={0}
+                  />
+                  {!form.message && (
+                    <p className="chat-form__input-placeholder">
+                      Type something here...
+                    </p>
+                  )}
+                </div>
+                <button
+                  className={`chat-form__button button ${isSending ? '--disabled' : '--primary'}`}
+                  type="button"
+                  onClick={sendMessage}
+                  disabled={isSending}
                 >
-                  <button className="chat__user-button" type="button" onClick={() => openChatRoom(room.userID)}>
+                  <ReactSVG
+                    className="chat-form__util-icon"
+                    src="/icons/send-outline.svg"
+                  />
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* CHAT ROOMS */}
+          <ul className="chat-rooms">
+            {rooms && (
+              rooms.map((room) => (
+                <li
+                  className={`chat-room ${activeRoom?.key === room.key ? '--active' : ''}`}
+                  key={room.key}
+                >
+                  <button
+                    className="chat-room__button"
+                    type="button"
+                    onClick={() => openChatRoom(room.userID)}
+                  >
                     <img src={room.avatar} alt={room.name} />
                   </button>
                 </li>
-              ))}
-            </ul>
-          </div>
-          <div className="chat-room">
-            <h2 className="chat__heading">
-              Chat Room
-            </h2>
-            <ul className="chat-messages">
-              {messages && messages.map(({ key, sender, content }) => {
-                const isSender = sender.key === user.key;
-
-                return (
-                  <li
-                    className={`chat-message ${isSender ? '--sender' : '--receiver'}`}
-                    key={key}
-                  >
-                    {!isSender && (
-                      <h3 className="chat-message__user">{sender.firstName}</h3>
-                    )}
-                    <p className="chat-message__content">
-                      {content}
-                    </p>
-                  </li>
-                );
-              })}
-              <li ref={messageAnchor} className="chat-messages__anchor" />
-            </ul>
-          </div>
-          <div className="chat-write">
-            <h2 className="chat__heading">
-              Message
-            </h2>
-            <textarea
-              name="message"
-              className="form__input --textarea"
-              onChange={inputController}
-              onKeyPress={sendMessage}
-              value={form.message}
-            />
-          </div>
+              ))
+            )}
+          </ul>
         </div>
       </div>
     </Layout>
