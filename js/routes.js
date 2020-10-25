@@ -12,7 +12,7 @@ export const routes = [
   {
     name: 'chat',
     href: '/chat',
-    icon: 'message',
+    icon: 'message-outline',
   },
 ];
 
