@@ -10,6 +10,12 @@
   align-items: center;
 }
 
+@mixin inline-flex-center {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+}
+
 @mixin hide-appearance {
   position: absolute;
   top: rem(-1000);
@@ -17,4 +23,13 @@
   width: 1px;
   height: 1px;
   opacity: 0;
+}
+
+@mixin hide-scrollbar {
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
 }
