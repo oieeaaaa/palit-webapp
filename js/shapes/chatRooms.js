@@ -1,3 +1,5 @@
+import firebaseApp from 'firebase/app';
+
 /**
  * newChatRoomUser.
  *
@@ -28,8 +30,25 @@ export const newChatRoom = (host, member) => ({
   member: newChatRoomUser(member),
 });
 
+/**
+ * newMessage.
+ *
+ * @param {object} data
+ */
+export const newMessage = (data) => ({
+  sender: {
+    key: data.user.key,
+    firstName: data.user.firstName,
+    lastName: data.user.lastName,
+    avatar: data.user.avatar,
+  },
+  content: data.content,
+  timestamp: firebaseApp.firestore.FieldValue.serverTimestamp(),
+});
+
 export default {
   newChatRoom,
   newChatRoomUser,
   newUserChatRoom,
+  newMessage,
 };

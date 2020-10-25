@@ -20,6 +20,12 @@ Bold: 700
 ============================================================================ */
 @font-face {
   font-family: 'Avenir', sans-serif;
+  src: url("/scss/Avenir-Light.woff") format("woff"), url("/scss/Avenir-Light.woff2") format("woff2");
+  font-weight: 300;
+}
+
+@font-face {
+  font-family: 'Avenir', sans-serif;
   src: url("/scss/Avenir-Black.woff") format("woff"), url("/scss/Avenir-Black.woff2") format("woff2");
   font-weight: 900;
 }

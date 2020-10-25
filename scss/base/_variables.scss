@@ -18,8 +18,12 @@ $persimmon: #ff5f58;
 $dodger-blue: #3399ff;
 $apple: #2ac940;
 
+// STATES
+$active-footer-nav: var(--tree-poppy) !important;
+
 // BORDERS
 $thin-gray-border: 1px solid var(--gray);
+$thin-tree-poppy-border: 1px solid var(--tree-poppy);
 
 // BOX SHADOWS
 $primary-hard-shadow: 0 0 0 2px var(--tree-poppy);
@@ -40,6 +44,8 @@ $indicator-z: 2;
 $footer-z: 3;
 $banner-z: 5;
 $header-dropdown-z: 6;
+$chat-header-z: 7;
+$header-z: 10;
 
 
 /* ============================================================================

@@ -13,9 +13,12 @@ Description:
 
   margin-bottom: rem(30);
 
+  position: sticky;
+  top: 0;
   display: flex;
   height: rem(80);
   background-color: var(--dark);
+  z-index: $header-z;
 
   @include tablet-p {
     margin-bottom: rem(60);

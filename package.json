@@ -21,7 +21,8 @@
     "node-fetch": "^2.6.1",
     "react": "16.13.1",
     "react-dom": "16.13.1",
-    "react-svg": "^11.0.38"
+    "react-svg": "^11.0.38",
+    "timeago.js": "^4.0.2"
   },
   "devDependencies": {
     "@babel/core": "^7.9.0",
