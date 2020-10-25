@@ -60,15 +60,23 @@ Description:
     }
 
     &__link {
-      &:not(.--chat).--active {
-        path {
-          fill: var(--mine-shaft) !important;
+      &.--active {
+        &.--home {
+          path {
+            fill: $active-footer-nav;
+          }
         }
-      }
 
-      &.--chat.--active {
-        path {
-          stroke: var(--mine-shaft) !important;
+        &.--inventory {
+          svg {
+            stroke: $active-footer-nav;
+          }
+        }
+
+        &.--chat {
+          svg {
+            stroke: $active-footer-nav;
+          }
         }
       }
     }
