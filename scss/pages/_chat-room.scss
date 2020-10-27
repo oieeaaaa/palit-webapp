@@ -21,6 +21,8 @@
     }
 
     &__settings {
+      @include flex-center;
+
       width: rem(30);
       height: rem(30);
       border-radius: rem(3);
