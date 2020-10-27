@@ -21,6 +21,7 @@ const ChatRoom = () => {
   const { handlers } = useContext(LayoutContext);
 
   // states
+  // TODO: Create a reducer for this
   const [isSending, setIsSending] = useState(false);
   const [rooms, setRooms] = useState(null);
   const [activeRoom, setActiveRoom] = useState(null);
@@ -186,14 +187,12 @@ const ChatRoom = () => {
       const newMessages = normalizeData(snapshot);
       const isEmpty = !newMessages.length;
 
-      // clear messages
-      if (isEmpty) {
-        setMessages(null);
-        return;
-      }
+      if (isEmpty) return;
 
       // The message is seen
-      CHATROOM.readChatRoomMessage(user.key, activeRoomKey);
+      if (activeRoom.isUnread) {
+        CHATROOM.readChatRoomMessage(user.key, activeRoomKey);
+      }
 
       // display messages with a fancy auto-scroll
       setMessages(newMessages);

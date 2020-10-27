@@ -76,7 +76,10 @@
       }
     }
 
-    // &__info {}
+    &__info {
+      display: flex;
+      flex-direction: column;
+    }
 
     &__name {
       margin-bottom: rem(5);
@@ -104,6 +107,8 @@
     }
 
     &__meta {
+      margin-top: auto;
+
       display: flex;
       justify-content: space-between;
     }
