@@ -10,13 +10,14 @@ export const newChatRoomUser = (user) => ({
   firstName: user.firstName,
   lastName: user.lastName,
   avatar: user.avatar,
+  isUnread: true,
 });
 
 /**
  * newUserChatRoom.
  */
 export const newUserChatRoom = () => ({
-  isDirty: false,
+  isUnread: false,
 });
 
 /**
@@ -46,9 +47,32 @@ export const newMessage = (data) => ({
   timestamp: firebaseApp.firestore.FieldValue.serverTimestamp(),
 });
 
+/**
+ * latestMessage.
+ *
+ * @param {object} data
+ */
+export const latestMessage = (data) => ({
+  latestMessage: {
+    senderID: data.user.key,
+    content: data.content,
+    timestamp: firebaseApp.firestore.FieldValue.serverTimestamp(),
+  },
+  isUnread: true,
+});
+
+/**
+ * readMessage.
+ */
+export const readMessage = () => ({
+  isUnread: false,
+});
+
 export default {
   newChatRoom,
   newChatRoomUser,
   newUserChatRoom,
   newMessage,
+  latestMessage,
+  readMessage,
 };
