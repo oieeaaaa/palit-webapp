@@ -1,16 +1,25 @@
 import firebaseApp from 'firebase/app';
 
 /**
+ * chatRoomUser.
+ *
+ * @param {object} user
+ */
+export const chatRoomUser = (user) => ({
+  firstName: user.firstName,
+  lastName: user.lastName,
+  avatar: user.avatar,
+});
+
+/**
  * newChatRoomUser.
  *
  * @param {object} user
  */
 export const newChatRoomUser = (user) => ({
   userID: user.key,
-  firstName: user.firstName,
-  lastName: user.lastName,
-  avatar: user.avatar,
   isUnread: false,
+  ...chatRoomUser(user),
 });
 
 /**
@@ -23,17 +32,32 @@ export const newUserChatRoom = () => ({
 /**
  * newChatRoom.
  *
- * @param {object} host
- * @param {object} member
+ * @param {string} hostID
+ * @param {string} memberID
  */
-export const newChatRoom = (host, member) => ({
+export const newChatRoom = (hostID, memberID) => ({
+  hostID,
   members: [
-    {
-      ...newChatRoomUser(host),
-      isCreator: true,
-    },
-    newChatRoomUser(member),
+    hostID,
+    memberID,
   ],
+});
+
+// ===========================================================================
+// MESSAGES
+// ===========================================================================
+
+/**
+ * messageSender.
+ *
+ * @param {object} user
+ */
+export const messageSender = (user) => ({
+  sender: {
+    firstName: user.firstName,
+    lastName: user.lastName,
+    avatar: user.avatar,
+  },
 });
 
 /**
@@ -44,9 +68,7 @@ export const newChatRoom = (host, member) => ({
 export const newMessage = (data) => ({
   sender: {
     key: data.user.key,
-    firstName: data.user.firstName,
-    lastName: data.user.lastName,
-    avatar: data.user.avatar,
+    ...messageSender(data),
   },
   content: data.content,
   timestamp: firebaseApp.firestore.FieldValue.serverTimestamp(),
@@ -80,4 +102,5 @@ export default {
   newMessage,
   latestMessage,
   readMessage,
+  messageSender,
 };

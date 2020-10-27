@@ -40,7 +40,7 @@ const add = (hostID, memberID) => db.runTransaction(async (transaction) => {
   const member = normalizeData(rawMember);
 
   // chatRooms
-  await transaction.set(newChatRoomRef, newChatRoom(host, member), { merge: true });
+  await transaction.set(newChatRoomRef, newChatRoom(hostID, memberID), { merge: true });
 
   // usersChatRooms
   await transaction.set(hostChatRoomCollection, newUserChatRoom(), { merge: true });

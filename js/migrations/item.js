@@ -23,7 +23,7 @@ const migrateItem = async () => {
         newItems.push({
           ...item,
           ownerInfo: {
-            name: ownerInfo.firstName,
+            firstName: ownerInfo.firstName,
             address: ownerInfo.address,
           },
         });
