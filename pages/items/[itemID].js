@@ -135,11 +135,11 @@ const ItemDetails = () => {
               details={[
                 {
                   label: '👤 Name',
-                  value: item.ownerInfo.firstName,
+                  value: item.ownerInfo?.firstName,
                 },
                 {
                   label: '📌 Address',
-                  value: item.ownerInfo.address,
+                  value: item.ownerInfo?.address,
                 },
               ]}
             />
