@@ -147,7 +147,7 @@ const ItemDetails = () => {
           <ItemDetailsCard variant="remarks">
             <ItemDetailsCardTitle text="Remarks" />
             <ItemDetailsCardRemarks remarks={item.remarks} />
-            <ItemDetailsCardLink href={`/chat?member=${item.owner}`}>
+            <ItemDetailsCardLink href="/chat/[memberID]" as={`/chat/${item.owner}`}>
               Send a message
             </ItemDetailsCardLink>
           </ItemDetailsCard>
