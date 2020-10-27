@@ -15,7 +15,7 @@ import useForm from 'js/hooks/useForm';
 import { normalizeData } from 'js/utils';
 import Layout from 'components/layout/layout';
 
-const Chat = () => {
+const ChatRoom = () => {
   // contexts
   const { user } = useContext(AuthContext);
   const { handlers } = useContext(LayoutContext);
@@ -39,20 +39,6 @@ const Chat = () => {
   const router = useRouter();
 
   /**
-   * initChatRooms.
-   */
-  const initChatRooms = async () => {
-    try {
-      const rawChatRooms = await CHATROOM.getAllUserChatRooms(user.key);
-      const chatRooms = normalizeData(rawChatRooms);
-
-      setRooms(chatRooms);
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
-  /**
    * openChatRoom.
    *
    * @param {string} memberID
@@ -62,7 +48,7 @@ const Chat = () => {
       const chatRoom = await CHATROOM.openChatRoom(user.key, memberID);
 
       if (memberID !== router.query?.member) {
-        router.push(`/chat?member=${memberID}`);
+        router.push(`/chat/${memberID}`);
       }
 
       setActiveRoom(chatRoom);
@@ -78,10 +64,12 @@ const Chat = () => {
    */
   const handleMessage = (e) => {
     e.persist();
+
     let value = e.target.innerHTML;
 
     if (value && value === '<br>') {
       value = '';
+      messageBox.current.innerHTML = '';
     }
 
     setForm((prevForm) => ({
@@ -114,7 +102,12 @@ const Chat = () => {
         user,
       });
 
-      await CHATROOM.addMessage(activeRoom.key, payload);
+      await CHATROOM.addMessage(
+        user.key,
+        activeRoom.userID,
+        activeRoom.key,
+        payload,
+      );
     } catch (err) {
       console.error(err);
     } finally {
@@ -157,12 +150,19 @@ const Chat = () => {
    * useEffect.
    */
   useEffect(() => {
-    const isMessageBoxClear = isSending && messageBox?.current;
+    if (!isSending) return;
 
-    if (isMessageBoxClear) {
-      messageBox.current.innerHTML = '';
+    const isMessageBoxOkayToClear = isSending && messageBox?.current;
+
+    if (isMessageBoxOkayToClear) {
+      // Need to make this async
+      // Not sure why or how contentEditable do
+      setTimeout(() => {
+        messageBox.current.innerHTML = '';
+        setForm({ message: '' });
+      }, 0);
     }
-  }, [isSending, messageBox]);
+  }, [isSending]);
 
   /**
    * useEffect.
@@ -173,7 +173,7 @@ const Chat = () => {
     // stop this effect
     if (!activeRoomKey || !rooms) return () => {};
 
-    // find if the room exists
+    // check if the room exists
     const isChatRoomExists = rooms?.some((room) => room.key === activeRoom.key);
 
     // add new room
@@ -192,6 +192,9 @@ const Chat = () => {
         return;
       }
 
+      // The message is seen
+      CHATROOM.readChatRoomMessage(user.key, activeRoomKey);
+
       // display messages with a fancy auto-scroll
       setMessages(newMessages);
       messageAnchor.current.scrollIntoView({ behavior: 'smooth' });
@@ -204,59 +207,67 @@ const Chat = () => {
    * useEffect. initializer.
    */
   useEffect(() => {
-    const memberID = router.query?.member;
+    const memberID = router.query?.memberID;
 
-    initChatRooms();
+    const unsubscribe = CHATROOM.userChatRoomsListener(user.key, (snapshot) => {
+      const chatRooms = normalizeData(snapshot);
+
+      setRooms(chatRooms);
+    });
 
     if (memberID) {
       openChatRoom(memberID);
     }
+
+    return unsubscribe;
   }, []);
 
   return (
     <Layout title="Palit | Chat">
-      <div className="chat">
+      <div className="chat-room">
         <div className="grid">
           {/* HEADER */}
-          <div className="chat-header">
-            <h1 className="chat-header__title">
-              {`${activeRoom?.firstName || 'Anonymous'} ${activeRoom?.lastName || ''}`}
+          <div className="chat-room-header">
+            <h1 className="chat-room-header__title">
+              {activeRoom && (
+                `${activeRoom.firstName} ${activeRoom.lastName}`
+              )}
             </h1>
-            <button className="chat-header__settings" type="button">
+            <button className="chat-room-header__settings" type="button">
               <ReactSVG
-                className="chat-header__settings-icon"
+                className="chat-room-header__settings-icon"
                 src="/icons/settings-outline.svg"
               />
             </button>
           </div>
 
           {/* BODY */}
-          <div className="chat-body">
+          <div className="chat-room-body">
             {/* MESSAGES */}
-            <ul className="chat-messages">
+            <ul className="chat-room-messages">
               {messages && (
                 messages.map((message) => {
                   const isSender = message.sender.key === user.key;
 
                   return (
                     <li
-                      className={`chat-message ${isSender ? '--sender' : ''}`}
+                      className={`chat-room-message ${isSender ? '--sender' : ''}`}
                       key={message.key}
                     >
-                      <figure className="chat-message__avatar">
+                      <figure className="chat-room-message__avatar">
                         <img src={message.sender?.avatar} alt="Palit" />
                       </figure>
-                      <div className="chat-message__info">
+                      <div className="chat-room-message__info">
                         {!isSender && (
-                          <p className="chat-message__info-name">
+                          <p className="chat-room-message__info-name">
                             {`${message.sender?.firstName || 'Anonymous'} ${message.sender?.lastName || ''}`}
                           </p>
                         )}
                         <div
-                          className="chat-message__info-text"
+                          className="chat-room-message__info-text"
                           dangerouslySetInnerHTML={{__html: message.content}} // eslint-disable-line
                         />
-                        <p className="chat-message__info-time">{format(message?.timestamp?.toMillis())}</p>
+                        <p className="chat-room-message__info-time">{format(message?.timestamp?.toMillis())}</p>
                       </div>
                     </li>
                   );
@@ -266,21 +277,19 @@ const Chat = () => {
             </ul>
 
             {/* CHAT FORM */}
-            <div className="chat-form">
-              <button className="chat-form__util" type="button" onClick={copyToClipboard}>
+            <div className="chat-room-form">
+              <button className="chat-room-form__util" type="button" onClick={copyToClipboard}>
                 <ReactSVG
-                  className="chat-form__util-icon"
+                  className="chat-room-form__util-icon"
                   src="/icons/copy-outline.svg"
                 />
               </button>
-              <div className="chat-form-container">
-                <div className="chat-form__input-group">
+              <div className="chat-room-form-container">
+                <div className="chat-room-form__input-group">
                   <div
                     ref={messageBox}
                     contentEditable
-                    className="chat-form__input"
-                    type="text"
-                    name="message"
+                    className="chat-room-form__input"
                     onInput={handleMessage}
                     onKeyPress={sendMessage}
                     role="textbox"
@@ -288,19 +297,19 @@ const Chat = () => {
                     tabIndex={0}
                   />
                   {!form.message && (
-                    <p className="chat-form__input-placeholder">
+                    <p className="chat-room-form__input-placeholder">
                       Type something here...
                     </p>
                   )}
                 </div>
                 <button
-                  className={`chat-form__button button ${isSending ? '--disabled' : '--primary'}`}
+                  className={`chat-room-form__button button ${isSending ? '--disabled' : '--primary'}`}
                   type="button"
                   onClick={sendMessage}
                   disabled={isSending}
                 >
                   <ReactSVG
-                    className="chat-form__util-icon"
+                    className="chat-room-form__util-icon"
                     src="/icons/send-outline.svg"
                   />
                 </button>
@@ -308,21 +317,26 @@ const Chat = () => {
             </div>
           </div>
 
-          {/* CHAT ROOMS */}
-          <ul className="chat-rooms">
+          {/* CHAT HEADS */}
+          <ul className="chat-room-heads">
             {rooms && (
               rooms.map((room) => (
                 <li
-                  className={`chat-room ${activeRoom?.key === room.key ? '--active' : ''}`}
+                  className={`chat-room-head ${activeRoom?.key === room.key ? '--active' : ''}`}
                   key={room.key}
                 >
-                  <button
-                    className="chat-room__button"
-                    type="button"
-                    onClick={() => openChatRoom(room.userID)}
-                  >
-                    <img src={room.avatar} alt={room.name} />
-                  </button>
+                  <div className="chat-room-head__group">
+                    {room.isUnread && (
+                      <span className="chat-room-head__indicator" />
+                    )}
+                    <button
+                      className="chat-room-head__button"
+                      type="button"
+                      onClick={() => openChatRoom(room.userID)}
+                    >
+                      <img src={room.avatar} alt={room.name} />
+                    </button>
+                  </div>
                 </li>
               ))
             )}
@@ -333,4 +347,4 @@ const Chat = () => {
   );
 };
 
-export default useProtection(Chat);
+export default useProtection(ChatRoom);
