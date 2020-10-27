@@ -82,6 +82,7 @@ const HeaderNav = ({ currentPath }) => (
    * @param {function} openDropdown
    * @param {function} signout
  */
+// TODO: Remove right margin on mobile
 const HeaderWithAvatar = ({
   avatar,
   alt,
