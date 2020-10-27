@@ -4,6 +4,8 @@ import {
   newChatRoomUser,
   newUserChatRoom,
   newMessage,
+  latestMessage,
+  readMessage,
 } from 'js/shapes/chatRooms';
 import { normalizeData } from 'js/utils';
 
@@ -84,6 +86,19 @@ const getAllUserChatRooms = (userID) => (
 );
 
 /**
+ * userChatRoomsListener.
+ *
+ * @param {string} userID
+ * @param {function} listener
+ */
+const userChatRoomsListener = (userID, listener) => (
+  usersChatRoomsCollection
+    .doc(userID)
+    .collection('_chatRooms')
+    .onSnapshot(listener)
+);
+
+/**
  * messagesListener.
  *
  * @param {string} chatRoomID
@@ -100,15 +115,34 @@ const messagesListener = (chatRoomID, listener) => (
 /**
  * addMessage.
  *
+ * @param {string} userID
+ * @param {string} memberID
  * @param {string} chatRoomID
  * @param {object} data
  */
-const addMessage = (chatRoomID, data) => (
-  chatRoomsCollection
-    .doc(chatRoomID)
-    .collection('messages')
-    .add(newMessage(data))
-);
+const addMessage = (userID, memberID, chatRoomID, data) => {
+  const batch = db.batch();
+
+  // collections & refs
+  const messagesCollection = chatRoomsCollection.doc(chatRoomID).collection('messages');
+  const userChatRoom = usersChatRoomsCollection.doc(userID).collection('_chatRooms').doc(chatRoomID);
+  const memberChatRoom = usersChatRoomsCollection.doc(memberID).collection('_chatRooms').doc(chatRoomID);
+
+  // new message id
+  const messageID = messagesCollection.doc().id;
+
+  // messages
+  batch.set(messagesCollection.doc(messageID), newMessage(data), { merge: true });
+
+  // usersChatRooms > _chatRooms
+  batch.set(userChatRoom, {
+    ...latestMessage(data),
+    ...readMessage(),
+  }, { merge: true });
+  batch.set(memberChatRoom, latestMessage(data), { merge: true });
+
+  batch.commit();
+};
 
 /**
  * openChatRoom.
@@ -133,6 +167,26 @@ const openChatRoom = async (userID, memberID) => {
   return newUserChatRoomWithMember;
 };
 
+/**
+ * readChatRoomMessage.
+ *
+ * @param {string} userID
+ * @param {chatRoomID} chatRoomID
+ */
+const readChatRoomMessage = (userID, chatRoomID) => {
+  const userChatRoomMember = usersChatRoomsCollection.doc(userID).collection('_chatRooms').doc(chatRoomID);
+
+  return db.runTransaction(async (transaction) => {
+    const userChatRoomMemberRawData = await transaction.get(userChatRoomMember);
+    const userChatRoomMemberData = normalizeData(userChatRoomMemberRawData);
+
+    // the message is seen by the current User
+    if (userChatRoomMemberData.isUnread) {
+      await transaction.update(userChatRoomMember, readMessage());
+    }
+  });
+};
+
 export default {
   add,
   getUserChatRoomsWithMember,
@@ -140,4 +194,6 @@ export default {
   messagesListener,
   getAllUserChatRooms,
   addMessage,
+  userChatRoomsListener,
+  readChatRoomMessage,
 };
