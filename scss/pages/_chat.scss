@@ -1,265 +1,132 @@
 .chat {
   &-header {
+    margin-bottom: rem(25);
     grid-column: 1 / -1;
 
     display: flex;
     justify-content: space-between;
-    align-items: center;
-    padding-left: rem(10);
-    padding-right: rem(10);
-    height: rem(50);
-    border: $thin-gray-border;
-    border-radius: rem(10);
-    background-color: var(--light);
-
-    &__title {
-      @include Montserrat(700);
-
-      font-size: rem(16);
-      line-height: rem(20);
-      color: var(--mine-shaft);
-    }
 
     &__settings {
-      width: rem(30);
-      height: rem(30);
-      border-radius: rem(3);
+      svg {
+        width: rem(20);
+        height: rem(20);
+      }
 
-      &-icon {
-        svg {
-          width: rem(20);
-          height: rem(20);
-        }
+      div {
+        display: flex;
       }
     }
   }
 
-  &-body {
-    margin-top: rem(20);
+  &__heading {
+    @include Montserrat(700);
+
+    font-size: rem(16);
+    line-height: rem(20);
+    color: var(--gray);
+  }
+
+  &-mates {
     grid-column: 1 / -1;
 
     display: flex;
     flex-direction: column;
-    justify-content: flex-start;
-    position: relative;
-    height: auto;
-    border: $thin-tree-poppy-border;
-    border-radius: rem(8);
-    background-color: var(--light);
   }
 
-  &-messages {
-    display: flex;
-    flex-direction: column;
-    padding: rem(20);
-    padding-bottom: 0;
-    min-height: 333 / 812 * 100vh;
-    max-height: 333 / 812 * 100vh;
-    overflow-y: scroll;
-  }
-
-  &-message {
-    $message: &;
+  &-mate {
+    $mate: &;
 
     margin-top: rem(40);
 
-    display: flex;
-    align-items: flex-start;
+    &.--unread {
+      #{$mate}__read-more {
+        color: var(--persimmon);
+      }
 
-    &.--sender {
-      margin-top: rem(20);
+      #{$mate}__avatar-container::before {
+        content: '';
+        display: inline-block;
+        position: absolute;
+        top: rem(-7);
+        right: rem(-7);
+        width: rem(15);
+        height: rem(15);
+        border-radius: 50%;
+        background-color: var(--persimmon);
+        z-index: $indicator-z;
+      }
+    }
 
-      flex-direction: row-reverse;
+    &__link {
+      display: grid;
+      grid-template-columns: (76 / 335 * 100%) 1fr;
+      grid-column-gap: rem(10);
+      color: var(--mine-shaft);
+      text-decoration: none;
     }
 
     &__avatar {
-      @include aspect-ratio(40, 40);
+      @include aspect-ratio(1, 1);
 
-      margin-right: rem(10);
-
-      width: rem(40);
       border-radius: rem(8);
-      background-color: var(--gray);
-      flex-shrink: 0;
+      background-color: var(--light);
 
-      #{$message}.--sender & {
-        margin-right: 0;
-        margin-left: rem(10);
+      &-container {
+        position: relative;
       }
     }
 
-    &__info {
-      position: relative;
-      width: 100%;
-      padding: rem(10);
-      background-color: var(--concrete);
-      border-radius: rem(8);
+    // &__info {}
 
-      &-name {
-        @include Avenir(300);
+    &__name {
+      margin-bottom: rem(5);
 
-        position: absolute;
-        top: rem(-5);
-        left: 0;
-        font-size: rem(14);
-        line-height: rem(22);
-        transform: translateY(-100%);
-        color: var(--gray);
-      }
+      @include Montserrat(700);
 
-      &-text {
-        @include Avenir(300);
-
-        font-size: rem(16);
-        line-height: rem(22);
-        color: var(--mine-shaft);
-      }
-
-      &-time {
-        @include Montserrat;
-
-        margin-top: rem(15);
-
-        font-size: rem(12);
-        line-height: rem(15);
-        color: var(--gray);
-      }
-    }
-  }
-
-  &-messages > &-message:first-of-type {
-    margin-top: 0;
-  }
-
-  &-form {
-    margin-top: auto;
-
-    padding: rem(20);
-    padding-top: rem(10);
-    width: 100%;
-    background-color: var(--light);
-    border-bottom-right-radius: rem(8);
-    border-bottom-left-radius: rem(8);
-
-    &__util {
-      margin-bottom: rem(10);
-
-      @include state(active) {
-        transform: scale(0.7);
-      }
-
-      transition: transform 0.25s linear;
-
-      &-icon {
-        // TODO: Create a component for each Icon and add this fix
-        div {
-          display: flex;
-        }
-
-        svg {
-          stroke: var(--tree-poppy) !important;
-        }
-      }
+      font-size: rem(18);
+      line-height: rem(22);
     }
 
-    &-container {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-end;
-      width: 100%;
-    }
+    &__message {
+      margin-bottom: rem(8);
 
-    &__input {
       @include Avenir(300);
 
       font-size: rem(16);
       line-height: rem(22);
-      padding: rem(10);
       color: var(--gray);
-      border: none;
-      border-radius: rem(8);
-      background-color: var(--concrete);
 
-      &-group {
-        position: relative;
-        width: 218 / 293 * 100%;
-      }
-
-      &-placeholder {
-        @include Avenir(300);
-
-        position: absolute;
-        top: 50%;
-        left: rem(10);
-        transform: translateY(-50%);
-        font-size: rem(16);
-        line-height: rem(22);
-        color: var(--gray);
-        user-select: none;
-        pointer-events: none;
-      }
+      // TODO: Create a mixin for this
+      text-overflow: ellipsis;
+      overflow: hidden;
+      white-space: nowrap;
+      max-width: rem(240);
     }
 
-    &__button {
-      width: rem(57);
+    &__meta {
+      display: flex;
+      justify-content: space-between;
+    }
 
-      svg * {
-        stroke: var(--light) !important;
-      }
+    &__read-more {
+      @include Avenir;
+
+      font-size: rem(14);
+      line-height: rem(19);
+      color: var(--gray);
+    }
+
+    &__timeago {
+      @include Avenir(300);
+
+      font-size: rem(14);
+      line-height: rem(19);
+      text-align: right;
+      color: var(--gray);
     }
   }
 
-  &-rooms {
-    @include hide-scrollbar;
-
-    grid-column: 1 / -1;
-
-    display: flex;
-    overflow-y: scroll;
-  }
-
-  &-room {
-    $room: &;
-
-    margin-right: rem(20);
-
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-
-    &::before {
-      content: '';
-      display: inline-block;
-      height: rem(30);
-    }
-
-    &.--active::before {
-      width: rem(2);
-      background-color: var(--tree-poppy);
-    }
-
-    &__button {
-      @include aspect-ratio(60, 60);
-
-      #{$room}.--active > &::after {
-        content: '';
-        display: inline-block;
-        position: absolute;
-        top: 0;
-        left: 50%;
-        transform: translate(-50%, -50%);
-
-        // TODO: Create a mixin for circle
-        width: rem(20);
-        height: rem(20);
-        border-radius: 50%;
-        background-color: var(--tree-poppy);
-      }
-
-      position: relative;
-      width: rem(60);
-      border-radius: rem(8);
-      background-color: var(--gray);
-    }
+  &-mates > &-mate:first-of-type {
+    margin-top: 0;
   }
 }
