@@ -10,7 +10,7 @@ export const newChatRoomUser = (user) => ({
   firstName: user.firstName,
   lastName: user.lastName,
   avatar: user.avatar,
-  isUnread: true,
+  isUnread: false,
 });
 
 /**
@@ -27,8 +27,13 @@ export const newUserChatRoom = () => ({
  * @param {object} member
  */
 export const newChatRoom = (host, member) => ({
-  host: newChatRoomUser(host),
-  member: newChatRoomUser(member),
+  members: [
+    {
+      ...newChatRoomUser(host),
+      isCreator: true,
+    },
+    newChatRoomUser(member),
+  ],
 });
 
 /**
