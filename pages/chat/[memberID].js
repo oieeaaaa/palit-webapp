@@ -15,6 +15,7 @@ import useForm from 'js/hooks/useForm';
 import { normalizeData } from 'js/utils';
 import Layout from 'components/layout/layout';
 
+// TODO: Limit the number of message displayed
 const ChatRoom = () => {
   // contexts
   const { user } = useContext(AuthContext);
@@ -221,6 +222,7 @@ const ChatRoom = () => {
     return unsubscribe;
   }, []);
 
+  // TODO: Break this markup into independent components like what we did in items/[itemID].js
   return (
     <Layout title="Palit | Chat">
       <div className="chat-room">
@@ -259,7 +261,7 @@ const ChatRoom = () => {
                       <div className="chat-room-message__info">
                         {!isSender && (
                           <p className="chat-room-message__info-name">
-                            {`${message.sender?.firstName || 'Anonymous'} ${message.sender?.lastName || ''}`}
+                            {`${message.sender?.firstName} ${message.sender?.lastName}`}
                           </p>
                         )}
                         <div
