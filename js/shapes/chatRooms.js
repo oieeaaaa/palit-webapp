@@ -1,33 +1,63 @@
 import firebaseApp from 'firebase/app';
 
 /**
- * newChatRoomUser.
+ * chatRoomUser.
  *
  * @param {object} user
  */
-export const newChatRoomUser = (user) => ({
-  userID: user.key,
+export const chatRoomUser = (user) => ({
   firstName: user.firstName,
   lastName: user.lastName,
   avatar: user.avatar,
 });
 
 /**
+ * newChatRoomUser.
+ *
+ * @param {object} user
+ */
+export const newChatRoomUser = (user) => ({
+  userID: user.key,
+  isUnread: false,
+  ...chatRoomUser(user),
+});
+
+/**
  * newUserChatRoom.
  */
 export const newUserChatRoom = () => ({
-  isDirty: false,
+  isUnread: false,
 });
 
 /**
  * newChatRoom.
  *
- * @param {object} host
- * @param {object} member
+ * @param {string} hostID
+ * @param {string} memberID
  */
-export const newChatRoom = (host, member) => ({
-  host: newChatRoomUser(host),
-  member: newChatRoomUser(member),
+export const newChatRoom = (hostID, memberID) => ({
+  hostID,
+  members: [
+    hostID,
+    memberID,
+  ],
+});
+
+// ===========================================================================
+// MESSAGES
+// ===========================================================================
+
+/**
+ * messageSender.
+ *
+ * @param {object} user
+ */
+export const messageSender = (user) => ({
+  sender: {
+    firstName: user.firstName,
+    lastName: user.lastName,
+    avatar: user.avatar,
+  },
 });
 
 /**
@@ -38,12 +68,31 @@ export const newChatRoom = (host, member) => ({
 export const newMessage = (data) => ({
   sender: {
     key: data.user.key,
-    firstName: data.user.firstName,
-    lastName: data.user.lastName,
-    avatar: data.user.avatar,
+    ...messageSender(data),
   },
   content: data.content,
   timestamp: firebaseApp.firestore.FieldValue.serverTimestamp(),
+});
+
+/**
+ * latestMessage.
+ *
+ * @param {object} data
+ */
+export const latestMessage = (data) => ({
+  latestMessage: {
+    senderID: data.user.key,
+    content: data.content,
+    timestamp: firebaseApp.firestore.FieldValue.serverTimestamp(),
+  },
+  isUnread: true,
+});
+
+/**
+ * readMessage.
+ */
+export const readMessage = () => ({
+  isUnread: false,
 });
 
 export default {
@@ -51,4 +100,7 @@ export default {
   newChatRoomUser,
   newUserChatRoom,
   newMessage,
+  latestMessage,
+  readMessage,
+  messageSender,
 };

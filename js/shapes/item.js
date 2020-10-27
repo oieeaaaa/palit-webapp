@@ -26,7 +26,7 @@ export const newItem = (owner, data = {}) => ({
   isDirty: false,
   owner: owner.key,
   ownerInfo: {
-    name: owner.name,
+    firstName: owner.firstName,
     address: owner.address,
   },
 });
@@ -42,8 +42,21 @@ export const updatedItem = (data = {}) => ({
   remarks: data.remarks,
 });
 
+/**
+ * ownerInfoUpdate.
+ *
+ * @param {object} owner
+ */
+export const ownerInfoUpdate = (owner) => ({
+  ownerInfo: {
+    firstName: owner.firstName,
+    address: owner.address,
+  },
+});
+
 export default {
   incrementTotalItems,
   newItem,
   updatedItem,
+  ownerInfoUpdate,
 };

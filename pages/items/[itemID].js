@@ -135,11 +135,11 @@ const ItemDetails = () => {
               details={[
                 {
                   label: '👤 Name',
-                  value: item.ownerInfo?.name,
+                  value: item.ownerInfo.firstName,
                 },
                 {
                   label: '📌 Address',
-                  value: item.ownerInfo?.address,
+                  value: item.ownerInfo.address,
                 },
               ]}
             />
@@ -147,7 +147,7 @@ const ItemDetails = () => {
           <ItemDetailsCard variant="remarks">
             <ItemDetailsCardTitle text="Remarks" />
             <ItemDetailsCardRemarks remarks={item.remarks} />
-            <ItemDetailsCardLink href={`/chat?member=${item.owner}`}>
+            <ItemDetailsCardLink href="/chat/[memberID]" as={`/chat/${item.owner}`}>
               Send a message
             </ItemDetailsCardLink>
           </ItemDetailsCard>
