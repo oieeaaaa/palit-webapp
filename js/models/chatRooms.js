@@ -121,8 +121,6 @@ const messagesListener = (chatRoomID, listener) => (
  * @param {object} data
  */
 const addMessage = (userID, memberID, chatRoomID, data) => {
-  const batch = db.batch();
-
   // collections & refs
   const messagesCollection = chatRoomsCollection.doc(chatRoomID).collection('messages');
   const userChatRoom = usersChatRoomsCollection.doc(userID).collection('_chatRooms').doc(chatRoomID);
@@ -131,17 +129,18 @@ const addMessage = (userID, memberID, chatRoomID, data) => {
   // new message id
   const messageID = messagesCollection.doc().id;
 
-  // messages
-  batch.set(messagesCollection.doc(messageID), newMessage(data), { merge: true });
+  db.runTransaction(async (transaction) => {
+    // messages
+    await transaction.set(messagesCollection.doc(messageID), newMessage(data), { merge: true });
 
-  // usersChatRooms > _chatRooms
-  batch.set(userChatRoom, {
-    ...latestMessage(data),
-    ...readMessage(),
-  }, { merge: true });
-  batch.set(memberChatRoom, latestMessage(data), { merge: true });
+    // usersChatRooms > _chatRooms
+    await transaction.set(userChatRoom, {
+      ...latestMessage(data),
+      ...readMessage(),
+    }, { merge: true });
 
-  batch.commit();
+    await transaction.set(memberChatRoom, latestMessage(data), { merge: true });
+  });
 };
 
 /**
@@ -182,7 +181,7 @@ const readChatRoomMessage = (userID, chatRoomID) => {
 
     // the message is seen by the current User
     if (userChatRoomMemberData.isUnread) {
-      await transaction.update(userChatRoomMember, readMessage());
+      await transaction.set(userChatRoomMember, readMessage(), { merge: true });
     }
   });
 };
