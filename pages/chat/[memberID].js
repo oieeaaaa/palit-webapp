@@ -7,6 +7,7 @@ import {
 import { ReactSVG } from 'react-svg';
 import { format } from 'timeago.js';
 import { useRouter } from 'next/router';
+import Link from 'next/link';
 import CHATROOM from 'js/models/chatRooms';
 import AuthContext from 'js/contexts/auth';
 import LayoutContext from 'js/contexts/layout';
@@ -234,12 +235,14 @@ const ChatRoom = () => {
                 `${activeRoom.firstName} ${activeRoom.lastName}`
               )}
             </h1>
-            <button className="chat-room-header__settings" type="button">
-              <ReactSVG
-                className="chat-room-header__settings-icon"
-                src="/icons/settings-outline.svg"
-              />
-            </button>
+            <Link href="/chat/settings" as="/chat/settings">
+              <a className="chat-room-header__settings" type="button">
+                <ReactSVG
+                  className="chat-room-header__settings-icon"
+                  src="/icons/settings-outline.svg"
+                />
+              </a>
+            </Link>
           </div>
 
           {/* BODY */}

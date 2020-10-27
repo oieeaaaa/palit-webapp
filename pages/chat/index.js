@@ -36,7 +36,7 @@ const Chat = () => {
             <h1 className="chat__heading">
               Chat
             </h1>
-            <Link href="/chat/settings">
+            <Link href="/chat/settings" as="/chat/settings">
               <a className="chat-header__settings">
                 <ReactSVG src="/icons/settings-outline.svg" />
               </a>
