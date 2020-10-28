@@ -19,14 +19,33 @@ export const chatRoomUser = (user) => ({
 export const newChatRoomUser = (user) => ({
   userID: user.key,
   isUnread: false,
-  ...chatRoomUser(user),
+  firstName: user.firstName,
+  lastName: user.lastName,
+  avatar: user.avatar,
+  latestMessage: {
+    senderID: '',
+    content: '',
+    timestamp: '',
+  },
 });
 
 /**
  * newUserChatRoom.
  */
 export const newUserChatRoom = () => ({
+  theme: '',
   isUnread: false,
+  doNotDisturb: false,
+});
+
+/**
+ * userChatRoomUpdate.
+ *
+ * @param {object} data
+ */
+export const userChatRoomUpdate = (data) => ({
+  theme: data.theme,
+  doNotDisturb: data.doNotDisturb,
 });
 
 /**
@@ -68,7 +87,9 @@ export const messageSender = (user) => ({
 export const newMessage = (data) => ({
   sender: {
     key: data.user.key,
-    ...messageSender(data),
+    firstName: data.user.firstName,
+    lastName: data.user.lastName,
+    avatar: data.user.avatar,
   },
   content: data.content,
   timestamp: firebaseApp.firestore.FieldValue.serverTimestamp(),
@@ -103,4 +124,5 @@ export default {
   latestMessage,
   readMessage,
   messageSender,
+  userChatRoomUpdate,
 };
