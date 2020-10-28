@@ -5,6 +5,12 @@ import Router from 'next/router';
  */
 export const gotoHome = () => Router.push('/', '/', { shallow: true });
 
+/**
+ * goBack.
+ */
+export const goBack = () => Router.back();
+
 export default {
   gotoHome,
+  goBack,
 };
