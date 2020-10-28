@@ -61,16 +61,23 @@ const Chat = () => {
                         {' '}
                         {room.lastName}
                       </h2>
-                      <p className="chat-mate__message">
-                        {room.latestMessage.senderID === user.key ? 'Me: ' : ''}
-                        {room.latestMessage.content}
-                      </p>
-                      <div className="chat-mate__meta">
-                        <span className="chat-mate__read-more">Read More</span>
-                        <span className="chat-mate__timeago">
-                          {format(room.latestMessage.timestamp.toMillis())}
-                        </span>
-                      </div>
+                      {room.latestMessage ? (
+                        <>
+                          <p className="chat-mate__message">
+                            {room.latestMessage.senderID === user.key ? 'Me: ' : ''}
+                            {room.latestMessage.content}
+                          </p>
+                          <div className="chat-mate__meta">
+                            <span className="chat-mate__read-more">Read More</span>
+                            <span className="chat-mate__timeago">
+                              {format(room.latestMessage.timestamp.toMillis())}
+                            </span>
+                          </div>
+                        </>
+                      )
+                        : (
+                          <p className="chat-mate__message">Empty conversation</p>
+                        )}
                     </div>
                   </a>
                 </Link>
