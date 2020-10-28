@@ -28,6 +28,7 @@ const ChatRoom = () => {
   const [rooms, setRooms] = useState(null);
   const [activeRoom, setActiveRoom] = useState(null);
   const [messages, setMessages] = useState(null);
+  const [settings, setSettings] = useState(null);
 
   // refs
   const messageAnchor = useRef(null);
@@ -55,6 +56,19 @@ const ChatRoom = () => {
       }
 
       setActiveRoom(chatRoom);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  /**
+   * getUserChatSettings.
+   */
+  const getUserChatSettings = async () => {
+    try {
+      const rawUserChatRoomSettings = await CHATROOM.getOneUserChatRoom(user.key);
+
+      setSettings(normalizeData(rawUserChatRoomSettings));
     } catch (err) {
       console.error(err);
     }
@@ -187,14 +201,9 @@ const ChatRoom = () => {
     // listener
     const unsubscribe = CHATROOM.messagesListener(activeRoomKey, (snapshot) => {
       const newMessages = normalizeData(snapshot);
-      const isEmpty = !newMessages.length;
-
-      if (isEmpty) return;
 
       // The message is seen
-      if (activeRoom.isUnread) {
-        CHATROOM.readChatRoomMessage(user.key, activeRoomKey);
-      }
+      CHATROOM.readChatRoomMessage(user.key, activeRoomKey);
 
       // display messages with a fancy auto-scroll
       setMessages(newMessages);
@@ -219,6 +228,9 @@ const ChatRoom = () => {
     if (memberID) {
       openChatRoom(memberID);
     }
+
+    // settings
+    getUserChatSettings();
 
     return unsubscribe;
   }, []);
@@ -307,7 +319,7 @@ const ChatRoom = () => {
                   )}
                 </div>
                 <button
-                  className={`chat-room-form__button button ${isSending ? '--disabled' : '--primary'}`}
+                  className={`chat-room-form__button button ${isSending ? '--disabled' : ''}`}
                   type="button"
                   onClick={sendMessage}
                   disabled={isSending}
@@ -346,6 +358,13 @@ const ChatRoom = () => {
             )}
           </ul>
         </div>
+        <style jsx>
+          {`
+            .chat-room {
+              --theme: #${settings?.theme || 'fa9917'};
+            }
+          `}
+        </style>
       </div>
     </Layout>
   );
