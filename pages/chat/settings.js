@@ -1,17 +1,73 @@
-import { Fragment } from 'react';
+import {
+  Fragment,
+  useState,
+  useEffect,
+  useContext,
+} from 'react';
 import { ReactSVG } from 'react-svg';
+import AuthContext from 'js/contexts/auth';
+import LayoutContext from 'js/contexts/layout';
+import CHATROOM from 'js/models/chatRooms';
 import useProtection from 'js/hooks/useProtection';
 import useForm from 'js/hooks/useForm';
+import { normalizeData } from 'js/utils';
+import { goBack } from 'js/helpers/router';
 import Layout from 'components/layout/layout';
 
 const Settings = () => {
   const themes = ['FA9917', '39F', 'F55', '2AC940', '333'];
 
+  // contexts
+  const { user } = useContext(AuthContext);
+  const { handlers } = useContext(LayoutContext);
+
+  // states
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   // custom hooks
-  const { setForm, form } = useForm({
+  const { setForm, form: settings, validateForm } = useForm({
     theme: '',
     doNotDisturb: false,
   });
+
+  /**
+   * getUserChatRoomSettings.
+   */
+  const getUserChatRoomSettings = async () => {
+    try {
+      const rawUserChatRoomSettings = await CHATROOM.getOneUserChatRoom(user.key);
+
+      setForm(normalizeData(rawUserChatRoomSettings));
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  /**
+   * saveSettings.
+   */
+  const saveSettings = async () => {
+    const isFormValid = validateForm({
+      theme: { complete: true },
+    });
+
+    if (!isFormValid) return;
+
+    try {
+      setIsSubmitting(true);
+
+      await CHATROOM.updateUserChatRoom(user.key, settings);
+
+      handlers.showBanner({
+        text: 'Updated settings! ✨',
+        variant: 'success',
+      });
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   /**
    * toggleCheckbox.
@@ -39,6 +95,13 @@ const Settings = () => {
     }));
   };
 
+  /**
+   * useEffect.
+   */
+  useEffect(() => {
+    getUserChatRoomSettings();
+  }, []);
+
   return (
     <Layout title="Palit | Chat Settings">
       <div className="chat-settings">
@@ -50,7 +113,7 @@ const Settings = () => {
               {themes && themes.map((theme) => (
                 <Fragment key={theme}>
                   <li
-                    className={`chat-settings__theme --${theme} ${theme === form.theme ? '--active' : ''}`}
+                    className={`chat-settings__theme --${theme} ${theme === settings.theme ? '--active' : ''}`}
                   >
                     <label className="chat-settings__checkbox" htmlFor={theme}>
                       <div className="chat-settings__theme-color" />
@@ -61,7 +124,7 @@ const Settings = () => {
                         type="checkbox"
                         onChange={() => onSelectTheme(theme)}
                       />
-                      {form.theme === theme && (
+                      {settings.theme === theme && (
                         <span className="chat-settings__checkbox-display">
                           <ReactSVG
                             className="chat-settings__checkbox-icon"
@@ -97,7 +160,7 @@ const Settings = () => {
                 onChange={toggleCheckbox}
               />
               <span className="chat-settings__checkbox-display">
-                {form.doNotDisturb && (
+                {settings.doNotDisturb && (
                   <ReactSVG
                     className="chat-settings__checkbox-icon"
                     src="/icons/checkbox-outline.svg"
@@ -110,10 +173,15 @@ const Settings = () => {
             </label>
           </div>
           <div className="chat-settings__actions">
-            <button className="button --default" type="button">
+            <button className="button --default" type="button" onClick={goBack}>
               Leave settings
             </button>
-            <button className="button --primary" type="button">
+            <button
+              className={`button ${isSubmitting ? '--disabled' : '--primary'}`}
+              type="button"
+              onClick={saveSettings}
+              disabled={isSubmitting}
+            >
               Save
             </button>
           </div>
