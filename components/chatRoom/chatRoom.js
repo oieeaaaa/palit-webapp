@@ -6,8 +6,8 @@ Description:
 ***************************************
 */
 import Link from 'next/link';
-import { ReactSVG } from 'react-svg';
 import { format } from 'timeago.js';
+import Icon from 'components/icon/icon';
 
 /**
  * ChatRoomHeader.
@@ -24,9 +24,9 @@ export const ChatRoomHeader = ({ activeRoom }) => (
     </h1>
     <Link href="/chat/settings" as="/chat/settings">
       <a className="chat-room-header__settings" type="button">
-        <ReactSVG
-          className="chat-room-header__settings-icon"
-          src="/icons/settings-outline.svg"
+        <Icon
+          className="chat-room-header__setings-icon"
+          name="settings-outline"
         />
       </a>
     </Link>
@@ -108,10 +108,7 @@ export const ChatRoomForm = ({
 }) => (
   <div className="chat-room-form">
     <button className="chat-room-form__util" type="button" onClick={copyToClipboard}>
-      <ReactSVG
-        className="chat-room-form__util-icon"
-        src="/icons/copy-outline.svg"
-      />
+      <Icon className="chat-room-form__util-icon" name="copy-outline" />
     </button>
     <div className="chat-room-form-container">
       <div className="chat-room-form__input-group">
@@ -137,10 +134,7 @@ export const ChatRoomForm = ({
         onClick={sendMessage}
         disabled={isSending}
       >
-        <ReactSVG
-          className="chat-room-form__util-icon"
-          src="/icons/send-outline.svg"
-        />
+        <Icon className="chat-room-form__util-icon" name="send-outline" />
       </button>
     </div>
   </div>
