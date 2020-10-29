@@ -11,6 +11,10 @@
       grid-column: 3 / -3;
     }
 
+    .title {
+      margin-bottom: 0;
+    }
+
     &__settings {
       svg {
         width: rem(20);
@@ -20,21 +24,6 @@
       div {
         display: flex;
       }
-    }
-  }
-
-  &__heading {
-    @include Montserrat(700);
-
-    font-size: rem(16);
-    line-height: rem(20);
-    color: var(--gray);
-
-    @include tablet-p {
-      @include Montserrat(700);
-
-      font-size: rem(18);
-      line-height: rem(22);
     }
   }
 
