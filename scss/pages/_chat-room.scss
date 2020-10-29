@@ -220,11 +220,6 @@
       }
 
       &-icon {
-        // TODO: Create a component for each Icon and add this fix
-        div {
-          display: flex;
-        }
-
         svg {
           stroke: var(--theme) !important;
         }
