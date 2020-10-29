@@ -6,6 +6,12 @@
     flex-direction: column;
 
     min-height: (582 / 812) * 100vh;
+
+    @include tablet-p {
+      display: grid;
+      flex-direction: unset;
+      min-height: unset;
+    }
   }
 
   &__title {
@@ -16,15 +22,30 @@
     font-size: rem(16);
     line-height: rem(20);
     color: var(--gray);
+
+    @include tablet-p {
+      grid-column: 1 / 7;
+
+      font-size: rem(18);
+      line-height: rem(22);
+    }
   }
 
   .form-group {
     margin-bottom: rem(30);
+
+    @include tablet-p {
+      grid-column: 1 / 7;
+    }
   }
 
   &__themes {
     display: flex;
     justify-content: space-between;
+
+    @include tablet-p {
+      grid-column: 1 / 7;
+    }
   }
 
   &__theme {
@@ -52,6 +73,10 @@
   &__checkbox {
     display: flex;
     align-items: center;
+
+    @include tablet-p {
+      cursor: pointer;
+    }
 
     &-display {
       @include inline-flex-center;
@@ -90,5 +115,9 @@
 
     display: flex;
     justify-content: space-between;
+
+    @include tablet-p {
+      grid-column: 1 / 7;
+    }
   }
 }
