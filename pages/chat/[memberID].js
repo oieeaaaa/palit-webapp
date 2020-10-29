@@ -3,15 +3,21 @@ import {
   useContext,
   useRef,
 } from 'react';
-import { ReactSVG } from 'react-svg';
-import { format } from 'timeago.js';
 import { useRouter } from 'next/router';
-import Link from 'next/link';
+
+// models
 import CHATROOM from 'js/models/chatRooms';
+
+// contexts
 import AuthContext from 'js/contexts/auth';
-import LayoutContext from 'js/contexts/layout';
+
+// hooks
 import useProtection from 'js/hooks/useProtection';
+import useError from 'js/hooks/useError';
 import useForm from 'js/hooks/useForm';
+import useCopyToClibpard from 'js/hooks/useCopyToClipboard';
+
+// reducers
 import useChatRoomReducer, {
   CHANGE_IS_SENDING,
   UPDATE_ROOMS,
@@ -20,14 +26,23 @@ import useChatRoomReducer, {
   UPDATE_SETTINGS,
   ADD_NEW_ROOM,
 } from 'js/reducers/chatRoom';
+
+// utils
 import { normalizeData } from 'js/utils';
+
+// components
 import Layout from 'components/layout/layout';
+import {
+  ChatRoomHeader,
+  ChatRoomMessages,
+  ChatRoomForm,
+  ChatRoomHeads,
+} from 'components/chatRoom/chatRoom';
 
 // TODO: Limit the number of message displayed
 const ChatRoom = () => {
   // contexts
   const { user } = useContext(AuthContext);
-  const { handlers } = useContext(LayoutContext);
 
   // states
   const [state, dispatch] = useChatRoomReducer();
@@ -43,6 +58,8 @@ const ChatRoom = () => {
     validateForm,
   } = useForm({ message: '' });
   const router = useRouter();
+  const [displayError] = useError();
+  const copyToClipboard = useCopyToClibpard(messageBox);
 
   /**
    * openChatRoom.
@@ -62,7 +79,7 @@ const ChatRoom = () => {
         activeRoom: chatRoom,
       });
     } catch (err) {
-      console.error(err);
+      displayError(err);
     }
   };
 
@@ -78,7 +95,7 @@ const ChatRoom = () => {
         settings: normalizeData(rawUserChatRoomSettings),
       });
     } catch (err) {
-      console.error(err);
+      displayError(err);
     }
   };
 
@@ -137,44 +154,13 @@ const ChatRoom = () => {
         payload,
       );
     } catch (err) {
-      console.error(err);
+      displayError(err);
     } finally {
       dispatch({
         type: CHANGE_IS_SENDING,
         isSending: false,
       });
     }
-  };
-
-  /**
-   * copyToClipboard.
-   */
-  const copyToClipboard = () => {
-    if (!messageBox?.current || !form.message) return;
-
-    const messageBoxEl = messageBox.current;
-    const range = document.createRange();
-
-    // 1. cleanup
-    messageBoxEl.focus();
-    window.getSelection().removeAllRanges();
-
-    // 2. create a selection
-    range.setStartBefore(messageBoxEl.firstChild);
-    range.setEndAfter(messageBoxEl.lastChild);
-    window.getSelection().addRange(range);
-
-    /* 3. Copy the text inside the text field */
-    document.execCommand('copy');
-
-    // 4. deselect, so the browser doesn't leave the element visibly selected
-    window.getSelection().removeAllRanges();
-
-    // 5. Let the user know the text is copied
-    handlers.showBanner({
-      text: 'Copied text ✨',
-      variant: 'info',
-    });
   };
 
   /**
@@ -258,137 +244,48 @@ const ChatRoom = () => {
     return unsubscribe;
   }, []);
 
-  // TODO: Break this markup into independent components like what we did in items/[itemID].js
   return (
     <Layout title="Palit | Chat">
       <div className="chat-room">
         <div className="grid">
           {/* HEADER */}
-          <div className="chat-room-header">
-            <h1 className="chat-room-header__title">
-              {state.activeRoom && (
-                `${state.activeRoom.firstName} ${state.activeRoom.lastName}`
-              )}
-            </h1>
-            <Link href="/chat/settings" as="/chat/settings">
-              <a className="chat-room-header__settings" type="button">
-                <ReactSVG
-                  className="chat-room-header__settings-icon"
-                  src="/icons/settings-outline.svg"
-                />
-              </a>
-            </Link>
-          </div>
+          <ChatRoomHeader activeRoom={state.activeRoom} />
 
           {/* BODY */}
           <div className="chat-room-body">
             {/* MESSAGES */}
-            <ul className="chat-room-messages">
-              {state.messages && (
-                state.messages.map((message) => {
-                  const isSender = message.sender.key === user.key;
-
-                  return (
-                    <li
-                      className={`chat-room-message ${isSender ? '--sender' : ''}`}
-                      key={message.key}
-                    >
-                      <figure className="chat-room-message__avatar">
-                        <img src={message.sender?.avatar} alt="Palit" />
-                      </figure>
-                      <div className="chat-room-message__info">
-                        {!isSender && (
-                          <p className="chat-room-message__info-name">
-                            {`${message.sender?.firstName} ${message.sender?.lastName}`}
-                          </p>
-                        )}
-                        <div
-                          className="chat-room-message__info-text"
-                          dangerouslySetInnerHTML={{__html: message.content}} // eslint-disable-line
-                        />
-                        <p className="chat-room-message__info-time">{format(message?.timestamp?.toMillis())}</p>
-                      </div>
-                    </li>
-                  );
-                })
-              )}
-              <li ref={messageAnchor} />
-            </ul>
+            <ChatRoomMessages
+              messages={state.messages}
+              userID={user.key}
+              messageAnchor={messageAnchor}
+            />
 
             {/* CHAT FORM */}
-            <div className="chat-room-form">
-              <button className="chat-room-form__util" type="button" onClick={copyToClipboard}>
-                <ReactSVG
-                  className="chat-room-form__util-icon"
-                  src="/icons/copy-outline.svg"
-                />
-              </button>
-              <div className="chat-room-form-container">
-                <div className="chat-room-form__input-group">
-                  <div
-                    ref={messageBox}
-                    contentEditable
-                    className="chat-room-form__input"
-                    onInput={handleMessage}
-                    onKeyPress={sendMessage}
-                    role="textbox"
-                    aria-label="Editor"
-                    tabIndex={0}
-                  />
-                  {!form.message && (
-                    <p className="chat-room-form__input-placeholder">
-                      Type something here...
-                    </p>
-                  )}
-                </div>
-                <button
-                  className={`chat-room-form__button button ${state.isSending ? '--disabled' : ''}`}
-                  type="button"
-                  onClick={sendMessage}
-                  disabled={state.isSending}
-                >
-                  <ReactSVG
-                    className="chat-room-form__util-icon"
-                    src="/icons/send-outline.svg"
-                  />
-                </button>
-              </div>
-            </div>
+            <ChatRoomForm
+              copyToClipboard={copyToClipboard}
+              messageBox={messageBox}
+              handleMessage={handleMessage}
+              sendMessage={sendMessage}
+              form={form}
+              isSending={state.isSending}
+            />
           </div>
 
           {/* CHAT HEADS */}
-          <ul className="chat-room-heads">
-            {state.rooms && (
-              state.rooms.map((room) => (
-                <li
-                  className={`chat-room-head ${state.activeRoom?.key === room.key ? '--active' : ''}`}
-                  key={room.key}
-                >
-                  <div className="chat-room-head__group">
-                    {room.isUnread && (
-                      <span className="chat-room-head__indicator" />
-                    )}
-                    <button
-                      className="chat-room-head__button"
-                      type="button"
-                      onClick={() => openChatRoom(room.userID)}
-                    >
-                      <img src={room.avatar} alt={room.name} />
-                    </button>
-                  </div>
-                </li>
-              ))
-            )}
-          </ul>
+          <ChatRoomHeads
+            rooms={state.rooms}
+            activeRoom={state.activeRoom}
+            openChatRoom={openChatRoom}
+          />
         </div>
-        <style jsx>
-          {`
-            .chat-room {
-              --theme: #${state.settings?.theme || 'fa9917'};
-            }
-          `}
-        </style>
       </div>
+      <style jsx>
+        {`
+          .chat-room {
+            --theme: #${state.settings?.theme || 'fa9917'};
+          }
+        `}
+      </style>
     </Layout>
   );
 };
