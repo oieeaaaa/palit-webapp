@@ -5,8 +5,8 @@ Author: Joimee
 Description:
 ***************************************
 */
-import { ReactSVG } from 'react-svg';
 import Link from 'next/link';
+import Icon from 'components/icon/icon';
 
 /**
  * ItemDetailsImageGroup.
@@ -154,10 +154,7 @@ export const ItemDetailsUnownedActions = ({
       onClick={onLike}
       disabled={isLiking}
     >
-      <ReactSVG
-        className="button-icon"
-        src={`/icons/heart-${isLiked ? 'filled' : 'outline'}.svg`}
-      />
+      <Icon className="button-icon" name={`heart-${isLiked ? 'filled' : 'outline'}`} />
       <span>Like</span>
     </button>
     {isTraded ? (
@@ -167,7 +164,7 @@ export const ItemDetailsUnownedActions = ({
     ) : (
       <Link href="/trades/request/[itemID]" as={`/trades/request/${itemKey}`}>
         <a className="button --primary-dark item__trade">
-          <ReactSVG className="button-icon" src="/icons/cart-filled.svg" />
+          <Icon className="button-icon" name="cart-filled" />
           <span>{isTraded ? 'Traded' : 'Trade Requests'}</span>
         </a>
       </Link>
