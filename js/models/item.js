@@ -36,7 +36,7 @@ const add = (owner, data) => {
 
   batch.set(itemsStats, incrementTotalItems(1), { merge: true });
 
-  batch.set(itemsCollection.doc(newDocumentID), newItem({ owner, ...data }), { merge: true });
+  batch.set(itemsCollection.doc(newDocumentID), newItem(owner, data), { merge: true });
 
   batch.commit();
 };

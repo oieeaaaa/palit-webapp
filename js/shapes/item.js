@@ -26,8 +26,8 @@ export const newItem = (owner, data = {}) => ({
   isDirty: false,
   owner: owner.key,
   ownerInfo: {
-    firstName: owner.firstName,
-    address: owner.address,
+    firstName: owner.firstName || '',
+    address: owner.address || '',
   },
 });
 
