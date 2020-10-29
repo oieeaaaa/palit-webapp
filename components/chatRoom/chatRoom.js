@@ -17,7 +17,6 @@ import { format } from 'timeago.js';
  */
 export const ChatRoomHeader = ({ activeRoom }) => (
   <div className="chat-room-header">
-    {/* TODO: Create a component for this */}
     <h1 className="chat-room-header__title">
       {activeRoom && (
         `${activeRoom.firstName} ${activeRoom.lastName}`
