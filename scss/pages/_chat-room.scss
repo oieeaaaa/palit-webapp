@@ -12,6 +12,10 @@
     border-radius: rem(10);
     background-color: var(--light);
 
+    @include tablet-p {
+      grid-column: 3 / -3;
+    }
+
     &__title {
       @include Montserrat(700);
 
@@ -48,16 +52,23 @@
     border: rem(1) solid var(--theme);
     border-radius: rem(8);
     background-color: var(--light);
+
+    @include tablet-p {
+      grid-column: 3 / -3;
+    }
   }
 
   &-messages {
     display: flex;
     flex-direction: column;
-    padding: rem(20);
-    padding-bottom: 0;
+    padding: rem(20) rem(20) 0;
     min-height: 333 / 812 * 100vh;
     max-height: 333 / 812 * 100vh;
     overflow-y: scroll;
+
+    @include tablet-p {
+      padding: rem(30) rem(30) 0;
+    }
   }
 
   &-message {
@@ -67,6 +78,10 @@
 
     display: flex;
     align-items: flex-start;
+
+    @include tablet-p {
+      margin-top: rem(60);
+    }
 
     &.--sender {
       margin-top: rem(20);
@@ -83,6 +98,10 @@
       border-radius: rem(8);
       background-color: var(--gray);
       flex-shrink: 0;
+
+      @include tablet-p {
+        width: rem(50);
+      }
 
       #{$message}.--sender & {
         margin-right: 0;
@@ -110,6 +129,8 @@
           height: 100%;
           background-color: var(--theme);
           opacity: 0.2;
+          user-select: none;
+          pointer-events: none;
         }
       }
 
@@ -123,6 +144,11 @@
         line-height: rem(22);
         transform: translateY(-100%);
         color: var(--gray);
+
+        @include tablet-p {
+          font-size: rem(16);
+          line-height: rem(20);
+        }
       }
 
       &-text {
@@ -131,6 +157,11 @@
         font-size: rem(16);
         line-height: rem(22);
         color: var(--mine-shaft);
+
+        @include tablet-p {
+          font-size: rem(18);
+          line-height: rem(25);
+        }
       }
 
       &-time {
@@ -141,6 +172,11 @@
         font-size: rem(12);
         line-height: rem(15);
         color: var(--gray);
+
+        @include tablet-p {
+          font-size: rem(14);
+          line-height: rem(17);
+        }
       }
     }
   }
@@ -163,14 +199,25 @@
     border-bottom-right-radius: rem(8);
     border-bottom-left-radius: rem(8);
 
+    @include tablet-p {
+      padding: rem(30);
+      padding-top: rem(10);
+    }
+
     &__util {
       margin-bottom: rem(10);
+
+      transition: transform 0.25s linear;
 
       @include state(active) {
         transform: scale(0.7);
       }
 
-      transition: transform 0.25s linear;
+      @include tablet-p {
+        margin-bottom: rem(15);
+
+        cursor: pointer;
+      }
 
       &-icon {
         // TODO: Create a component for each Icon and add this fix
@@ -202,9 +249,17 @@
       border-radius: rem(8);
       background-color: var(--concrete);
 
+      @include tablet-p {
+        padding: rem(14);
+      }
+
       &-group {
         position: relative;
         width: 218 / 293 * 100%;
+
+        @include tablet-p {
+          width: 330 / 405 * 100%;
+        }
       }
 
       &-placeholder {
@@ -219,6 +274,12 @@
         color: var(--gray);
         user-select: none;
         pointer-events: none;
+
+        @include tablet-p {
+          left: rem(14);
+          font-size: rem(18);
+          line-height: rem(25);
+        }
       }
     }
 
@@ -240,6 +301,10 @@
 
     display: flex;
     overflow-y: scroll;
+
+    @include tablet-p {
+      grid-column: 3 / -3;
+    }
   }
 
   &-head {
