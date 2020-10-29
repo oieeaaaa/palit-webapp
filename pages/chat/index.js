@@ -5,7 +5,7 @@ import { format } from 'timeago.js';
 import CHATROOM from 'js/models/chatRooms';
 import AuthContext from 'js/contexts/auth';
 import useProtection from 'js/hooks/useProtection';
-import { normalizeData } from 'js/utils';
+import { normalizeData, isAllObjectValuesFalse } from 'js/utils';
 import Layout from 'components/layout/layout';
 
 const Chat = () => {
@@ -36,7 +36,7 @@ const Chat = () => {
             <h1 className="chat__heading">
               Chat
             </h1>
-            <Link href="/chat/settings">
+            <Link href="/chat/settings" as="/chat/settings">
               <a className="chat-header__settings">
                 <ReactSVG src="/icons/settings-outline.svg" />
               </a>
@@ -61,16 +61,23 @@ const Chat = () => {
                         {' '}
                         {room.lastName}
                       </h2>
-                      <p className="chat-mate__message">
-                        {room.latestMessage.senderID === user.key ? 'Me: ' : ''}
-                        {room.latestMessage.content}
-                      </p>
-                      <div className="chat-mate__meta">
-                        <span className="chat-mate__read-more">Read More</span>
-                        <span className="chat-mate__timeago">
-                          {format(room.latestMessage.timestamp.toMillis())}
-                        </span>
-                      </div>
+                      {!isAllObjectValuesFalse(room.latestMessage) ? (
+                        <>
+                          <p className="chat-mate__message">
+                            {room.latestMessage.senderID === user.key ? 'Me: ' : ''}
+                            {room.latestMessage.content}
+                          </p>
+                          <div className="chat-mate__meta">
+                            <span className="chat-mate__read-more">Read More</span>
+                            <span className="chat-mate__timeago">
+                              {format(room.latestMessage.timestamp.toMillis())}
+                            </span>
+                          </div>
+                        </>
+                      )
+                        : (
+                          <p className="chat-mate__message">Empty conversation</p>
+                        )}
                     </div>
                   </a>
                 </Link>

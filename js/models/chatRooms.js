@@ -6,9 +6,11 @@ import {
   newMessage,
   latestMessage,
   readMessage,
+  userChatRoomUpdate,
 } from 'js/shapes/chatRooms';
 import { normalizeData } from 'js/utils';
 
+// TODO: SEPERATE USERS CHATROOMS
 const db = firebase.firestore();
 
 // collections
@@ -74,6 +76,13 @@ const getUserChatRoomsWithMember = (userID, memberID) => (
 );
 
 /**
+ * getOneUserChatRoom.
+ *
+ * @param {string} userID
+ */
+const getOneUserChatRoom = (userID) => usersChatRoomsCollection.doc(userID).get();
+
+/**
  * getAllUserChatRooms.
  *
  * @param {string} userID
@@ -83,6 +92,18 @@ const getAllUserChatRooms = (userID) => (
     .doc(userID)
     .collection('_chatRooms')
     .get()
+);
+
+/**
+ * updateUserChatRoom.
+ *
+ * @param {string} userID
+ * @param {object} data
+ */
+const updateUserChatRoom = (userID, data) => (
+  usersChatRoomsCollection
+    .doc(userID)
+    .set(userChatRoomUpdate(data), { merge: true })
 );
 
 /**
@@ -190,9 +211,11 @@ export default {
   add,
   getUserChatRoomsWithMember,
   openChatRoom,
-  messagesListener,
   getAllUserChatRooms,
-  addMessage,
-  userChatRoomsListener,
+  getOneUserChatRoom,
   readChatRoomMessage,
+  addMessage,
+  messagesListener,
+  userChatRoomsListener,
+  updateUserChatRoom,
 };

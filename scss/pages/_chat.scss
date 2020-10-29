@@ -6,6 +6,11 @@
     display: flex;
     justify-content: space-between;
 
+    @include tablet-p {
+      margin-bottom: rem(40);
+      grid-column: 3 / -3;
+    }
+
     &__settings {
       svg {
         width: rem(20);
@@ -24,6 +29,13 @@
     font-size: rem(16);
     line-height: rem(20);
     color: var(--gray);
+
+    @include tablet-p {
+      @include Montserrat(700);
+
+      font-size: rem(18);
+      line-height: rem(22);
+    }
   }
 
   &-mates {
@@ -31,6 +43,10 @@
 
     display: flex;
     flex-direction: column;
+
+    @include tablet-p {
+      grid-column: 3 / -3;
+    }
   }
 
   &-mate {
@@ -69,7 +85,14 @@
       @include aspect-ratio(1, 1);
 
       border-radius: rem(8);
-      background-color: var(--light);
+
+      @include tablet-p {
+        border: rem(1) solid transparent;
+
+        @include state(hover, $mate) {
+          border-color: var(--gray);
+        }
+      }
 
       &-container {
         position: relative;
@@ -79,6 +102,17 @@
     &__info {
       display: flex;
       flex-direction: column;
+
+      @include tablet-p {
+        padding: rem(10);
+        border-radius: rem(10);
+        border: rem(1) solid transparent;
+
+        @include state(hover, $mate) {
+          background-color: $tree-poppy;
+          border-color: var(--gray);
+        }
+      }
     }
 
     &__name {
@@ -88,6 +122,16 @@
 
       font-size: rem(18);
       line-height: rem(22);
+
+      @include tablet-p {
+        font-size: rem(22);
+        line-height: rem(27);
+        color: var(--mine-shaft);
+
+        @include state(hover, $mate) {
+          color: var(--light);
+        }
+      }
     }
 
     &__message {
@@ -104,6 +148,15 @@
       overflow: hidden;
       white-space: nowrap;
       max-width: rem(240);
+
+      @include tablet-p {
+        font-size: rem(18);
+        line-height: rem(25);
+
+        @include state(hover, $mate) {
+          color: var(--light);
+        }
+      }
     }
 
     &__meta {
@@ -119,6 +172,15 @@
       font-size: rem(14);
       line-height: rem(19);
       color: var(--gray);
+
+      @include tablet-p {
+        font-size: rem(16);
+        line-height: rem(22);
+
+        @include state(hover, $mate) {
+          color: var(--light);
+        }
+      }
     }
 
     &__timeago {
@@ -128,6 +190,15 @@
       line-height: rem(19);
       text-align: right;
       color: var(--gray);
+
+      @include tablet-p {
+        font-size: rem(16);
+        line-height: rem(22);
+
+        @include state(hover, $mate) {
+          color: var(--light);
+        }
+      }
     }
   }
 

@@ -62,6 +62,13 @@ export const normalizeData = (rawData) => {
 export const isObjectEmpty = (obj) => Object.keys(obj).length === 0;
 
 /**
+ * isAllObjectValuesFalse.
+ *
+ * @param {object} obj
+ */
+export const isAllObjectValuesFalse = (obj) => !Object.keys(obj).some((key) => !!obj[key]);
+
+/**
  * breakpoint.
  */
 export const breakpoint = () => {
@@ -224,4 +231,5 @@ export default {
   validate,
   validateFields,
   isEqual,
+  isAllObjectValuesFalse,
 };
