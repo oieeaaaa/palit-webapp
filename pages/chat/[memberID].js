@@ -1,5 +1,4 @@
 import {
-  useState,
   useEffect,
   useContext,
   useRef,
@@ -13,6 +12,14 @@ import AuthContext from 'js/contexts/auth';
 import LayoutContext from 'js/contexts/layout';
 import useProtection from 'js/hooks/useProtection';
 import useForm from 'js/hooks/useForm';
+import useChatRoomReducer, {
+  CHANGE_IS_SENDING,
+  UPDATE_ROOMS,
+  UPDATE_MESSAGES,
+  UPDATE_ACTIVE_ROOM,
+  UPDATE_SETTINGS,
+  ADD_NEW_ROOM,
+} from 'js/reducers/chatRoom';
 import { normalizeData } from 'js/utils';
 import Layout from 'components/layout/layout';
 
@@ -23,12 +30,7 @@ const ChatRoom = () => {
   const { handlers } = useContext(LayoutContext);
 
   // states
-  // TODO: Create a reducer for this
-  const [isSending, setIsSending] = useState(false);
-  const [rooms, setRooms] = useState(null);
-  const [activeRoom, setActiveRoom] = useState(null);
-  const [messages, setMessages] = useState(null);
-  const [settings, setSettings] = useState(null);
+  const [state, dispatch] = useChatRoomReducer();
 
   // refs
   const messageAnchor = useRef(null);
@@ -55,7 +57,10 @@ const ChatRoom = () => {
         router.push(`/chat/${memberID}`);
       }
 
-      setActiveRoom(chatRoom);
+      dispatch({
+        type: UPDATE_ACTIVE_ROOM,
+        activeRoom: chatRoom,
+      });
     } catch (err) {
       console.error(err);
     }
@@ -68,7 +73,10 @@ const ChatRoom = () => {
     try {
       const rawUserChatRoomSettings = await CHATROOM.getOneUserChatRoom(user.key);
 
-      setSettings(normalizeData(rawUserChatRoomSettings));
+      dispatch({
+        type: UPDATE_SETTINGS,
+        settings: normalizeData(rawUserChatRoomSettings),
+      });
     } catch (err) {
       console.error(err);
     }
@@ -111,7 +119,10 @@ const ChatRoom = () => {
 
     if (!isFormValid) return;
 
-    setIsSending(true);
+    dispatch({
+      type: CHANGE_IS_SENDING,
+      isSending: true,
+    });
 
     try {
       const payload = ({
@@ -121,14 +132,17 @@ const ChatRoom = () => {
 
       await CHATROOM.addMessage(
         user.key,
-        activeRoom.userID,
-        activeRoom.key,
+        state.activeRoom.userID,
+        state.activeRoom.key,
         payload,
       );
     } catch (err) {
       console.error(err);
     } finally {
-      setIsSending(false);
+      dispatch({
+        type: CHANGE_IS_SENDING,
+        isSending: false,
+      });
     }
   };
 
@@ -167,51 +181,57 @@ const ChatRoom = () => {
    * useEffect.
    */
   useEffect(() => {
-    if (!isSending) return;
+    if (!state.isSending) return;
 
-    const isMessageBoxOkayToClear = isSending && messageBox?.current;
+    const isMessageBoxOkayToClear = state.isSending && messageBox?.current;
 
     if (isMessageBoxOkayToClear) {
       // Need to make this async
-      // Not sure why or how contentEditable do
+      // Not sure why or how contentEditable do this
       setTimeout(() => {
         messageBox.current.innerHTML = '';
         setForm({ message: '' });
       }, 0);
     }
-  }, [isSending]);
+  }, [state.isSending]);
 
   /**
    * useEffect.
    */
   useEffect(() => {
-    const activeRoomKey = activeRoom?.key;
+    const activeRoomKey = state.activeRoom?.key;
 
     // stop this effect
-    if (!activeRoomKey || !rooms) return () => {};
+    if (!activeRoomKey || !state.rooms) return () => {};
 
     // check if the room exists
-    const isChatRoomExists = rooms?.some((room) => room.key === activeRoom.key);
+    const isChatRoomExists = state.rooms?.some((room) => room.key === state.activeRoom.key);
 
     // add new room
     if (!isChatRoomExists) {
-      setRooms((prevRooms) => prevRooms.concat(activeRoom));
+      dispatch({
+        type: ADD_NEW_ROOM,
+        newRoom: state.activeRoom,
+      });
     }
 
     // listener
     const unsubscribe = CHATROOM.messagesListener(activeRoomKey, (snapshot) => {
-      const newMessages = normalizeData(snapshot);
+      const messages = normalizeData(snapshot);
 
       // The message is seen
       CHATROOM.readChatRoomMessage(user.key, activeRoomKey);
 
       // display messages with a fancy auto-scroll
-      setMessages(newMessages);
+      dispatch({
+        type: UPDATE_MESSAGES,
+        messages,
+      });
       messageAnchor.current.scrollIntoView({ behavior: 'smooth' });
     });
 
     return unsubscribe;
-  }, [activeRoom?.key, rooms]);
+  }, [state.activeRoom?.key, state.rooms]);
 
   /**
    * useEffect. initializer.
@@ -220,9 +240,12 @@ const ChatRoom = () => {
     const memberID = router.query?.memberID;
 
     const unsubscribe = CHATROOM.userChatRoomsListener(user.key, (snapshot) => {
-      const chatRooms = normalizeData(snapshot);
+      const rooms = normalizeData(snapshot);
 
-      setRooms(chatRooms);
+      dispatch({
+        type: UPDATE_ROOMS,
+        rooms,
+      });
     });
 
     if (memberID) {
@@ -243,8 +266,8 @@ const ChatRoom = () => {
           {/* HEADER */}
           <div className="chat-room-header">
             <h1 className="chat-room-header__title">
-              {activeRoom && (
-                `${activeRoom.firstName} ${activeRoom.lastName}`
+              {state.activeRoom && (
+                `${state.activeRoom.firstName} ${state.activeRoom.lastName}`
               )}
             </h1>
             <Link href="/chat/settings" as="/chat/settings">
@@ -261,8 +284,8 @@ const ChatRoom = () => {
           <div className="chat-room-body">
             {/* MESSAGES */}
             <ul className="chat-room-messages">
-              {messages && (
-                messages.map((message) => {
+              {state.messages && (
+                state.messages.map((message) => {
                   const isSender = message.sender.key === user.key;
 
                   return (
@@ -319,10 +342,10 @@ const ChatRoom = () => {
                   )}
                 </div>
                 <button
-                  className={`chat-room-form__button button ${isSending ? '--disabled' : ''}`}
+                  className={`chat-room-form__button button ${state.isSending ? '--disabled' : ''}`}
                   type="button"
                   onClick={sendMessage}
-                  disabled={isSending}
+                  disabled={state.isSending}
                 >
                   <ReactSVG
                     className="chat-room-form__util-icon"
@@ -335,10 +358,10 @@ const ChatRoom = () => {
 
           {/* CHAT HEADS */}
           <ul className="chat-room-heads">
-            {rooms && (
-              rooms.map((room) => (
+            {state.rooms && (
+              state.rooms.map((room) => (
                 <li
-                  className={`chat-room-head ${activeRoom?.key === room.key ? '--active' : ''}`}
+                  className={`chat-room-head ${state.activeRoom?.key === room.key ? '--active' : ''}`}
                   key={room.key}
                 >
                   <div className="chat-room-head__group">
@@ -361,7 +384,7 @@ const ChatRoom = () => {
         <style jsx>
           {`
             .chat-room {
-              --theme: #${settings?.theme || 'fa9917'};
+              --theme: #${state.settings?.theme || 'fa9917'};
             }
           `}
         </style>
