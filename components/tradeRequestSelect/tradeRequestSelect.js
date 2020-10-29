@@ -9,18 +9,6 @@ import Link from 'next/link';
 import MiniCard, { MiniCardSkeleton } from 'components/miniCard/miniCard';
 
 /**
- * TradeRequestSelectHeading.
- *
- * @param {object}
-   * @param {string} text
- */
-export const TradeRequestSelectHeading = ({ text }) => (
-  <h2 className="trade-request-select__heading">
-    {text}
-  </h2>
-);
-
-/**
  * TradeRequestSelectItems.
  *
  * @param {object}
@@ -96,7 +84,6 @@ export const TradeRequestSelectFooter = ({ itemID, selectedItemID, submitRequest
 );
 
 export default {
-  TradeRequestSelectHeading,
   TradeRequestSelectEmpty,
   TradeRequestSelectFooter,
 };
