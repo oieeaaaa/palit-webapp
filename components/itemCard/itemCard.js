@@ -6,7 +6,7 @@ Description:
 ***************************************
 */
 import Link from 'next/link';
-import { ReactSVG } from 'react-svg';
+import Icon from 'components/icon/icon';
 
 export const ItemCardSkeleton = () => (
   <div className="itemCard-skeleton">
@@ -24,16 +24,14 @@ export const ItemCardSkeleton = () => (
   </div>
 );
 
-const ItemCard = (
-  {
-    item,
-    onLike,
-    enableTrade,
-    isLiking,
-    isIndicatorOn,
-    linkOptions = { href: '', as: '' },
-  },
-) => (
+const ItemCard = ({
+  item,
+  onLike,
+  enableTrade,
+  isLiking,
+  isIndicatorOn,
+  linkOptions,
+}) => (
   <div className="itemCard">
     {/* TITLE */}
     <h2 className="itemCard__title" title={item.name}>{item.name}</h2>
@@ -72,9 +70,8 @@ const ItemCard = (
             onClick={() => onLike({ isLiked: item.isLiked, key: item.key })}
             disabled={isLiking}
           >
-            <ReactSVG
-              className="itemCard__meta-icon"
-              src={`/icons/heart-${item.isLiked ? 'filled' : 'outline'}.svg`}
+            <Icon
+              name={`heart-${item.isLiked ? 'filled' : 'outline'}`}
             />
           </button>
           )}
@@ -101,10 +98,7 @@ const ItemCard = (
           {enableTrade && (
           <Link href="/trades/request/[itemID]" as={`/trades/request/${item.key}`}>
             <a className="itemCard__button">
-              <ReactSVG
-                className="itemCard__meta-icon"
-                src={`/icons/cart-${item.isTradingPartner ? 'filled' : 'outline'}.svg`}
-              />
+              <Icon name={`cart-${item.isTradingPartner ? 'filled' : 'outline'}`} />
             </a>
           </Link>
           )}
