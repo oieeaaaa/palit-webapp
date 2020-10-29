@@ -5,7 +5,7 @@ import { format } from 'timeago.js';
 import CHATROOM from 'js/models/chatRooms';
 import AuthContext from 'js/contexts/auth';
 import useProtection from 'js/hooks/useProtection';
-import { normalizeData } from 'js/utils';
+import { normalizeData, isAllObjectValuesFalse } from 'js/utils';
 import Layout from 'components/layout/layout';
 
 const Chat = () => {
@@ -61,7 +61,7 @@ const Chat = () => {
                         {' '}
                         {room.lastName}
                       </h2>
-                      {room.latestMessage ? (
+                      {!isAllObjectValuesFalse(room.latestMessage) ? (
                         <>
                           <p className="chat-mate__message">
                             {room.latestMessage.senderID === user.key ? 'Me: ' : ''}
