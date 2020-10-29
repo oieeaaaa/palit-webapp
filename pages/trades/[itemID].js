@@ -26,6 +26,7 @@ import {
   TradeRequestEmpty,
   TradeRequestFooter,
 } from 'components/tradeRequest/tradeRequest';
+import Title from 'components/title/title';
 
 const TradeItem = () => {
   // contexts
@@ -209,10 +210,10 @@ const TradeItem = () => {
     <Layout title="Trades List">
       <div className="trade-request">
         <div className="grid">
-          <TradeRequestHeading text="My Item" />
+          <Title>My Item</Title>
           <TradeRequestMyItem myItem={myItem} />
           <TradeRequestGoodLuckCard tradeRequestItem={tradeRequestItem} />
-          <TradeRequestHeading text="Trade Requests" />
+          <Title>Trade Requests</Title>
           <div className="trade-request__list">
             <TradeRequestItemRequests
               tradeRequestItem={tradeRequestItem}

@@ -4,22 +4,10 @@
   justify-content: space-between;
   min-height: 69.82758620689656vh;
 
-  &__heading {
-    @include Montserrat(700);
-
+  .title {
     grid-column: 1 / -1;
-    margin-bottom: rem(20);
-
-    font-size: rem(16);
-    line-height: rem(20);
-    color: var(--gray);
 
     @include tablet-p {
-      margin-bottom: rem(30);
-
-      font-size: rem(18);
-      line-height: rem(22);
-
       &:not(:first-of-type) {
         margin-top: rem(40);
       }
