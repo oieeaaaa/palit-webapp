@@ -15,11 +15,20 @@ Description:
 import { useEffect, useState, useContext } from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
+
+// contexts
 import AuthContext from 'js/contexts/auth';
+
+// hooks
 import useAuth from 'js/hooks/useAuth';
+
+// routes
 import routes from 'js/routes';
+
+// components
 import Banner from 'components/banner/banner';
 import { LandingHeader } from 'components/landing/landing';
+import Avatar from 'components/avatar/avatar';
 
 /**
  * HeaderDropdown.
@@ -83,44 +92,25 @@ const HeaderNav = ({ currentPath }) => (
    * @param {function} signout
  */
 const HeaderWithAvatar = ({
+  name,
+  initial,
   avatar,
-  alt,
   isDropdownOpen,
   openDropdown,
   signout,
 }) => (
-  avatar ? (
-    <div className="header-avatar">
-      <button className="header__profile" type="button" onClick={openDropdown}>
-        <img src={avatar} alt={alt} />
-      </button>
-      <HeaderDropdown isOpen={isDropdownOpen} onLogout={signout} />
-    </div>
-  ) : null
-);
-
-/**
- * HeaderWithAvatar.
- *
- * @param {object}
-   * @param {object} user
-   * @param {function} openDropdown
-   * @param {boolean} isDropdownOpen
-   * @param {function} signout
- */
-const HeaderWithoutAvatar = ({
-  user,
-  openDropdown,
-  isDropdownOpen,
-  signout,
-}) => ((!user.avatar && user.email) ? (
   <div className="header-avatar">
     <button className="header__profile" type="button" onClick={openDropdown}>
-      <span className="header__placeholder">{user.email[0]}</span>
+      <Avatar
+        className="header__profile-avatar"
+        name={name}
+        initial={initial}
+        src={avatar}
+      />
     </button>
     <HeaderDropdown isOpen={isDropdownOpen} onLogout={signout} />
   </div>
-) : null);
+);
 
 /**
  * Header.
@@ -175,15 +165,10 @@ const Header = () => {
         </Link>
         <HeaderWithAvatar
           avatar={user.avatar}
-          alt={user.firstName}
+          initial={user.email[0]}
+          name={user.firstName}
           isDropdownOpen={isDropdownOpen}
           openDropdown={openDropdown}
-          signout={auth.signout}
-        />
-        <HeaderWithoutAvatar
-          user={user}
-          openDropdown={openDropdown}
-          isDropdownOpen={isDropdownOpen}
           signout={auth.signout}
         />
         {user.key && <HeaderNav currentPath={router.pathname} />}
