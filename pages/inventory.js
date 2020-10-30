@@ -17,6 +17,7 @@ import {
   InventoryItems,
   InventoryEmpty,
 } from 'components/inventory/inventory';
+import Title from 'components/title/title';
 
 const Inventory = () => {
   // contexts
@@ -89,7 +90,7 @@ const Inventory = () => {
     <Layout title="Inventory">
       <div className="inventory">
         <div className="grid">
-          <h1 className="inventory__title">Inventory</h1>
+          <Title>Inventory</Title>
           <div className="inventory__list">
             <InventoryItems items={items} isFetching={isFetching} />
             <InventoryEmpty isEmpty={isItemsEmpty()} />

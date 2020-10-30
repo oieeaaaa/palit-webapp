@@ -36,9 +36,8 @@
 
   &__input {
     @include Montserrat(600);
+    @include padding-x(10);
 
-    padding-left: rem(10);
-    padding-right: rem(10);
     width: 100%;
     height: rem(40);
     font-size: rem(16);
@@ -48,8 +47,8 @@
     background-color: var(--silver);
 
     @include tablet-p {
-      padding-left: rem(15);
-      padding-right: rem(15);
+      @include padding-x(15);
+
       height: rem(50);
       font-size: rem(18);
       line-height: rem(20);
@@ -75,9 +74,9 @@
     }
 
     &.--textarea {
+      @include padding-y(10);
+
       min-height: rem(130);
-      padding-top: rem(10);
-      padding-bottom: rem(10);
       resize: vertical;
     }
   }

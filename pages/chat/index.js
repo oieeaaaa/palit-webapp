@@ -7,6 +7,7 @@ import AuthContext from 'js/contexts/auth';
 import useProtection from 'js/hooks/useProtection';
 import { normalizeData, isAllObjectValuesFalse } from 'js/utils';
 import Layout from 'components/layout/layout';
+import Title from 'components/title/title';
 
 const Chat = () => {
   // context
@@ -33,9 +34,7 @@ const Chat = () => {
       <div className="chat">
         <div className="grid">
           <div className="chat-header">
-            <h1 className="chat__heading">
-              Chat
-            </h1>
+            <Title>Chat</Title>
             <Link href="/chat/settings" as="/chat/settings">
               <a className="chat-header__settings">
                 <ReactSVG src="/icons/settings-outline.svg" />

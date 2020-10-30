@@ -33,3 +33,28 @@
   -ms-overflow-style: none;  /* IE and Edge */
   scrollbar-width: none;  /* Firefox */
 }
+
+@mixin padding-x($padding-left, $padding-right: null) {
+  padding-left: rem($padding-left);
+
+  @if ($padding-right == null) {
+    padding-right: rem($padding-left);
+  } @else {
+    padding-right: rem($padding-right);
+  }
+}
+
+@mixin padding-y($padding-top, $padding-bottom: null) {
+  padding-top: rem($padding-top);
+
+  @if ($padding-bottom == null) {
+    padding-bottom: rem($padding-top);
+  } @else {
+    padding-bottom: rem($padding-bottom);
+  }
+}
+
+@mixin minmax-height($min, $max) {
+  min-height: $min;
+  max-height: $max;
+}

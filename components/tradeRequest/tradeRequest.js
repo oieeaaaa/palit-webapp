@@ -10,17 +10,7 @@ import { isObjectEmpty } from 'js/utils';
 import MiniCard, { MiniCardSkeleton } from 'components/miniCard/miniCard';
 import GoodLuckCard from 'components/goodLuckCard/goodLuckCard';
 import ItemCard, { ItemCardSkeleton } from 'components/itemCard/itemCard';
-
-/**
- * TradeRequestHeading.
- *
- * @param {string} text
- */
-export const TradeRequestHeading = ({ text }) => (
-  <h2 className="trade-request__heading">
-    {text}
-  </h2>
-);
+import Title from 'components/title/title';
 
 /**
  * TradeRequestMyItem.
@@ -56,7 +46,7 @@ export const TradeRequestGoodLuckCard = ({ tradeRequestItem }) => {
 
   return (
     <>
-      <TradeRequestHeading text="Note" />
+      <Title>Note</Title>
       <GoodLuckCard ownerID={tradeRequestItem.acceptedItem.owner} />
     </>
   );
@@ -214,7 +204,6 @@ export const TradeRequestFooter = ({ editKey, onRemoveItem }) => (
 );
 
 export default {
-  TradeRequestHeading,
   TradeRequestMyItem,
   TradeRequestGoodLuckCard,
   TradeRequestItemRequests,

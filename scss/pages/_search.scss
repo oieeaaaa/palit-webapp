@@ -1,10 +1,10 @@
 .search {
   &__input {
     @include Montserrat(700);
+    @include padding-x(10);
 
     grid-column: 1 / -1;
 
-    padding: 0 rem(10);
     height: rem(50);
     border-radius: rem(10);
     border: $thin-gray-border;

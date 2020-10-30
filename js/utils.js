@@ -221,6 +221,35 @@ export const validateFields = (fields, fieldRules) => {
 export const isEqual = (data = {}, toCompare = {}) => !Object.keys(data)
   .some((key) => data[key] !== toCompare[key]);
 
+/**
+ * valueFallback.
+ *
+ * @param {any} value
+ * @param {string} type: string | number | object | array | function
+ */
+export const valueFallback = (value, type) => {
+  if (!value) {
+    switch (type) {
+      case 'string':
+        return '';
+      case 'number':
+        return 0;
+      case 'boolean':
+        return false;
+      case 'object':
+        return {};
+      case 'array':
+        return [];
+      case 'function':
+        return () => {};
+      default:
+        throw new Error(`Invalid type! There is no type as ${type}`);
+    }
+  }
+
+  return value;
+};
+
 // export as collection of utils
 export default {
   extractFileURL,
@@ -232,4 +261,5 @@ export default {
   validateFields,
   isEqual,
   isAllObjectValuesFalse,
+  valueFallback,
 };

@@ -1,34 +1,51 @@
 import {
-  useState,
   useEffect,
   useContext,
   useRef,
 } from 'react';
-import { ReactSVG } from 'react-svg';
-import { format } from 'timeago.js';
 import { useRouter } from 'next/router';
-import Link from 'next/link';
+
+// models
 import CHATROOM from 'js/models/chatRooms';
+
+// contexts
 import AuthContext from 'js/contexts/auth';
-import LayoutContext from 'js/contexts/layout';
+
+// hooks
 import useProtection from 'js/hooks/useProtection';
+import useError from 'js/hooks/useError';
 import useForm from 'js/hooks/useForm';
+import useCopyToClibpard from 'js/hooks/useCopyToClipboard';
+
+// reducers
+import useChatRoomReducer, {
+  CHANGE_IS_SENDING,
+  UPDATE_ROOMS,
+  UPDATE_MESSAGES,
+  UPDATE_ACTIVE_ROOM,
+  UPDATE_SETTINGS,
+  ADD_NEW_ROOM,
+} from 'js/reducers/chatRoom';
+
+// utils
 import { normalizeData } from 'js/utils';
+
+// components
 import Layout from 'components/layout/layout';
+import {
+  ChatRoomHeader,
+  ChatRoomMessages,
+  ChatRoomForm,
+  ChatRoomHeads,
+} from 'components/chatRoom/chatRoom';
 
 // TODO: Limit the number of message displayed
 const ChatRoom = () => {
   // contexts
   const { user } = useContext(AuthContext);
-  const { handlers } = useContext(LayoutContext);
 
   // states
-  // TODO: Create a reducer for this
-  const [isSending, setIsSending] = useState(false);
-  const [rooms, setRooms] = useState(null);
-  const [activeRoom, setActiveRoom] = useState(null);
-  const [messages, setMessages] = useState(null);
-  const [settings, setSettings] = useState(null);
+  const [state, dispatch] = useChatRoomReducer();
 
   // refs
   const messageAnchor = useRef(null);
@@ -41,6 +58,8 @@ const ChatRoom = () => {
     validateForm,
   } = useForm({ message: '' });
   const router = useRouter();
+  const [displayError] = useError();
+  const copyToClipboard = useCopyToClibpard(messageBox);
 
   /**
    * openChatRoom.
@@ -55,9 +74,12 @@ const ChatRoom = () => {
         router.push(`/chat/${memberID}`);
       }
 
-      setActiveRoom(chatRoom);
+      dispatch({
+        type: UPDATE_ACTIVE_ROOM,
+        activeRoom: chatRoom,
+      });
     } catch (err) {
-      console.error(err);
+      displayError(err);
     }
   };
 
@@ -68,9 +90,12 @@ const ChatRoom = () => {
     try {
       const rawUserChatRoomSettings = await CHATROOM.getOneUserChatRoom(user.key);
 
-      setSettings(normalizeData(rawUserChatRoomSettings));
+      dispatch({
+        type: UPDATE_SETTINGS,
+        settings: normalizeData(rawUserChatRoomSettings),
+      });
     } catch (err) {
-      console.error(err);
+      displayError(err);
     }
   };
 
@@ -111,7 +136,10 @@ const ChatRoom = () => {
 
     if (!isFormValid) return;
 
-    setIsSending(true);
+    dispatch({
+      type: CHANGE_IS_SENDING,
+      isSending: true,
+    });
 
     try {
       const payload = ({
@@ -121,97 +149,75 @@ const ChatRoom = () => {
 
       await CHATROOM.addMessage(
         user.key,
-        activeRoom.userID,
-        activeRoom.key,
+        state.activeRoom.userID,
+        state.activeRoom.key,
         payload,
       );
     } catch (err) {
-      console.error(err);
+      displayError(err);
     } finally {
-      setIsSending(false);
+      dispatch({
+        type: CHANGE_IS_SENDING,
+        isSending: false,
+      });
     }
-  };
-
-  /**
-   * copyToClipboard.
-   */
-  const copyToClipboard = () => {
-    if (!messageBox?.current || !form.message) return;
-
-    const messageBoxEl = messageBox.current;
-    const range = document.createRange();
-
-    // 1. cleanup
-    messageBoxEl.focus();
-    window.getSelection().removeAllRanges();
-
-    // 2. create a selection
-    range.setStartBefore(messageBoxEl.firstChild);
-    range.setEndAfter(messageBoxEl.lastChild);
-    window.getSelection().addRange(range);
-
-    /* 3. Copy the text inside the text field */
-    document.execCommand('copy');
-
-    // 4. deselect, so the browser doesn't leave the element visibly selected
-    window.getSelection().removeAllRanges();
-
-    // 5. Let the user know the text is copied
-    handlers.showBanner({
-      text: 'Copied text ✨',
-      variant: 'info',
-    });
   };
 
   /**
    * useEffect.
    */
   useEffect(() => {
-    if (!isSending) return;
+    if (!state.isSending) return;
 
-    const isMessageBoxOkayToClear = isSending && messageBox?.current;
+    const isMessageBoxOkayToClear = state.isSending && messageBox?.current;
 
     if (isMessageBoxOkayToClear) {
       // Need to make this async
-      // Not sure why or how contentEditable do
+      // Not sure why or how contentEditable do this
       setTimeout(() => {
         messageBox.current.innerHTML = '';
         setForm({ message: '' });
       }, 0);
     }
-  }, [isSending]);
+  }, [state.isSending]);
 
   /**
    * useEffect.
    */
   useEffect(() => {
-    const activeRoomKey = activeRoom?.key;
+    const activeRoomKey = state.activeRoom?.key;
 
     // stop this effect
-    if (!activeRoomKey || !rooms) return () => {};
+    if (!activeRoomKey || !state.rooms) return () => {};
 
     // check if the room exists
-    const isChatRoomExists = rooms?.some((room) => room.key === activeRoom.key);
+    const isChatRoomExists = state.rooms?.some((room) => room.key === state.activeRoom.key);
 
     // add new room
     if (!isChatRoomExists) {
-      setRooms((prevRooms) => prevRooms.concat(activeRoom));
+      dispatch({
+        type: ADD_NEW_ROOM,
+        newRoom: state.activeRoom,
+      });
     }
 
     // listener
     const unsubscribe = CHATROOM.messagesListener(activeRoomKey, (snapshot) => {
-      const newMessages = normalizeData(snapshot);
+      const messages = normalizeData(snapshot);
 
       // The message is seen
       CHATROOM.readChatRoomMessage(user.key, activeRoomKey);
 
       // display messages with a fancy auto-scroll
-      setMessages(newMessages);
+      dispatch({
+        type: UPDATE_MESSAGES,
+        messages,
+      });
       messageAnchor.current.scrollIntoView({ behavior: 'smooth' });
     });
 
     return unsubscribe;
-  }, [activeRoom?.key, rooms]);
+  }, [state.activeRoom?.key, state.rooms]);
 
   /**
    * useEffect. initializer.
@@ -220,9 +226,12 @@ const ChatRoom = () => {
     const memberID = router.query?.memberID;
 
     const unsubscribe = CHATROOM.userChatRoomsListener(user.key, (snapshot) => {
-      const chatRooms = normalizeData(snapshot);
+      const rooms = normalizeData(snapshot);
 
-      setRooms(chatRooms);
+      dispatch({
+        type: UPDATE_ROOMS,
+        rooms,
+      });
     });
 
     if (memberID) {
@@ -235,137 +244,48 @@ const ChatRoom = () => {
     return unsubscribe;
   }, []);
 
-  // TODO: Break this markup into independent components like what we did in items/[itemID].js
   return (
     <Layout title="Palit | Chat">
       <div className="chat-room">
         <div className="grid">
           {/* HEADER */}
-          <div className="chat-room-header">
-            <h1 className="chat-room-header__title">
-              {activeRoom && (
-                `${activeRoom.firstName} ${activeRoom.lastName}`
-              )}
-            </h1>
-            <Link href="/chat/settings" as="/chat/settings">
-              <a className="chat-room-header__settings" type="button">
-                <ReactSVG
-                  className="chat-room-header__settings-icon"
-                  src="/icons/settings-outline.svg"
-                />
-              </a>
-            </Link>
-          </div>
+          <ChatRoomHeader activeRoom={state.activeRoom} />
 
           {/* BODY */}
           <div className="chat-room-body">
             {/* MESSAGES */}
-            <ul className="chat-room-messages">
-              {messages && (
-                messages.map((message) => {
-                  const isSender = message.sender.key === user.key;
-
-                  return (
-                    <li
-                      className={`chat-room-message ${isSender ? '--sender' : ''}`}
-                      key={message.key}
-                    >
-                      <figure className="chat-room-message__avatar">
-                        <img src={message.sender?.avatar} alt="Palit" />
-                      </figure>
-                      <div className="chat-room-message__info">
-                        {!isSender && (
-                          <p className="chat-room-message__info-name">
-                            {`${message.sender?.firstName} ${message.sender?.lastName}`}
-                          </p>
-                        )}
-                        <div
-                          className="chat-room-message__info-text"
-                          dangerouslySetInnerHTML={{__html: message.content}} // eslint-disable-line
-                        />
-                        <p className="chat-room-message__info-time">{format(message?.timestamp?.toMillis())}</p>
-                      </div>
-                    </li>
-                  );
-                })
-              )}
-              <li ref={messageAnchor} />
-            </ul>
+            <ChatRoomMessages
+              messages={state.messages}
+              userID={user.key}
+              messageAnchor={messageAnchor}
+            />
 
             {/* CHAT FORM */}
-            <div className="chat-room-form">
-              <button className="chat-room-form__util" type="button" onClick={copyToClipboard}>
-                <ReactSVG
-                  className="chat-room-form__util-icon"
-                  src="/icons/copy-outline.svg"
-                />
-              </button>
-              <div className="chat-room-form-container">
-                <div className="chat-room-form__input-group">
-                  <div
-                    ref={messageBox}
-                    contentEditable
-                    className="chat-room-form__input"
-                    onInput={handleMessage}
-                    onKeyPress={sendMessage}
-                    role="textbox"
-                    aria-label="Editor"
-                    tabIndex={0}
-                  />
-                  {!form.message && (
-                    <p className="chat-room-form__input-placeholder">
-                      Type something here...
-                    </p>
-                  )}
-                </div>
-                <button
-                  className={`chat-room-form__button button ${isSending ? '--disabled' : ''}`}
-                  type="button"
-                  onClick={sendMessage}
-                  disabled={isSending}
-                >
-                  <ReactSVG
-                    className="chat-room-form__util-icon"
-                    src="/icons/send-outline.svg"
-                  />
-                </button>
-              </div>
-            </div>
+            <ChatRoomForm
+              copyToClipboard={copyToClipboard}
+              messageBox={messageBox}
+              handleMessage={handleMessage}
+              sendMessage={sendMessage}
+              form={form}
+              isSending={state.isSending}
+            />
           </div>
 
           {/* CHAT HEADS */}
-          <ul className="chat-room-heads">
-            {rooms && (
-              rooms.map((room) => (
-                <li
-                  className={`chat-room-head ${activeRoom?.key === room.key ? '--active' : ''}`}
-                  key={room.key}
-                >
-                  <div className="chat-room-head__group">
-                    {room.isUnread && (
-                      <span className="chat-room-head__indicator" />
-                    )}
-                    <button
-                      className="chat-room-head__button"
-                      type="button"
-                      onClick={() => openChatRoom(room.userID)}
-                    >
-                      <img src={room.avatar} alt={room.name} />
-                    </button>
-                  </div>
-                </li>
-              ))
-            )}
-          </ul>
+          <ChatRoomHeads
+            rooms={state.rooms}
+            activeRoom={state.activeRoom}
+            openChatRoom={openChatRoom}
+          />
         </div>
-        <style jsx>
-          {`
-            .chat-room {
-              --theme: #${settings?.theme || 'fa9917'};
-            }
-          `}
-        </style>
       </div>
+      <style jsx>
+        {`
+          .chat-room {
+            --theme: #${state.settings?.theme || 'fa9917'};
+          }
+        `}
+      </style>
     </Layout>
   );
 };

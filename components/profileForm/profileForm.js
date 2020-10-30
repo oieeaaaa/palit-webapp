@@ -10,7 +10,6 @@ import { ReactSVG } from 'react-svg';
 import AuthContext from 'js/contexts/auth';
 import useForm from 'js/hooks/useForm';
 
-// TODO: Support email update in firebase auth
 const ProfileForm = ({
   onSubmit,
   isLoading,

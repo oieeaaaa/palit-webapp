@@ -1,0 +1,24 @@
+/*
+***************************************
+Component: Title
+Author: Joimee
+Description:
+***************************************
+*/
+
+.title {
+  @include Montserrat(700);
+
+  margin-bottom: rem(20);
+
+  font-size: rem(16);
+  line-height: rem(20);
+  color: var(--gray);
+
+  @include tablet-p {
+    @include Montserrat(700);
+
+    font-size: rem(18);
+    line-height: rem(22);
+  }
+}

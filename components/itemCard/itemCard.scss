@@ -14,16 +14,13 @@ Description:
 
   &__title {
     @include Montserrat(700);
+    @include ellipsis(163);
 
     margin-bottom: rem(10);
 
     font-size: rem(18);
     line-height: rem(22);
     color: var(--mine-shaft);
-    text-overflow: ellipsis;
-    overflow: hidden;
-    max-width: rem(163);
-    white-space: nowrap;
     cursor: default;
 
     @include tablet-p {
@@ -47,25 +44,23 @@ Description:
   }
 
   &__indicator {
+    @include circle(10);
+
     position: absolute;
     top: rem(10);
     right: rem(10);
     display: inline-block;
-    width: rem(10);
-    height: rem(10);
     background-color: var(--persimmon);
-    border-radius: 50%;
     z-index: $indicator-z;
 
     &::before {
+      @include circle(10);
+
       content: '';
       display: inline-block;
       position: absolute;
       top: 50%;
       left: 50%;
-      width: rem(10);
-      height: rem(10);
-      border-radius: 50%;
       background-color: var(--persimmon);
       animation: ripple 1s ease infinite;
     }
@@ -82,7 +77,8 @@ Description:
   }
 
   &__meta {
-    padding: rem(15) rem(10) 0;
+    @include padding-y(15, 0);
+    @include padding-x(10);
   }
 
   &__meta-head {
@@ -102,8 +98,6 @@ Description:
     background: none;
     cursor: pointer;
   }
-
-  //&__meta-icon {}
 
   &__meta-subtext {
     @include Montserrat(700);
@@ -149,8 +143,7 @@ Description:
     }
 
     &__meta {
-      padding-left: rem(10);
-      padding-right: rem(10);
+      @include padding-x(10);
     }
 
     &__text {

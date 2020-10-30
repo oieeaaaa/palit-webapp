@@ -7,8 +7,10 @@ Description:
 */
 
 .goodLuckCard {
+  @include padding-y(20);
+  @include padding-x(15);
+
   width: 100%;
-  padding: rem(20) rem(15);
   border: $thin-gray-border;
   border-radius: rem(10);
   background-color: var(--light);

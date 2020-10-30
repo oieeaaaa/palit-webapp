@@ -14,11 +14,11 @@ import useProtection from 'js/hooks/useProtection';
 
 import Layout from 'components/layout/layout';
 import {
-  TradeRequestSelectHeading,
   TradeRequestSelectItems,
   TradeRequestSelectEmpty,
   TradeRequestSelectFooter,
 } from 'components/tradeRequestSelect/tradeRequestSelect';
+import Title from 'components/title/title';
 
 const TradeRequestSelect = () => {
   // customHooks
@@ -131,9 +131,9 @@ const TradeRequestSelect = () => {
     <Layout title="Trade Request Form">
       <div className="trade-request-select">
         <div className="grid">
-          <TradeRequestSelectHeading
-            text={checkItemsEmpty() ? 'No available items to trade' : 'Select an item to trade'}
-          />
+          <Title>
+            {checkItemsEmpty() ? 'No available items to trade' : 'Select an item to trade'}
+          </Title>
           <div className="trade-request-select__list">
             <TradeRequestSelectItems
               items={items}

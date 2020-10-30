@@ -10,7 +10,6 @@ import {
 } from 'js/shapes/chatRooms';
 import { normalizeData } from 'js/utils';
 
-// TODO: SEPERATE USERS CHATROOMS
 const db = firebase.firestore();
 
 // collections

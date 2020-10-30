@@ -1,5 +1,6 @@
 .button {
   @include Montserrat(600);
+  @include padding-x(10);
 
   display: flex;
   justify-content: center;
@@ -10,16 +11,14 @@
   line-height: rem(20);
   border: rem(1) solid;
   text-decoration: none;
-  padding-left: rem(10);
-  padding-right: rem(10);
   cursor: pointer;
 
   @include tablet-p {
+    @include padding-x(20);
+
     height: rem(50);
     font-size: rem(18);
     line-height: rem(22);
-    padding-left: rem(20);
-    padding-right: rem(20);
   }
 
   // variants
@@ -110,9 +109,5 @@
   // with icon
   &-icon {
     margin-right: rem(15);
-
-    div {
-      display: flex;
-    }
   }
 }
