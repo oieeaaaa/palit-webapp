@@ -47,9 +47,10 @@ Description: For notifications, alerts, tips, and information of the user
   }
 
   &__content {
+    @include padding-y(20);
+
     grid-column: 1 / -1;
 
-    padding: rem(20) 0;
     text-align: center;
   }
 }

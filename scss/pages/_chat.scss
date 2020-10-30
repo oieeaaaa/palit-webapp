@@ -49,14 +49,13 @@
       }
 
       #{$mate}__avatar-container::before {
+        @include circle(15);
+
         content: '';
         display: inline-block;
         position: absolute;
         top: rem(-7);
         right: rem(-7);
-        width: rem(15);
-        height: rem(15);
-        border-radius: 50%;
         background-color: var(--persimmon);
         z-index: $indicator-z;
       }
@@ -124,19 +123,14 @@
     }
 
     &__message {
-      margin-bottom: rem(8);
-
       @include Avenir(300);
+      @include ellipsis(240);
+
+      margin-bottom: rem(8);
 
       font-size: rem(16);
       line-height: rem(22);
       color: var(--gray);
-
-      // TODO: Create a mixin for this
-      text-overflow: ellipsis;
-      overflow: hidden;
-      white-space: nowrap;
-      max-width: rem(240);
 
       @include tablet-p {
         font-size: rem(18);

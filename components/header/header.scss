@@ -132,9 +132,9 @@ Description:
     }
 
     &__item {
-      padding-top: rem(20);
-      padding-left: rem(20);
-      padding-right: rem(20);
+      @include padding-y(20, 0);
+      @include padding-x(20);
+
       color: var(--light);
     }
 
@@ -173,10 +173,8 @@ Description:
   &__profile {
     @include flex-center;
     @include aspect-ratio(1, 1);
+    @include circle(30);
 
-    width: rem(30);
-    height: rem($profile-height);
-    border-radius: 50%;
     overflow: hidden;
     text-decoration: none;
     background-color: var(--tree-poppy);

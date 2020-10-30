@@ -1,12 +1,12 @@
 .chat-room {
   &-header {
+    @include padding-x(10);
+
     grid-column: 1 / -1;
 
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding-left: rem(10);
-    padding-right: rem(10);
     height: rem(50);
     border: rem(1) solid var(--theme);
     border-radius: rem(10);
@@ -59,15 +59,17 @@
   }
 
   &-messages {
+    @include padding-y(20, 0);
+    @include padding-x(20);
+    @include minmax-height((333 / 812 * 100vh), (333 / 812 * 100vh));
+
     display: flex;
     flex-direction: column;
-    padding: rem(20) rem(20) 0;
-    min-height: 333 / 812 * 100vh;
-    max-height: 333 / 812 * 100vh;
     overflow-y: scroll;
 
     @include tablet-p {
-      padding: rem(30) rem(30) 0;
+      @include padding-y(30, 0);
+      @include padding-x(30);
     }
   }
 
@@ -190,18 +192,19 @@
   }
 
   &-form {
+    @include padding-y(10, 20);
+    @include padding-x(20);
+
     margin-top: auto;
 
-    padding: rem(20);
-    padding-top: rem(10);
     width: 100%;
     background-color: var(--light);
     border-bottom-right-radius: rem(8);
     border-bottom-left-radius: rem(8);
 
     @include tablet-p {
-      padding: rem(30);
-      padding-top: rem(10);
+      @include padding-y(10, 30);
+      @include padding-x(30);
     }
 
     &__util {
@@ -326,13 +329,13 @@
       position: relative;
     }
 
+    // TODO: Make a component for this
     &__indicator {
+      @include circle(15);
+
       position: absolute;
       top: rem(-7);
       right: rem(-7);
-      width: rem(15);
-      height: rem(15);
-      border-radius: 50%;
       background-color: var(--persimmon);
       z-index: $indicator-z;
     }
@@ -341,17 +344,14 @@
       @include aspect-ratio(60, 60);
 
       #{$room}.--active &::after {
+        @include circle(20);
+
         content: '';
         display: inline-block;
         position: absolute;
         top: 0;
         left: 50%;
         transform: translate(-50%, -50%);
-
-        // TODO: Create a mixin for circle
-        width: rem(20);
-        height: rem(20);
-        border-radius: 50%;
         background-color: var(--theme);
       }
 
