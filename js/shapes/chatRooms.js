@@ -1,4 +1,5 @@
 import firebaseApp from 'firebase/app';
+import { valueFallback } from 'js/utils';
 
 /**
  * chatRoomUser.
@@ -6,9 +7,9 @@ import firebaseApp from 'firebase/app';
  * @param {object} user
  */
 export const chatRoomUser = (user) => ({
-  firstName: user.firstName,
-  lastName: user.lastName,
-  avatar: user.avatar,
+  firstName: valueFallback(user.firstName, 'string'),
+  lastName: valueFallback(user.lastName, 'string'),
+  avatar: valueFallback(user.avatar, 'string'),
 });
 
 /**
@@ -17,11 +18,11 @@ export const chatRoomUser = (user) => ({
  * @param {object} user
  */
 export const newChatRoomUser = (user) => ({
-  userID: user.key,
+  userID: valueFallback(user.key, 'string'),
   isUnread: false,
-  firstName: user.firstName,
-  lastName: user.lastName,
-  avatar: user.avatar,
+  firstName: valueFallback(user.firstName, 'string'),
+  lastName: valueFallback(user.lastName, 'string'),
+  avatar: valueFallback(user.avatar, 'string'),
   latestMessage: {
     senderID: '',
     content: '',
@@ -44,8 +45,8 @@ export const newUserChatRoom = () => ({
  * @param {object} data
  */
 export const userChatRoomUpdate = (data) => ({
-  theme: data.theme,
-  doNotDisturb: data.doNotDisturb,
+  theme: valueFallback(data.theme, 'string'),
+  doNotDisturb: valueFallback(data.doNotDisturb, 'boolean'),
 });
 
 /**
@@ -73,9 +74,9 @@ export const newChatRoom = (hostID, memberID) => ({
  */
 export const messageSender = (user) => ({
   sender: {
-    firstName: user.firstName,
-    lastName: user.lastName,
-    avatar: user.avatar,
+    firstName: valueFallback(user.firstName, 'string'),
+    lastName: valueFallback(user.lastName, 'string'),
+    avatar: valueFallback(user.avatar, 'string'),
   },
 });
 
@@ -86,12 +87,12 @@ export const messageSender = (user) => ({
  */
 export const newMessage = (data) => ({
   sender: {
-    key: data.user.key,
-    firstName: data.user.firstName,
-    lastName: data.user.lastName,
-    avatar: data.user.avatar,
+    key: valueFallback(data.user.key, 'string'),
+    firstName: valueFallback(data.user.firstName, 'string'),
+    lastName: valueFallback(data.user.lastName, 'string'),
+    avatar: valueFallback(data.user.avatar, 'string'),
   },
-  content: data.content,
+  content: valueFallback(data.content, 'string'),
   timestamp: firebaseApp.firestore.FieldValue.serverTimestamp(),
 });
 
@@ -102,8 +103,8 @@ export const newMessage = (data) => ({
  */
 export const latestMessage = (data) => ({
   latestMessage: {
-    senderID: data.user.key,
-    content: data.content,
+    senderID: valueFallback(data.user.key, 'string'),
+    content: valueFallback(data.content, 'string'),
     timestamp: firebaseApp.firestore.FieldValue.serverTimestamp(),
   },
   isUnread: true,
