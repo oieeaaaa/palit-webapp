@@ -12,14 +12,14 @@ Description:
 ***************************************
 *
 */
-import {useEffect, useState, useContext} from 'react';
-import {useRouter} from 'next/router';
+import { useEffect, useState, useContext } from 'react';
+import { useRouter } from 'next/router';
 import Link from 'next/link';
 import AuthContext from 'js/contexts/auth';
 import useAuth from 'js/hooks/useAuth';
 import routes from 'js/routes';
 import Banner from 'components/banner/banner';
-import {LandingHeader} from 'components/landing/landing';
+import { LandingHeader } from 'components/landing/landing';
 
 /**
  * HeaderDropdown.
@@ -28,7 +28,7 @@ import {LandingHeader} from 'components/landing/landing';
    * @param {boolean} isOpen
    * @param {function} onLogout
  */
-const HeaderDropdown = ({isOpen, onLogout}) => (
+const HeaderDropdown = ({ isOpen, onLogout }) => (
   <ul
     className={`header-dropdown ${isOpen ? '--open' : ''}`}
     onClick={(e) => e.stopPropagation()} // hide from window click event
@@ -58,7 +58,7 @@ const HeaderDropdown = ({isOpen, onLogout}) => (
  * @param {object}
    * @param {string} currentPath
  */
-const HeaderNav = ({currentPath}) => (
+const HeaderNav = ({ currentPath }) => (
   <div className="header-nav">
     {routes.map((route) => (
       <Link href={route.href} key={route.name}>
@@ -89,15 +89,15 @@ const HeaderWithAvatar = ({
   openDropdown,
   signout,
 }) => (
-    avatar ? (
-      <div className="header-avatar">
-        <button className="header__profile" type="button" onClick={openDropdown}>
-          <img src={avatar} alt={alt} />
-        </button>
-        <HeaderDropdown isOpen={isDropdownOpen} onLogout={signout} />
-      </div>
-    ) : null
-  );
+  avatar ? (
+    <div className="header-avatar">
+      <button className="header__profile" type="button" onClick={openDropdown}>
+        <img src={avatar} alt={alt} />
+      </button>
+      <HeaderDropdown isOpen={isDropdownOpen} onLogout={signout} />
+    </div>
+  ) : null
+);
 
 /**
  * HeaderWithAvatar.
@@ -128,7 +128,7 @@ const HeaderWithoutAvatar = ({
  */
 const Header = () => {
   // contexts
-  const {user} = useContext(AuthContext);
+  const { user } = useContext(AuthContext);
 
   // states
   const [isDropdownOpen, setIsDropdownOpen] = useState();
