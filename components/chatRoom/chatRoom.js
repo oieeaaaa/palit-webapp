@@ -6,8 +6,9 @@ Description:
 ***************************************
 */
 import Link from 'next/link';
-import { format } from 'timeago.js';
+import {format} from 'timeago.js';
 import Icon from 'components/icon/icon';
+import Avatar from 'components/avatar/avatar';
 
 /**
  * ChatRoomHeader.
@@ -15,7 +16,7 @@ import Icon from 'components/icon/icon';
  * @param {object} props
    * @param {object} activeRoom
  */
-export const ChatRoomHeader = ({ activeRoom }) => (
+export const ChatRoomHeader = ({activeRoom}) => (
   <div className="chat-room-header">
     <h1 className="chat-room-header__title">
       {activeRoom && (
@@ -40,7 +41,7 @@ export const ChatRoomHeader = ({ activeRoom }) => (
    * @param {boolean} isSender
    * @param {object} message
  */
-export const ChatRoomMessage = ({ isSender, message }) => (
+export const ChatRoomMessage = ({isSender, message}) => (
   <li className={`chat-room-message ${isSender ? '--sender' : ''}`}>
     <figure className="chat-room-message__avatar">
       <img src={message.sender?.avatar} alt="Palit" />
@@ -68,9 +69,9 @@ export const ChatRoomMessage = ({ isSender, message }) => (
    * @param {string} userID
    * @param {object} messageAnchor
  */
-export const ChatRoomMessages = ({ messages, userID, messageAnchor }) => (
+export const ChatRoomMessages = ({messages, userID, messageAnchor}) => (
   <ul className="chat-room-messages">
-    {messages && (
+    {messages && messages.length ? (
       messages.map((message) => {
         const isSender = message.sender.key === userID;
 
@@ -82,7 +83,9 @@ export const ChatRoomMessages = ({ messages, userID, messageAnchor }) => (
           />
         );
       })
-    )}
+    ) : (
+        <li className="chat-room-messages__empty">No conversations yet</li>
+      )}
     <li ref={messageAnchor} />
   </ul>
 );
@@ -106,39 +109,39 @@ export const ChatRoomForm = ({
   form,
   isSending,
 }) => (
-  <div className="chat-room-form">
-    <button className="chat-room-form__util" type="button" onClick={copyToClipboard}>
-      <Icon className="chat-room-form__util-icon" name="copy-outline" />
-    </button>
-    <div className="chat-room-form-container">
-      <div className="chat-room-form__input-group">
-        <div
-          ref={messageBox}
-          contentEditable
-          className="chat-room-form__input"
-          onInput={handleMessage}
-          onKeyPress={sendMessage}
-          role="textbox"
-          aria-label="Editor"
-          tabIndex={0}
-        />
-        {!form.message && (
-        <p className="chat-room-form__input-placeholder">
-          Type something here...
-        </p>
-        )}
-      </div>
-      <button
-        className={`chat-room-form__button button ${isSending ? '--disabled' : ''}`}
-        type="button"
-        onClick={sendMessage}
-        disabled={isSending}
-      >
-        <Icon className="chat-room-form__util-icon" name="send-outline" />
+    <div className="chat-room-form">
+      <button className="chat-room-form__util" type="button" onClick={copyToClipboard}>
+        <Icon className="chat-room-form__util-icon" name="copy-outline" />
       </button>
+      <div className="chat-room-form-container">
+        <div className="chat-room-form__input-group">
+          <div
+            ref={messageBox}
+            contentEditable
+            className="chat-room-form__input"
+            onInput={handleMessage}
+            onKeyPress={sendMessage}
+            role="textbox"
+            aria-label="Editor"
+            tabIndex={0}
+          />
+          {!form.message && (
+            <p className="chat-room-form__input-placeholder">
+              Type something here...
+            </p>
+          )}
+        </div>
+        <button
+          className={`chat-room-form__button button ${isSending ? '--disabled' : ''}`}
+          type="button"
+          onClick={sendMessage}
+          disabled={isSending}
+        >
+          <Icon className="chat-room-form__util-icon" name="send-outline" />
+        </button>
+      </div>
     </div>
-  </div>
-);
+  );
 
 /**
  * ChatRoomHeads.
@@ -148,7 +151,7 @@ export const ChatRoomForm = ({
    * @param {object} activeRoom
    * @param {function} openChatRoom
  */
-export const ChatRoomHeads = ({ rooms, activeRoom, openChatRoom }) => (
+export const ChatRoomHeads = ({rooms, activeRoom, openChatRoom}) => (
   <ul className="chat-room-heads">
     {rooms && (
       rooms.map((room) => (
@@ -165,7 +168,11 @@ export const ChatRoomHeads = ({ rooms, activeRoom, openChatRoom }) => (
               type="button"
               onClick={() => openChatRoom(room.userID)}
             >
-              <img src={room.avatar} alt={room.name} />
+              <Avatar
+                src={room.avatar}
+                initial={room.firstName[0]}
+                name={room.firstName}
+              />
             </button>
           </div>
         </li>

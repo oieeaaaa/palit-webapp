@@ -20,11 +20,10 @@
   &__add {
     @include Montserrat(600);
 
-    grid-column: 3 / -3;
+    grid-column: 1 / 4;
     margin-top: rem(30);
 
     @include tablet-p {
-      grid-column: 5 / -5;
       margin-top: rem(60);
     }
   }

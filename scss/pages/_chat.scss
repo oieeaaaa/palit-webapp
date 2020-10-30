@@ -70,9 +70,11 @@
     }
 
     &__avatar {
-      @include aspect-ratio(1, 1);
-
       border-radius: rem(8);
+
+      &.avatar {
+        background-color: unset;
+      }
 
       @include tablet-p {
         border: rem(1) solid transparent;
@@ -187,5 +189,13 @@
 
   &-mates > &-mate:first-of-type {
     margin-top: 0;
+  }
+
+  .tip {
+    grid-column: 1 / -1;
+
+    @include tablet-p {
+      grid-column: 3 / -3;
+    }
   }
 }

@@ -104,6 +104,8 @@ Description:
       }
 
       @include tablet-p {
+        transition: color 0.25s ease;
+
         @include state((hover, focus)) {
           color: var(--light);
         }
@@ -163,6 +165,10 @@ Description:
       border: none;
       background: none;
       cursor: pointer;
+
+      @include state(hover) {
+        text-decoration: underline;
+      }
     }
 
     &__button.--logout {
@@ -172,37 +178,24 @@ Description:
 
   &__profile {
     @include flex-center;
-    @include aspect-ratio(1, 1);
-    @include circle(30);
 
     margin-left: auto;
 
-    overflow: hidden;
     text-decoration: none;
-    background-color: var(--tree-poppy);
     cursor: pointer;
+    box-shadow: none;
 
-    @include tablet-p {
-      width: rem(50);
-      height: rem($profile-height--tablet);
+    &-avatar {
+      @include circle(30);
 
-      @include state(hover) {
-        box-shadow: $primary-hard-and-soft-shadow;
+      @include tablet-p {
+        @include circle(50);
+
+        @include state(hover) {
+          box-shadow: $primary-hard-and-soft-shadow;
+        }
       }
     }
-  }
-
-  &__placeholder {
-    @include Montserrat(700);
-
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 100%;
-    height: 100%;
-    background-color: var(--tree-poppy);
-    text-transform: uppercase;
-    color: var(--mine-shaft);
   }
 
   .banner {
