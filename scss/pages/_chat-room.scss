@@ -341,7 +341,11 @@
     }
 
     &__button {
-      @include aspect-ratio(60, 60);
+      position: relative;
+      width: rem(60);
+      border-radius: rem(8);
+      background-color: var(--gray);
+      overflow: hidden;
 
       #{$room}.--active &::after {
         @include circle(20);
@@ -355,10 +359,9 @@
         background-color: var(--theme);
       }
 
-      position: relative;
-      width: rem(60);
-      border-radius: rem(8);
-      background-color: var(--gray);
+      .avatar__placeholder {
+        background-color: var(--theme);
+      }
     }
   }
 }
