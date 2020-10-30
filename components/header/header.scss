@@ -175,6 +175,8 @@ Description:
     @include aspect-ratio(1, 1);
     @include circle(30);
 
+    margin-left: auto;
+
     overflow: hidden;
     text-decoration: none;
     background-color: var(--tree-poppy);
