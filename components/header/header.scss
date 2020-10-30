@@ -165,6 +165,10 @@ Description:
       border: none;
       background: none;
       cursor: pointer;
+
+      @include state(hover) {
+        text-decoration: underline;
+      }
     }
 
     &__button.--logout {
