@@ -1,10 +1,15 @@
-import { useState, useContext, useEffect } from 'react';
+import {
+  useState,
+  useContext,
+  useEffect,
+  useCallback,
+} from 'react';
 import CHATROOM from 'js/models/chatRooms';
 import AuthContext from 'js/contexts/auth';
 import useProtection from 'js/hooks/useProtection';
 import { normalizeData } from 'js/utils';
 import Layout from 'components/layout/layout';
-import { ChatHeader, ChatMates } from 'components/chat/chat';
+import { ChatHeader, ChatMates, ChatEmpty } from 'components/chat/chat';
 
 const Chat = () => {
   // context
@@ -12,6 +17,9 @@ const Chat = () => {
 
   // states
   const [rooms, setRooms] = useState(null);
+
+  // callbacks
+  const isChatEmpty = useCallback(() => !!(rooms && !rooms.length), [rooms]);
 
   /**
    * useEffect.
@@ -32,6 +40,7 @@ const Chat = () => {
         <div className="grid">
           <ChatHeader title="Chat" />
           <ChatMates mates={rooms} userID={user.key} />
+          <ChatEmpty isEmpty={isChatEmpty()} />
         </div>
       </div>
     </Layout>

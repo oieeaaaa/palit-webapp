@@ -10,6 +10,7 @@ import { format } from 'timeago.js';
 import { isAllObjectValuesFalse } from 'js/utils';
 import Icon from 'components/icon/icon';
 import Title from 'components/title/title';
+import Avatar from 'components/avatar/avatar';
 
 /**
  * ChatHeader.
@@ -43,9 +44,12 @@ export const ChatMate = ({ mate, userID }) => (
     <Link href="/chat/[memberID]" as={`/chat/${mate.userID}`}>
       <a className="chat-mate__link">
         <div className="chat-mate__avatar-container">
-          <figure className="chat-mate__avatar">
-            <img src={mate.avatar} alt="palit" />
-          </figure>
+          <Avatar
+            className="chat-mate__avatar"
+            src={mate.avatar}
+            name={mate.firstName}
+            initial={mate.firstName[0]}
+          />
         </div>
         <div className="chat-mate__info">
           <h2 className="chat-mate__name">
@@ -85,13 +89,27 @@ export const ChatMate = ({ mate, userID }) => (
 export const ChatMates = ({ mates, userID }) => (
   <ul className="chat-mates">
     {mates && mates.map((mate) => (
-      <ChatMate mate={mate} userID={userID} />
+      <ChatMate key={mate.key} mate={mate} userID={userID} />
     ))}
   </ul>
+);
+
+/**
+ * ChatEmpty.
+ *
+ * @param {object} props
+   * @param {boolean} string
+ */
+export const ChatEmpty = ({ isEmpty }) => isEmpty && (
+  <div className="tip">
+    <h2 className="tip-heading">Your chat is empty:</h2>
+    <p className="tip-text">There is nothing here</p>
+  </div>
 );
 
 export default {
   ChatMate,
   ChatHeader,
   ChatMates,
+  ChatEmpty,
 };
