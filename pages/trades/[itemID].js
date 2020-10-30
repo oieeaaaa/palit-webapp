@@ -19,7 +19,6 @@ import { normalizeData, isObjectEmpty } from 'js/utils';
 
 import Layout from 'components/layout/layout';
 import {
-  TradeRequestHeading,
   TradeRequestMyItem,
   TradeRequestGoodLuckCard,
   TradeRequestItemRequests,
