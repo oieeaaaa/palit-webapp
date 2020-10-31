@@ -19,6 +19,7 @@
 .DS_Store
 .env*
 /notes/
+palit-fb2a5-firebase-adminsdk-*.json
 
 # debug
 npm-debug.log*
