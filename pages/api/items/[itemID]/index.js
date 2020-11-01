@@ -9,6 +9,10 @@ import {
   incrementTotalRequests,
   incrementTradeRequests,
 } from 'js/shapes/tradeRequest';
+import {
+  successPayload,
+  errorPayload,
+} from 'js/shapes/commons';
 
 // utils
 import { normalizeData } from 'js/utils';
@@ -29,12 +33,6 @@ const requestsCollection = db.collectionGroup('requests');
  */
 const getOneItem = async (req, res) => {
   const { itemID, userID } = req.query;
-
-  let payload = {
-    data: null,
-    message: '',
-    error: null,
-  };
 
   try {
     let data = {};
@@ -58,21 +56,15 @@ const getOneItem = async (req, res) => {
       data = await itemsCollection.doc(itemID).get();
     }
 
-    payload = {
-      ...payload,
+    successPayload(res, {
       message: 'Found it!',
       data,
-    };
-
-    res.status(200).send(payload);
+    });
   } catch (error) {
-    payload = {
-      ...payload,
+    errorPayload(res, {
       message: 'Ugh, Something went wrong. Blame that silly developer.',
       error: error.message,
-    };
-
-    res.status(400).send(payload);
+    });
   }
 };
 
@@ -85,11 +77,6 @@ const getOneItem = async (req, res) => {
 const updateItem = async (req, res) => {
   const { body: data, query } = req;
   const { itemID } = query;
-  let payload = {
-    key: itemID,
-    message: '',
-    error: null,
-  };
 
   // refs
   const itemRef = itemsCollection.doc(itemID);
@@ -115,20 +102,16 @@ const updateItem = async (req, res) => {
       transaction.update(itemRef, updatedItem(data));
     });
 
-    payload = {
-      ...payload,
+    successPayload(res, {
+      key: itemID,
       message: "You've updated your item, Nice one!",
-    };
-
-    res.status(200).send(payload);
+    });
   } catch (error) {
-    payload = {
-      ...payload,
+    errorPayload(res, {
+      key: itemID,
       message: "Oops, Maybe the developer made a silly mistake. Otherwise, it's your fault.",
       error: error.message,
-    };
-
-    res.status(400).send(payload);
+    });
   }
 };
 
@@ -140,11 +123,6 @@ const updateItem = async (req, res) => {
  */
 const deleteItem = async (req, res) => {
   const { itemID } = req.query;
-  let payload = {
-    key: itemID,
-    message: '',
-    error: null,
-  };
 
   const affectedRequestsParentKeys = [];
 
@@ -210,20 +188,16 @@ const deleteItem = async (req, res) => {
       }
     });
 
-    payload = {
-      ...payload,
+    successPayload(res, {
+      key: itemID,
       message: "Your item is gone. It won't ever come back. Forever.",
-    };
-
-    res.status(200).send(payload);
+    });
   } catch (error) {
-    payload = {
-      ...payload,
+    errorPayload(res, {
+      key: itemID,
       message: 'Oh no! There must be some issue/s here. Hmmm...',
       error: error.message,
-    };
-
-    res.status(400).send(payload);
+    });
   }
 };
 
