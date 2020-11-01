@@ -1,9 +1,10 @@
-import { db, fn } from 'admin';
+import { db } from 'admin';
 import { normalizeData } from 'js/utils';
+import api from 'js/helpers/api';
 
 const itemsCollection = db.collection('items');
 
-const get = fn.https.onRequest(async (req, res) => {
+const getAllItems = async (req, res) => {
   const { userID, limit } = req.body;
 
   const rawItems = await itemsCollection
@@ -15,17 +16,8 @@ const get = fn.https.onRequest(async (req, res) => {
   const items = normalizeData(rawItems);
 
   res.send(items);
-});
-
-const ITEMS = async (req, res) => {
-  switch (req.method) {
-    case 'GET':
-      await get(req, res);
-      break;
-
-    default:
-      throw new Error('Unsupported method!');
-  }
 };
+
+const ITEMS = api({ get: getAllItems });
 
 export default ITEMS;
