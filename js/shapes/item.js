@@ -1,4 +1,5 @@
-import firebaseApp from 'firebase/app';
+import admin from 'admin';
+import { valueFallback } from 'js/utils';
 
 /**
  * incrementTotalItems.
@@ -6,7 +7,7 @@ import firebaseApp from 'firebase/app';
  * @param {number} amount
  */
 export const incrementTotalItems = (amount = 0) => ({
-  totalItems: firebaseApp.firestore.FieldValue.increment(amount),
+  totalItems: admin.firestore.FieldValue.increment(amount),
 });
 
 /**
@@ -26,8 +27,8 @@ export const newItem = (owner, data = {}) => ({
   isDirty: false,
   owner: owner.key,
   ownerInfo: {
-    firstName: owner.firstName || '',
-    address: owner.address || '',
+    firstName: valueFallback(owner.firstName, 'string'),
+    address: valueFallback(owner.address, 'string'),
   },
 });
 
@@ -37,9 +38,9 @@ export const newItem = (owner, data = {}) => ({
  * @param {object} data
  */
 export const updatedItem = (data = {}) => ({
-  name: data.name,
-  cover: data.cover,
-  remarks: data.remarks,
+  name: valueFallback(data.name, 'string'),
+  cover: valueFallback(data.cover, 'string'),
+  remarks: valueFallback(data.remarks, 'string'),
 });
 
 /**

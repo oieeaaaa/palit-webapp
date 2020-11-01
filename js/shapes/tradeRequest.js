@@ -1,4 +1,4 @@
-import firebaseApp from 'firebase/app';
+import admin from 'admin';
 
 /**
  * newTradeRequest.
@@ -36,7 +36,7 @@ export const newRequest = (data = {}) => ({
  * @param {number} amount
  */
 export const incrementTradeRequests = (amount = 0) => ({
-  tradeRequests: firebaseApp.firestore.FieldValue.increment(amount),
+  tradeRequests: admin.firestore.FieldValue.increment(amount),
 });
 
 /**
@@ -45,7 +45,7 @@ export const incrementTradeRequests = (amount = 0) => ({
  * @param {number} amount
  */
 export const incrementTotalRequests = (amount = 0) => ({
-  totalRequests: firebaseApp.firestore.FieldValue.increment(amount),
+  totalRequests: admin.firestore.FieldValue.increment(amount),
 });
 
 /**
