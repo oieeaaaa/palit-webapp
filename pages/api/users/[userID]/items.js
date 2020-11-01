@@ -1,4 +1,5 @@
 import { db } from 'admin';
+import { successPayload, errorPayload } from 'js/shapes/commons';
 import { normalizeData } from 'js/utils';
 import api from 'js/helpers/api';
 
@@ -15,11 +16,6 @@ const likesCollection = db.collection('likes');
  */
 const getAllItems = async (req, res) => {
   const { userID, limit } = req.query;
-  let payload = {
-    data: {},
-    message: '',
-    error: null,
-  };
 
   try {
     // items
@@ -56,24 +52,18 @@ const getAllItems = async (req, res) => {
     const rawStats = await itemsStats.get();
     const stats = normalizeData(rawStats);
 
-    payload = {
-      ...payload,
+    successPayload(res, {
       message: "You've got 'em all!",
       data: {
         items,
         stats,
       },
-    };
-
-    res.send(payload);
+    });
   } catch (error) {
-    payload = {
-      ...payload,
+    errorPayload(res, {
       message: "Oh snap! Can't retrieve the items right now.",
       error: error.message,
-    };
-
-    res.send(payload);
+    });
   }
 };
 
