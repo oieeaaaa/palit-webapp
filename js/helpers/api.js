@@ -18,10 +18,11 @@ const api = (methods) => async (req, res) => {
   for (const method of Object.keys(methods)) {
     if (req.method === method.toUpperCase()) {
       await methods[method](req, res);
-    } else {
-      throw new Error('Invalid method name: Try using 👉 get, post, put, or delete.');
+      return;
     }
   }
+
+  throw new Error('Invalid method name: Try using 👉 get, post, put, or delete.');
 };
 
 export default api;
