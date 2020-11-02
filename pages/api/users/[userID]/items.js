@@ -1,6 +1,7 @@
 import { db } from 'admin';
 import { successPayload, errorPayload } from 'js/shapes/commons';
 import { normalizeData } from 'js/utils';
+import messages from 'js/messages';
 import api from 'js/helpers/api';
 
 const itemsCollection = db.collection('items');
@@ -53,7 +54,7 @@ const getAllItems = async (req, res) => {
     const stats = normalizeData(rawStats);
 
     successPayload(res, {
-      message: "You've got 'em all!",
+      message: messages.success.retrieved,
       data: {
         items,
         stats,
@@ -61,7 +62,7 @@ const getAllItems = async (req, res) => {
     });
   } catch (error) {
     errorPayload(res, {
-      message: "Oh snap! Can't retrieve the items right now.",
+      message: messages.error.common,
       error: error.message,
     });
   }

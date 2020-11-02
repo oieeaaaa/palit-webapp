@@ -1,5 +1,6 @@
 import { db } from 'admin';
 import { successPayload, errorPayload } from 'js/shapes/item';
+import messages from 'js/messages';
 import api from 'js/helpers/api';
 
 const itemsCollection = db.collection('items');
@@ -19,11 +20,11 @@ const cleanDirty = async (req, res) => {
     });
 
     successPayload(res, {
-      message: 'Nice!',
+      message: messages.success.common,
     });
   } catch (error) {
     errorPayload(res, {
-      message: 'Oops, Something went wrong.',
+      message: messages.error.common,
       error: error.message,
     });
   }

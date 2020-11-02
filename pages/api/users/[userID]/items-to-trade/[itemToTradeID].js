@@ -4,6 +4,7 @@ import {
   successPayload,
   errorPayload,
 } from 'js/shapes/commons';
+import messages from 'js/messages';
 import api from 'js/helpers/api';
 
 const itemsCollection = db.collection('items');
@@ -41,11 +42,11 @@ const getItemsToTrade = async (req, res) => {
 
     successPayload(res, {
       data: newItems,
-      message: 'Good luck trading!',
+      message: messages.success.retrieved,
     });
   } catch (error) {
     errorPayload(res, {
-      message: 'Ooops, Something went wrong.',
+      message: messages.error.common,
       error: error.message,
     });
   }

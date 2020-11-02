@@ -13,6 +13,7 @@ import {
   successPayload,
   errorPayload,
 } from 'js/shapes/commons';
+import messages from 'js/messages';
 
 // utils
 import { normalizeData } from 'js/utils';
@@ -57,12 +58,12 @@ const getOneItem = async (req, res) => {
     }
 
     successPayload(res, {
-      message: 'Found it!',
+      message: messages.success.retrieved,
       data,
     });
   } catch (error) {
     errorPayload(res, {
-      message: 'Ugh, Something went wrong. Blame that silly developer.',
+      message: messages.error.common,
       error: error.message,
     });
   }
@@ -104,12 +105,12 @@ const updateItem = async (req, res) => {
 
     successPayload(res, {
       key: itemID,
-      message: "You've updated your item, Nice one!",
+      message: messages.success.updated,
     });
   } catch (error) {
     errorPayload(res, {
       key: itemID,
-      message: "Oops, Maybe the developer made a silly mistake. Otherwise, it's your fault.",
+      message: messages.error.common,
       error: error.message,
     });
   }
@@ -190,12 +191,12 @@ const deleteItem = async (req, res) => {
 
     successPayload(res, {
       key: itemID,
-      message: "Your item is gone. It won't ever come back. Forever.",
+      message: messages.success.deleted,
     });
   } catch (error) {
     errorPayload(res, {
       key: itemID,
-      message: 'Oh no! There must be some issue/s here. Hmmm...',
+      message: messages.error.common,
       error: error.message,
     });
   }
